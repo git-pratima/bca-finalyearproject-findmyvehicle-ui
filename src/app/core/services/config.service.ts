@@ -54,8 +54,8 @@ get apiUrl(): string {
   }
 
   return window.location.hostname === 'localhost'
-    ? '/api'
-    : 'https://findmyvehicle.onrender.com/api';
+    ? 'http://localhost:5050/api'
+    : 'https://bca-finalyearproject-findmyvehicle.onrender.com/api';
 
 }
 
@@ -66,8 +66,8 @@ get oauthUrl(): string {
   }
 
   return window.location.hostname === 'localhost'
-    ? ''
-    : 'https://findmyvehicle.onrender.com';
+    ? 'http://localhost:5050'
+    : 'https://bca-finalyearproject-findmyvehicle.onrender.com';
 
 }
 

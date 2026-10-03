@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://findmyvehicle.onrender.com',
-  oauthUrl: 'https://findmyvehicle.onrender.com'
+  apiUrl: 'https://bca-finalyearproject-findmyvehicle.onrender.com/api',
+  oauthUrl: 'https://bca-finalyearproject-findmyvehicle.onrender.com'
 };

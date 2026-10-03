@@ -1,11 +1,15 @@
+[build]
+  command = "npm run build"
+  publish = "dist/findmyvehicle-ui/browser"
+
 [[redirects]]
   from = "/api/*"
-  to = "https://findmyvehicle.onrender.com/api/:splat"
+  to = "https://bca-finalyearproject-findmyvehicle.onrender.com/api/:splat"
   status = 200
   force = true
 
 [[redirects]]
   from = "/oauth2/*"
-  to = "https://findmyvehicle.onrender.com/oauth2/:splat"
+  to = "https://bca-finalyearproject-findmyvehicle.onrender.com/oauth2/:splat"
   status = 200
   force = true

@@ -1,4 +1,4 @@
 {
-  "apiUrl": "/api",
-  "oauthUrl": ""
+  "apiUrl": "https://bca-finalyearproject-findmyvehicle.onrender.com/api",
+  "oauthUrl": "https://bca-finalyearproject-findmyvehicle.onrender.com"
 }
