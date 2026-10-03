@@ -1,0 +1,26 @@
+<main class="info-page">
+  <section class="info-hero">
+    <div class="hero-glow"></div>
+    <div class="hero-content">
+      <span class="eyebrow"><mat-icon>shield</mat-icon>{{ content.eyebrow }}</span>
+      <h1>{{ content.title }}</h1>
+      <p>{{ content.introduction }}</p>
+      <a class="hero-action" [routerLink]="content.actionRoute">{{ content.actionLabel }}<mat-icon>arrow_forward</mat-icon></a>
+    </div>
+    <div class="hero-mark" aria-hidden="true"><mat-icon>near_me</mat-icon><span></span><span></span></div>
+  </section>
+
+  <section class="info-content" aria-label="Information">
+    <div class="section-heading"><span>Find My Vehicle</span><h2>People helping people</h2></div>
+    <div class="info-grid">
+      @for (section of content.sections; track section.title; let index = $index) {
+        <article class="info-card">
+          <div class="card-top"><span class="card-icon" [class.alt]="index % 2 === 1"><mat-icon>{{ section.icon }}</mat-icon></span><span class="card-index">0{{ index + 1 }}</span></div>
+          <h2>{{ section.title }}</h2>
+          <p>{{ section.body }}</p>
+        </article>
+      }
+    </div>
+    <aside class="closing-note"><mat-icon>info</mat-icon><p>Always prioritize your safety. If a situation requires urgent assistance, contact the appropriate local authorities.</p></aside>
+  </section>
+</main>

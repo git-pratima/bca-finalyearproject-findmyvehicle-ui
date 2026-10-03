@@ -1,0 +1,105 @@
+<main class="vehicle-page">
+  <div class="vehicle-container">
+    <a class="back-link" [routerLink]="backLink"><mat-icon>arrow_back</mat-icon> {{ backLink === '/dashboard' ? 'Back to dashboard' : 'Back to home' }}</a>
+
+    @if (loading()) {
+      <p class="page-message" role="status">Loading vehicle details…</p>
+    } @else if (error()) {
+      <section class="message-card" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        <h1>Vehicle details unavailable</h1>
+        <p>{{ error() }}</p>
+        <a routerLink="/search">Search vehicles</a>
+      </section>
+    } @else if (vehicle(); as item) {
+      <header class="page-heading">
+        <div>
+          <span class="eyebrow">Missing vehicle report</span>
+          <h1>{{ item.vehicleModel || item.vehicleCompany || 'Vehicle details' }}</h1>
+          <p>{{ item.regNumber }}</p>
+        </div>
+        <span class="status-pill" [class.found]="item.vehicleStatus === 'FOUND'">{{ item.vehicleStatus || 'STATUS UNAVAILABLE' }}</span>
+      </header>
+
+      <div class="details-layout">
+        <section class="content-column">
+          <article class="photo-card">
+            <div class="photo-stage">
+              @if (currentImage(); as image) {
+                <img [src]="image" [alt]="item.vehicleModel || item.regNumber">
+              } @else {
+                <div class="photo-placeholder"><mat-icon>directions_car</mat-icon><span>No vehicle photos available</span></div>
+              }
+              <span class="photo-count">{{ images().length ? imageIndex() + 1 : 0 }} / {{ images().length }}</span>
+              @if (images().length > 1) {
+                <button class="photo-control previous" type="button" (click)="previousImage()" aria-label="Previous vehicle photo"><mat-icon>chevron_left</mat-icon></button>
+                <button class="photo-control next" type="button" (click)="nextImage()" aria-label="Next vehicle photo"><mat-icon>chevron_right</mat-icon></button>
+              }
+            </div>
+            @if (images().length > 1) {
+              <div class="photo-thumbnails" aria-label="Vehicle photos">
+                @for (image of images(); track image; let i = $index) {
+                  <button type="button" [class.active]="imageIndex() === i" (click)="selectImage(i)" [attr.aria-label]="'Show vehicle photo ' + (i + 1)" [attr.aria-pressed]="imageIndex() === i">
+                    <img [src]="image" [alt]="'Vehicle photo ' + (i + 1)">
+                  </button>
+                }
+              </div>
+            }
+          </article>
+
+          <article class="information-card">
+            <div class="card-heading"><span class="heading-icon"><mat-icon>directions_car</mat-icon></span><div><h2>Vehicle information</h2><p>Identification and owner details</p></div></div>
+            <dl class="detail-grid">
+              <div><dt>Registration number</dt><dd>{{ item.regNumber }}</dd></div>
+              <div><dt>Vehicle</dt><dd>{{ item.vehicleCompany || 'Not provided' }} {{ item.vehicleModel || '' }}</dd></div>
+              <div><dt>Type</dt><dd>{{ item.type || 'Not provided' }}</dd></div>
+              <div><dt>Color</dt><dd>{{ item.color || 'Not provided' }}</dd></div>
+              <div><dt>Chassis number</dt><dd>{{ item.chassisNumber || 'Not provided' }}</dd></div>
+              <div><dt>Engine number</dt><dd>{{ item.engineNumber || 'Not provided' }}</dd></div>
+              <div><dt>Owner</dt><dd>{{ item.owner || 'Not provided' }}</dd></div>
+              <div><dt>Owner mobile</dt><dd>{{ item.ownerMobile || 'Not provided' }}</dd></div>
+            </dl>
+          </article>
+
+          @for (report of reports(); track report.id) {
+            <article class="information-card report-card">
+              <div class="card-heading"><span class="heading-icon alert"><mat-icon>location_on</mat-icon></span><div><h2>Missing report</h2><p>{{ report.missingDate ? (report.missingDate | date:'dd MMM yyyy') : 'Date not provided' }}{{ report.missingTime ? ' at ' + report.missingTime : '' }}</p></div></div>
+              <dl class="detail-grid">
+                <div><dt>Last seen near</dt><dd>{{ report.missingAddress || 'Not provided' }}</dd></div>
+                <div><dt>City / district</dt><dd>{{ joinValues(report.city, report.district) }}</dd></div>
+                <div><dt>State / country</dt><dd>{{ joinValues(report.state, report.country) }}</dd></div>
+                <div><dt>PIN code</dt><dd>{{ report.pinCode || 'Not provided' }}</dd></div>
+                @if (report.reward) {<div><dt>Reward</dt><dd>{{ report.reward }}</dd></div>}
+              </dl>
+              @if (report.description) {<p class="report-description">{{ report.description }}</p>}
+            </article>
+          }
+        </section>
+
+        <aside class="action-card">
+          <span class="action-kicker">Help bring this vehicle home</span>
+          <h2>Have information?</h2>
+          <p>Contact the owner or share where you saw this vehicle.</p>
+          @if (item.ownerEmail) {
+            <a class="primary-action" [href]="notifyOwnerHref()" target="_blank" rel="noopener noreferrer"><mat-icon>mail_outline</mat-icon>Notify Owner</a>
+            <div class="action-divider"><span>OR</span></div>
+            <form (ngSubmit)="sendSighting()">
+              <h3>Seen At</h3>
+              <label for="sighting-location">Where did you see it?</label>
+              <input id="sighting-location" name="sightingLocation" [ngModel]="sightingLocation()" (ngModelChange)="sightingLocation.set($event)" required placeholder="Area, street or landmark">
+              <label for="sighting-notes">Additional details <span>Optional</span></label>
+              <textarea id="sighting-notes" name="sightingNotes" [ngModel]="sightingNotes()" (ngModelChange)="sightingNotes.set($event)" rows="3" placeholder="Time, direction of travel, or other helpful details"></textarea>
+              <button class="secondary-action" type="submit"><mat-icon>location_on</mat-icon>Send sighting</button>
+              <small>This opens your email app to send the sighting directly to the owner.</small>
+            </form>
+          } @else {
+            <p class="contact-unavailable"><mat-icon>info_outline</mat-icon>Owner contact details are not available for this report.</p>
+          }
+          @if (item.ownerMobile) {
+            <a class="phone-link" [href]="'tel:' + item.ownerMobile"><mat-icon>call</mat-icon>Call {{ item.ownerMobile }}</a>
+          }
+        </aside>
+      </div>
+    }
+  </div>
+</main>

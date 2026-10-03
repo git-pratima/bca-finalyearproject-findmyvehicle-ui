@@ -1,0 +1,284 @@
+/* ==========================================
+   AUTH CONTAINER
+========================================== */
+
+.auth-container {
+
+    display: grid;
+
+    grid-template-columns: 1fr 520px;
+
+    min-height: 100vh;
+
+    background: var(--color-background);
+
+}
+
+/* ==========================================
+   LEFT PANEL
+========================================== */
+
+.auth-left {
+
+    position: relative;
+
+    overflow: hidden;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 80px;
+
+    color: white;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0d47a1,
+            #1565c0,
+            #1976d2
+        );
+
+}
+
+/* Decorative circles */
+
+.auth-left::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 420px;
+    height: 420px;
+
+    border-radius: 50%;
+
+    top: -120px;
+    right: -120px;
+
+    background: rgba(255,255,255,.08);
+
+}
+
+.auth-left::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 260px;
+    height: 260px;
+
+    border-radius: 50%;
+
+    bottom: -60px;
+    left: -60px;
+
+    background: rgba(255,255,255,.06);
+
+}
+
+.overlay {
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        radial-gradient(
+            circle at top right,
+            rgba(255,255,255,.15),
+            transparent 45%
+        );
+
+}
+
+.content {
+
+    position: relative;
+
+    z-index: 5;
+
+    max-width: 560px;
+
+}
+
+.logo {
+
+    font-size: 34px;
+
+    font-weight: 700;
+
+    margin-bottom: 20px;
+
+}
+
+.badge {
+
+    display: inline-block;
+
+    padding: 8px 18px;
+
+    border-radius: 999px;
+
+    margin-bottom: 28px;
+
+    font-size: 14px;
+
+    background: rgba(255,255,255,.15);
+
+    backdrop-filter: blur(12px);
+
+}
+
+.content h1 {
+
+    font-size: 48px;
+
+    line-height: 1.15;
+
+    font-weight: 700;
+
+    margin-bottom: 24px;
+
+}
+
+.content>p {
+
+    font-size: 18px;
+
+    line-height: 1.8;
+
+    opacity: .92;
+
+    margin-bottom: 48px;
+
+}
+
+/* ==========================================
+   FEATURES
+========================================== */
+
+.features {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 22px;
+
+}
+
+.feature {
+
+    display: flex;
+
+    gap: 18px;
+
+    align-items: flex-start;
+
+}
+
+.feature mat-icon {
+
+    width: 52px;
+    height: 52px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    font-size: 28px;
+
+    color: #FFD54F;
+
+    background: rgba(255,255,255,.12);
+
+}
+
+.feature h3 {
+
+    margin: 0 0 6px;
+
+    font-size: 18px;
+
+}
+
+.feature p {
+
+    margin: 0;
+
+    opacity: .85;
+
+    line-height: 1.6;
+
+}
+
+/* ==========================================
+   RIGHT
+========================================== */
+
+.auth-right {
+
+    display: flex;
+
+    padding: 48px;
+
+    background: var(--color-surface);
+
+}
+
+/* Center the routed page (e.g. login card) in both axes.
+   Using margin:auto instead of align-items/justify-content:center
+   keeps the card fully scrollable when it is taller than the
+   viewport (e.g. on phones) instead of clipping its overflow. */
+
+.auth-right > * {
+
+    margin: auto;
+
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width:1100px){
+
+    .auth-container{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .auth-left{
+
+        display:none;
+
+    }
+
+    .auth-right{
+
+        padding:32px;
+
+    }
+
+}
+
+@media (max-width:600px){
+
+    .auth-right{
+
+        padding:20px;
+
+    }
+
+}

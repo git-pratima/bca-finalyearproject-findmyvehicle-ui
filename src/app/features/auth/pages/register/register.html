@@ -1,0 +1,353 @@
+<div class="register-card">
+
+    <!-- ===========================
+         HEADER
+    ============================ -->
+
+    <div class="register-header">
+
+        <span class="welcome-badge">
+
+            Create Account
+
+        </span>
+
+        <h1>
+
+            Join Find My Vehicle
+
+        </h1>
+
+        <p>
+
+            Create your account to report, search and recover
+            missing or stolen vehicles securely.
+
+        </p>
+
+    </div>
+
+    <!-- ===========================
+         FORM
+    ============================ -->
+
+    <form
+        [formGroup]="registerForm"
+        (ngSubmit)="register()"
+        autocomplete="off">
+
+        <!-- Full Name -->
+
+        <mat-form-field
+            appearance="outline"
+            class="full-width">
+
+            <mat-label>Full Name</mat-label>
+
+            <input
+                matInput
+                formControlName="name"
+                placeholder="Enter your full name">
+
+            <mat-icon matSuffix>
+
+                person
+
+            </mat-icon>
+
+            @if(name.touched && name.hasError('required')){
+
+            <mat-error>
+
+                Full Name is required
+
+            </mat-error>
+
+            }
+
+            @if(name.touched && name.hasError('minlength')){
+
+            <mat-error>
+
+                Minimum 3 characters required
+
+            </mat-error>
+
+            }
+
+        </mat-form-field>
+
+        <!-- Email -->
+
+        <mat-form-field
+            appearance="outline"
+            class="full-width">
+
+            <mat-label>Email Address</mat-label>
+
+            <input
+                matInput
+                type="email"
+                formControlName="email"
+                placeholder="Enter your email">
+
+            <mat-icon matSuffix>
+
+                mail
+
+            </mat-icon>
+
+            @if(email.touched && email.hasError('required')){
+
+            <mat-error>
+
+                Email is required
+
+            </mat-error>
+
+            }
+
+            @if(email.touched && email.hasError('email')){
+
+            <mat-error>
+
+                Enter a valid email
+
+            </mat-error>
+
+            }
+
+        </mat-form-field>
+
+        <!-- Phone -->
+
+        <mat-form-field
+            appearance="outline"
+            class="full-width">
+
+            <mat-label>Mobile Number</mat-label>
+
+            <input
+                matInput
+                maxlength="10"
+                formControlName="phoneNumber"
+                placeholder="9876543210">
+
+            <mat-icon matSuffix>
+
+                phone
+
+            </mat-icon>
+
+            @if(phoneNumber.touched && phoneNumber.hasError('required')){
+
+            <mat-error>
+
+                Mobile Number is required
+
+            </mat-error>
+
+            }
+
+            @if(phoneNumber.touched && phoneNumber.hasError('pattern')){
+
+            <mat-error>
+
+                Enter a valid 10 digit mobile number
+
+            </mat-error>
+
+            }
+
+        </mat-form-field>
+
+        <!-- Password -->
+
+        <mat-form-field
+            appearance="outline"
+            class="full-width">
+
+            <mat-label>Password</mat-label>
+
+            <input
+                matInput
+                [type]="hidePassword() ? 'password':'text'"
+                formControlName="password"
+                placeholder="Create password">
+
+            <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                (click)="togglePassword()">
+
+                <mat-icon>
+
+                    {{ hidePassword() ? 'visibility_off':'visibility' }}
+
+                </mat-icon>
+
+            </button>
+
+        </mat-form-field>
+
+        <!-- Password Strength -->
+
+        <div class="password-strength">
+
+            <div class="strength-bar">
+
+                <div
+                    class="fill"
+                    [style.width.%]="passwordStrength()*20">
+
+                </div>
+
+            </div>
+
+            <span>
+
+                @switch(passwordStrength()){
+
+                @case(0){Weak}
+
+                @case(1){Weak}
+
+                @case(2){Fair}
+
+                @case(3){Good}
+
+                @case(4){Strong}
+
+                @case(5){Excellent}
+
+                }
+
+            </span>
+
+        </div>
+
+        <!-- Confirm Password -->
+
+        <mat-form-field
+            appearance="outline"
+            class="full-width">
+
+            <mat-label>Confirm Password</mat-label>
+
+            <input
+                matInput
+                [type]="hideConfirmPassword() ? 'password':'text'"
+                formControlName="confirmPassword"
+                placeholder="Confirm password">
+
+            <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                (click)="toggleConfirmPassword()">
+
+                <mat-icon>
+
+                    {{ hideConfirmPassword() ? 'visibility_off':'visibility' }}
+
+                </mat-icon>
+
+            </button>
+
+        </mat-form-field>
+
+        @if(registerForm.hasError('passwordMismatch')
+        && confirmPassword.touched){
+
+        <div class="password-error">
+
+            Passwords do not match
+
+        </div>
+
+        }
+
+        <!-- Terms -->
+
+        <div class="terms">
+
+            <mat-checkbox formControlName="terms">
+
+                I agree to the
+
+                <a href="#">Terms of Service</a>
+
+                and
+
+                <a href="#">Privacy Policy</a>
+
+            </mat-checkbox>
+
+        </div>
+
+        <!-- Submit -->
+
+        <button
+            mat-flat-button
+            color="primary"
+            class="register-btn"
+            type="submit"
+            [disabled]="loading() || registerForm.invalid">
+
+            @if(!loading()){
+
+            Create Account
+
+            }@else{
+
+            Creating Account...
+
+            }
+
+        </button>
+
+    </form>
+
+    <!-- Divider -->
+
+    <div class="divider">
+
+        <div class="line"></div>
+
+        <span>OR</span>
+
+        <div class="line"></div>
+
+    </div>
+
+    <!-- Google -->
+
+    <button
+        mat-stroked-button
+        class="google-btn">
+
+        <img
+            src="assets/images/google.png"
+            class="google-logo"
+            alt="Google">
+
+        Continue with Google
+
+    </button>
+
+    <!-- Footer -->
+
+    <div class="login-link">
+
+        Already have an account?
+
+        <a routerLink="/login">
+
+            Login
+
+        </a>
+
+    </div>
+
+</div>

@@ -1,0 +1,36 @@
+<section class="latest-section">
+  <div class="container">
+    <header class="section-heading">
+      <div><span class="eyebrow"><span class="heading-dot"></span>Community alerts · {{ recentMissingVehicles?.totalCount ?? 0 }} active</span><h2>{{ recentMissingVehicles?.title || 'Recently reported vehicles' }}</h2><p>Keep an eye out. A small detail could help someone find their way home.</p></div>
+      @if (recentMissingVehicles?.viewAllUrl) {<a class="view-all" [routerLink]="recentMissingVehicles?.viewAllUrl">Browse all alerts<mat-icon>arrow_forward</mat-icon></a>}
+    </header>
+    @if (recentMissingVehicles?.items?.length) {
+      <div class="vehicle-grid">
+        @for (vehicle of recentMissingVehicles?.items; track vehicle.id ?? vehicle.registrationNumber) {
+          <article class="vehicle-card">
+            <a class="vehicle-image" [routerLink]="vehicle.registrationNumber ? ['/vehicle', vehicle.registrationNumber] : '/search'" [attr.aria-label]="'View details for ' + (vehicle.registrationNumber || 'missing vehicle')">
+              @if (vehicle.imageUrls?.[0]; as imageUrl) {
+                <img [src]="imageUrl" [alt]="vehicle.displayName || vehicle.registrationNumber || 'Vehicle'" loading="lazy">
+              } @else {
+                <span class="image-fallback"><mat-icon>directions_car</mat-icon><small>Photo not available</small></span>
+              }
+              <span class="vehicle-status"><span></span>{{ vehicle.status || 'Missing' }}</span>
+              <span class="image-arrow"><mat-icon>arrow_outward</mat-icon></span>
+            </a>
+            <div class="vehicle-info">
+              <div class="vehicle-title"><div><span class="vehicle-type">{{ vehicle.vehicleType || vehicle.brand || 'Community alert' }}</span><h3>{{ vehicle.registrationNumber || 'Registration unavailable' }}</h3><p>{{ vehicle.displayName || vehicle.model || vehicle.brand || 'Vehicle details' }}</p></div></div>
+              <div class="details">
+                @if (vehicle.missingLocation?.displayName) {<span><mat-icon>location_on</mat-icon>{{ vehicle.missingLocation?.displayName }}</span>}
+                @if (vehicle.missigngDateTime) {<span><mat-icon>calendar_today</mat-icon>{{ vehicle.missigngDateTime | date:'dd MMM yyyy' }}</span>}
+              </div>
+              @if (vehicle.reward?.amount != null) {<div class="reward-line"><span>Reward offered</span><strong>{{ vehicle.reward?.amount | currency:(vehicle.reward?.currency || 'INR'):'symbol':'1.0-2':'en-IN' }}</strong></div>}
+              <a class="view-details" [routerLink]="vehicle.registrationNumber ? ['/vehicle', vehicle.registrationNumber] : '/search'">View vehicle details<mat-icon>arrow_forward</mat-icon></a>
+            </div>
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="empty-state"><span><mat-icon>notifications_active</mat-icon></span><div><h3>No active alerts just yet</h3><p>Check back soon, or help the community by reporting a missing vehicle.</p></div><a routerLink="/dashboard/report-missing">Create a report<mat-icon>arrow_forward</mat-icon></a></div>
+    }
+  </div>
+</section>

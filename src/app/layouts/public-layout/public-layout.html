@@ -1,0 +1,44 @@
+<div class="layout-container">
+
+    <!-- Mobile Overlay -->
+
+    @if (drawerOpen) {
+
+        <div
+            class="mobile-overlay"
+            (click)="closeDrawer()">
+        </div>
+
+    }
+
+    <!-- Mobile Sidebar -->
+
+    <aside
+        class="mobile-sidebar"
+        [class.open]="drawerOpen">
+
+        <app-mobile-nav
+            (closeMenu)="closeDrawer()">
+        </app-mobile-nav>
+
+    </aside>
+
+    <!-- Main Content -->
+
+    <div class="layout-content">
+
+        <app-header
+            (menuClick)="toggleDrawer()">
+        </app-header>
+
+        <main>
+
+            <router-outlet></router-outlet>
+
+        </main>
+
+        <app-footer></app-footer>
+
+    </div>
+
+</div>

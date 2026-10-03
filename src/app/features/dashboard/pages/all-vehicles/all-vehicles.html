@@ -1,0 +1,57 @@
+<main class="listing-page">
+  <header class="page-heading">
+    <div><span class="eyebrow">Community directory</span><h1>All Vehicles</h1><p>Browse vehicles listed on Find My Vehicle and review their latest report details.</p></div>
+  </header>
+
+  <section class="filter-card" aria-label="Filter all vehicles">
+    <div class="filter-heading"><span class="filter-icon"><mat-icon>tune</mat-icon></span><div><h2>Find a vehicle</h2><p>Filter the community directory by vehicle, location, or status.</p></div></div>
+    <form class="filter-grid" (submit)="$event.preventDefault(); search()">
+      <label>Registration number<input [value]="regNumber()" (input)="regNumber.set($any($event.target).value)" placeholder="e.g. KA00112212"></label>
+      <label>Vehicle model<input [value]="model()" (input)="model.set($any($event.target).value)" placeholder="e.g. Honda Activa"></label>
+      <label>Missing city<input [value]="missingCity()" (input)="missingCity.set($any($event.target).value)" placeholder="e.g. Bengaluru"></label>
+      <label>PIN code<input [value]="pinCode()" (input)="pinCode.set($any($event.target).value)" placeholder="e.g. 562107" inputmode="numeric"></label>
+      <label>Vehicle status<select [value]="status()" (change)="status.set($any($event.target).value)"><option value="">All statuses</option><option value="MISSING">Missing</option><option value="FOUND">Found</option></select></label>
+      <div class="filter-actions"><button class="clear-button" type="button" (click)="clearFilters()" [disabled]="loading()">Clear filters</button><button class="search-button" type="submit" [disabled]="loading()"><mat-icon>search</mat-icon>{{ loading() ? 'Searching…' : 'Search vehicles' }}</button></div>
+    </form>
+  </section>
+
+  <section aria-labelledby="all-vehicles-heading">
+    <header class="list-heading"><div><h2 id="all-vehicles-heading">{{ searched() ? 'Search results' : 'All listed vehicles' }}</h2><p>{{ totalElements() }} vehicle{{ totalElements() === 1 ? '' : 's' }} found</p></div><div class="list-controls"><label>Per page<select [value]="pageSize()" (change)="updatePageSize($any($event.target).value)" [disabled]="loading()" aria-label="Vehicles per page"><option value="2">2</option><option value="4">4</option><option value="6">6</option></select></label><nav class="list-pagination" aria-label="All vehicle pages"><button type="button" aria-label="Previous page" (click)="loadVehicles(page() - 1)" [disabled]="page() === 0 || loading()"><mat-icon>chevron_left</mat-icon></button><span>Page <strong>{{ totalPages() ? page() + 1 : 0 }}</strong> of <strong>{{ totalPages() }}</strong></span><button type="button" aria-label="Next page" (click)="loadVehicles(page() + 1)" [disabled]="page() + 1 >= totalPages() || loading()"><mat-icon>chevron_right</mat-icon></button></nav></div></header>
+
+    @if (loading()) {
+      <div class="state-card" role="status"><mat-icon>hourglass_top</mat-icon><p>Loading community vehicles…</p></div>
+    } @else if (error()) {
+      <div class="state-card error-state" role="alert"><mat-icon>error_outline</mat-icon><p>{{ error() }}</p><button type="button" (click)="loadVehicles(page())">Try again</button></div>
+    } @else if (vehicles().length) {
+      <div class="vehicle-list">
+        @for (vehicle of vehicles(); track vehicle.id) {
+          <article class="vehicle-card">
+            <div class="vehicle-top">
+              @if (vehicle.imageUrls?.[0]; as imageUrl) {<img class="vehicle-image" [src]="imageUrl" [alt]="vehicle.vehicleModel || vehicle.regNumber" loading="lazy">}
+              @else {<span class="vehicle-image placeholder"><mat-icon>directions_car</mat-icon></span>}
+              <div class="vehicle-heading"><span class="eyebrow">{{ vehicle.vehicleCompany || 'Vehicle' }}{{ vehicle.type ? ' · ' + vehicle.type : '' }}</span><h3>{{ vehicle.vehicleModel || vehicle.vehicleCompany || 'Vehicle' }}</h3><p class="registration">{{ vehicle.regNumber }}</p><div class="badges"><span class="status" [class.found]="vehicle.vehicleStatus === 'FOUND'">{{ vehicle.vehicleStatus || 'STATUS UNKNOWN' }}</span>@if (vehicle.color) {<span>{{ vehicle.color }}</span>}</div></div>
+              <a class="details-link" [routerLink]="['/dashboard/all-reports']" [queryParams]="{ regNumber: vehicle.regNumber }">View report details<mat-icon>arrow_forward</mat-icon></a>
+            </div>
+            <div class="vehicle-meta">
+              <div><mat-icon>confirmation_number</mat-icon><span><small>Chassis number</small><strong>{{ vehicle.chassisNumber || 'Not provided' }}</strong></span></div>
+              <div><mat-icon>settings</mat-icon><span><small>Engine number</small><strong>{{ vehicle.engineNumber || 'Not provided' }}</strong></span></div>
+              <div><mat-icon>person_outline</mat-icon><span><small>Owner</small><strong>{{ vehicle.owner || 'Not provided' }}</strong></span></div>
+              <div><mat-icon>call</mat-icon><span><small>Contact</small><strong>{{ vehicle.ownerMobile || 'Not provided' }}</strong></span></div>
+            </div>
+            @if (vehicle.missingDetails?.length) {
+              <div class="report-summary">
+                <mat-icon>location_on</mat-icon><span><strong>{{ vehicle.missingDetails?.length }} report{{ vehicle.missingDetails?.length === 1 ? '' : 's' }} on record</strong>
+                  @if (vehicle.missingDetails?.[0]; as latest) {<small>{{ latestReportLocation(latest) }}{{ latest.missingDate ? ' · ' + (latest.missingDate | date:'dd MMM yyyy') : '' }}</small>}
+                </span>
+              </div>
+            } @else {
+              <div class="report-summary no-reports"><mat-icon>info_outline</mat-icon><span><strong>No missing report details</strong><small>No incident location or date is currently associated with this vehicle.</small></span></div>
+            }
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="state-card empty-state"><span class="empty-icon"><mat-icon>directions_car</mat-icon></span><h3>{{ searched() ? 'No vehicles match those filters' : 'No vehicles found' }}</h3><p>Try adjusting the vehicle, location, or status filters.</p></div>
+    }
+  </section>
+</main>

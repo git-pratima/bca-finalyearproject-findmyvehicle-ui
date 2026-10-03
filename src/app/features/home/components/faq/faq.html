@@ -1,0 +1,53 @@
+<section class="faq-section">
+
+    <div class="container">
+
+        <span class="subtitle">
+
+            FAQ
+
+        </span>
+
+        <h2>
+
+            Frequently Asked Questions
+
+        </h2>
+
+        <p>
+
+            Everything you need to know about Find My Vehicle.
+
+        </p>
+
+        <mat-accordion>
+
+            @for (faq of faqs; track faq.question) {
+
+                <mat-expansion-panel>
+
+                    <mat-expansion-panel-header>
+
+                        <mat-panel-title>
+
+                            {{ faq.question }}
+
+                        </mat-panel-title>
+
+                    </mat-expansion-panel-header>
+
+                    <p>
+
+                        {{ faq.answer }}
+
+                    </p>
+
+                </mat-expansion-panel>
+
+            }
+
+        </mat-accordion>
+
+    </div>
+
+</section>

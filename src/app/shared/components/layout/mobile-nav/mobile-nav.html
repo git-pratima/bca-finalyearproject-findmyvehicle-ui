@@ -1,0 +1,152 @@
+<div class="mobile-nav">
+
+    <!-- Header -->
+
+    <div class="mobile-header">
+
+        <div class="logo">
+
+            🚗 Find My Vehicle
+
+        </div>
+
+        <button
+            class="close-btn"
+            (click)="closeMenu.emit()">
+
+            ✕
+
+        </button>
+
+    </div>
+
+    <!-- Profile -->
+
+    @if (loggedIn()) {
+
+    <div class="profile-card">
+
+        <div class="avatar">
+
+            {{ userName().charAt(0).toUpperCase() }}
+
+        </div>
+
+        <div>
+
+            <div class="profile-name">
+
+                {{ userName() }}
+
+            </div>
+
+            <a
+                routerLink="/profile"
+                (click)="closeMenu.emit()">
+
+                View Profile
+
+            </a>
+
+        </div>
+
+    </div>
+
+    }
+
+    <!-- Navigation -->
+
+    <div class="menu-section">
+
+        @for (item of navigation; track item.route) {
+
+        <a
+
+            class="menu-item"
+
+            [routerLink]="item.route"
+
+            routerLinkActive="active"
+
+            (click)="closeMenu.emit()">
+
+            <mat-icon>
+
+                {{ item.icon }}
+
+            </mat-icon>
+
+            <span>
+
+                {{ item.label }}
+
+            </span>
+
+        </a>
+
+        }
+
+    </div>
+
+    <!-- Bottom -->
+
+    <div class="bottom-actions">
+
+        <button
+            type="button"
+            class="theme-button"
+            [class.dark-theme]="themeService.theme() === 'dark'"
+            (click)="themeService.toggleTheme()">
+
+            <mat-icon>{{ themeService.theme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+            <span>{{ themeService.theme() === 'dark' ? 'Light Mode' : 'Dark Mode' }}</span>
+
+        </button>
+
+        @if (!loggedIn()) {
+
+        <button
+
+            mat-flat-button
+
+            routerLink="/login"
+
+            (click)="closeMenu.emit()">
+
+            Login
+
+        </button>
+
+        <button
+
+            mat-stroked-button
+
+            routerLink="/register"
+
+            (click)="closeMenu.emit()">
+
+            Register
+
+        </button>
+
+        }
+
+        @else {
+
+        <button
+
+            mat-flat-button
+
+            color="warn"
+
+            (click)="logout()">
+
+            Logout
+
+        </button>
+
+        }
+
+    </div>
+
+</div>

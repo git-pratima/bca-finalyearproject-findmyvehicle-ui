@@ -1,0 +1,16 @@
+:host{display:block}
+.cta-wrap{padding:0 25px 70px;background:var(--color-surface)}
+.cta-section{position:relative;isolation:isolate;overflow:hidden;display:grid;grid-template-columns:76px minmax(0,1fr) auto;align-items:center;gap:22px;max-width:1180px;min-height:176px;margin:auto;padding:30px 34px;border:1px solid #ffffff20;border-radius:17px;color:#fff;background:linear-gradient(110deg,#0a2851 0%,#104c91 57%,#1768b5 100%);box-shadow:0 16px 35px #06366a25}
+.cta-decoration{position:absolute;z-index:-1;top:-170px;right:-80px;width:420px;height:420px;border:1px solid #ffffff22;border-radius:50%;box-shadow:0 0 0 35px #ffffff08,0 0 0 82px #ffffff06,0 0 0 128px #ffffff04}
+.cta-symbol{position:relative;display:grid;place-items:center;width:70px;height:76px;color:#9bc7ff}
+.cta-symbol>mat-icon:first-child{width:70px;height:70px;font-size:70px}
+.cta-symbol>mat-icon:last-child{position:absolute;width:27px;height:27px;color:#fff;font-size:27px}
+.cta-copy{max-width:590px}
+.cta-copy>span{color:#a9d8ff;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.cta-section h2{margin:7px 0 6px;font-size:23px;letter-spacing:-.45px}
+.cta-section p{max-width:490px;margin:0;color:#d0e1f4;font-size:12px;line-height:1.65}
+.community-action{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:43px;padding:0 15px;border:1px solid #ffffffa6;border-radius:8px;color:#0a2b50;background:#fff;font-size:11px;font-weight:800;text-decoration:none;white-space:nowrap;transition:transform .2s,background .2s}
+.community-action:hover{transform:translateY(-2px);background:#edf6ff}
+.community-action mat-icon{width:17px;height:17px;font-size:17px}
+@media(max-width:700px){.cta-wrap{padding:0 17px 48px}.cta-section{grid-template-columns:54px 1fr;gap:13px;min-height:0;padding:22px 17px}.cta-symbol{width:52px;height:58px}.cta-symbol>mat-icon:first-child{width:55px;height:55px;font-size:55px}.cta-symbol>mat-icon:last-child{width:21px;height:21px;font-size:21px}.cta-section h2{font-size:18px}.cta-section p{font-size:11px}.community-action{grid-column:2;justify-self:start;min-height:38px;margin-top:3px;font-size:10px}}
+@media(max-width:400px){.cta-section{grid-template-columns:1fr}.cta-symbol{display:none}.cta-copy,.community-action{grid-column:1}.cta-section h2{font-size:17px}}

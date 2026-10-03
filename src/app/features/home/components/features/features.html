@@ -1,0 +1,43 @@
+<section class="features-section">
+
+    <div class="container">
+
+        <span class="section-tag">
+            WHY CHOOSE US
+        </span>
+
+        <h2>
+            Built for Speed, Security & Community
+        </h2>
+
+        <p class="section-description">
+            Everything you need to report, search and recover missing vehicles in one trusted platform.
+        </p>
+
+        <div class="features-grid">
+
+            @for (feature of features; track feature.title) {
+
+                <div class="feature-card">
+
+                    <div class="feature-icon">
+
+                        <mat-icon>
+                            {{ feature.icon }}
+                        </mat-icon>
+
+                    </div>
+
+                    <h3>{{ feature.title }}</h3>
+
+                    <p>{{ feature.description }}</p>
+
+                </div>
+
+            }
+
+        </div>
+
+    </div>
+
+</section>

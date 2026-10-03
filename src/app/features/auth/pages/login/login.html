@@ -1,0 +1,227 @@
+<div class="login-card">
+
+    <!-- Header -->
+
+    <div class="login-header">
+
+        <span class="welcome-badge">
+
+            Welcome Back
+
+        </span>
+
+        <h1>
+
+            Sign In
+
+        </h1>
+
+        <p>
+
+            Login to continue using
+            <strong>Find My Vehicle</strong>
+
+        </p>
+
+    </div>
+
+    <!-- Form -->
+
+    <form
+        [formGroup]="loginForm"
+        (ngSubmit)="login()"
+        autocomplete="off">
+
+        <!-- Email -->
+
+        <mat-form-field
+            appearance="outline"
+            class="full-width">
+
+            <mat-label>Email Address</mat-label>
+
+            <input
+                matInput
+                type="email"
+                formControlName="email"
+                placeholder="Enter your email">
+
+            <mat-icon matSuffix>
+
+                mail
+
+            </mat-icon>
+
+            @if (email.touched && email.hasError('required')) {
+
+                <mat-error>
+
+                    Email is required
+
+                </mat-error>
+
+            }
+
+            @if (email.touched && email.hasError('email')) {
+
+                <mat-error>
+
+                    Please enter a valid email
+
+                </mat-error>
+
+            }
+
+        </mat-form-field>
+
+        <!-- Password -->
+
+        <mat-form-field
+            appearance="outline"
+            class="full-width">
+
+            <mat-label>Password</mat-label>
+
+            <input
+                matInput
+                [type]="hidePassword() ? 'password' : 'text'"
+                formControlName="password"
+                placeholder="Enter your password">
+
+            <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                (click)="togglePassword()">
+
+                <mat-icon>
+
+                    {{ hidePassword() ? 'visibility_off' : 'visibility' }}
+
+                </mat-icon>
+
+            </button>
+
+            @if (password.touched && password.hasError('required')) {
+
+                <mat-error>
+
+                    Password is required
+
+                </mat-error>
+
+            }
+
+            @if (password.touched && password.hasError('minlength')) {
+
+                <mat-error>
+
+                    Minimum 6 characters required
+
+                </mat-error>
+
+            }
+
+        </mat-form-field>
+
+        <!-- Remember -->
+
+        <div class="login-options">
+
+            <mat-checkbox formControlName="rememberMe">
+
+                Remember Me
+
+            </mat-checkbox>
+
+            <a routerLink="/forgot-password">
+
+                Forgot Password?
+
+            </a>
+
+        </div>
+
+        <!-- Login -->
+
+<button
+    mat-flat-button
+    color="primary"
+    class="login-btn"
+    type="submit"
+    [disabled]="loading() || loginForm.invalid">
+
+    @if (!loading()) {
+
+        <span>
+
+            Login
+
+        </span>
+
+    } @else {
+
+        <span>
+
+            Signing In...
+
+        </span>
+
+    }
+
+</button>
+
+    </form>
+
+    <!-- Divider -->
+
+    <div class="divider">
+
+        <div class="line"></div>
+
+        <span>
+
+            OR
+
+        </span>
+
+        <div class="line"></div>
+
+    </div>
+
+    <!-- Google -->
+
+<button
+    mat-stroked-button
+    class="google-btn"
+    type="button"
+    (click)="googleLogin()">
+
+    <img
+        src="assets/images/google.png"
+        alt="Google"
+        class="google-logo">
+
+    Continue with Google
+
+</button>
+
+    <!-- Register -->
+
+    <div class="register">
+
+        <span>
+
+            Don't have an account?
+
+        </span>
+
+        <a routerLink="/register">
+
+            Create Account
+
+        </a>
+
+    </div>
+
+</div>

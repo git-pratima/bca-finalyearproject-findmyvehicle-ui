@@ -1,0 +1,103 @@
+.faq-section {
+
+    padding: 100px 24px;
+
+    background: var(--color-surface);
+
+}
+
+.container {
+
+    max-width: 900px;
+
+    margin: auto;
+
+}
+
+.subtitle {
+
+    display: block;
+
+    text-align: center;
+
+    color: var(--color-primary);
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+
+    margin-bottom: 12px;
+
+}
+
+h2 {
+
+    text-align: center;
+
+    color: var(--color-text);
+
+    font-size: 44px;
+
+    margin-bottom: 18px;
+
+}
+
+.container>p {
+
+    text-align: center;
+
+    color: var(--color-text-secondary);
+
+    margin-bottom: 60px;
+
+    font-size: 18px;
+
+}
+
+mat-expansion-panel {
+
+    margin-bottom: 16px;
+
+    border-radius: 14px !important;
+
+    background: var(--color-background);
+
+    border: 1px solid var(--color-border);
+
+    box-shadow: 0 10px 25px var(--card-shadow);
+
+}
+
+mat-panel-title {
+
+    color: var(--color-text);
+
+    font-weight: 600;
+
+    font-size: 17px;
+
+}
+
+mat-expansion-panel p {
+
+    color: var(--color-text-secondary);
+
+    line-height: 1.8;
+
+}
+
+::ng-deep .mat-expansion-indicator::after {
+
+    color: var(--color-primary);
+
+}
+
+@media (max-width:768px) {
+
+    h2 {
+
+        font-size: 34px;
+
+    }
+
+}

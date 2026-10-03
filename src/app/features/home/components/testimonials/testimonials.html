@@ -1,0 +1,79 @@
+<section class="testimonial-section">
+
+    <div class="container">
+
+        <span class="subtitle">
+
+            SUCCESS STORIES
+
+        </span>
+
+        <h2>
+
+            Real People. Real Recoveries.
+
+        </h2>
+
+        <p>
+
+            Hear from vehicle owners who successfully recovered their vehicles through community support.
+
+        </p>
+
+        <div class="testimonial-grid">
+
+            @for(item of testimonials; track item.name){
+
+                <div class="testimonial-card">
+
+                    <div class="stars">
+
+                        <mat-icon>star</mat-icon>
+                        <mat-icon>star</mat-icon>
+                        <mat-icon>star</mat-icon>
+                        <mat-icon>star</mat-icon>
+                        <mat-icon>star</mat-icon>
+
+                    </div>
+
+                    <blockquote>
+
+                        "{{item.message}}"
+
+                    </blockquote>
+
+                    <div class="user">
+
+                        <div class="avatar">
+
+                            {{item.name.charAt(0)}}
+
+                        </div>
+
+                        <div>
+
+                            <h4>
+
+                                {{item.name}}
+
+                            </h4>
+
+                            <span>
+
+                                {{item.city}}
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            }
+
+        </div>
+
+    </div>
+
+</section>

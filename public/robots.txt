@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://findmyvehicle.netlify.app/sitemap.xml

@@ -1,0 +1,88 @@
+<main class="listing-page">
+  <header class="page-heading">
+    <div>
+      <span class="eyebrow">Your activity</span>
+      <h1>My Reports</h1>
+      <p>Review each missing incident you have reported and its associated vehicle.</p>
+    </div>
+    <a class="listing-action" routerLink="/dashboard/report-missing"><mat-icon>add</mat-icon>Report a vehicle</a>
+  </header>
+
+  <section class="filter-card" aria-label="Filter reports">
+    <div class="filter-heading">
+      <span class="filter-icon"><mat-icon>tune</mat-icon></span>
+      <div><h2>Find a report</h2><p>Filter your reports by vehicle or missing location.</p></div>
+    </div>
+    <form class="filter-grid" (submit)="$event.preventDefault(); search()">
+      <label>Registration number<input [value]="regNumber()" (input)="regNumber.set($any($event.target).value)" placeholder="e.g. KA00112212"></label>
+      <label>Vehicle model<input [value]="model()" (input)="model.set($any($event.target).value)" placeholder="e.g. Honda Activa"></label>
+      <label>Missing city<input [value]="missingCity()" (input)="missingCity.set($any($event.target).value)" placeholder="e.g. Bengaluru"></label>
+      <label>PIN code<input [value]="pinCode()" (input)="pinCode.set($any($event.target).value)" placeholder="e.g. 562107" inputmode="numeric"></label>
+      <div class="filter-actions">
+        <button class="clear-button" type="button" (click)="clearFilters()" [disabled]="loading()">Clear</button>
+        <button class="search-button" type="submit" [disabled]="loading()"><mat-icon>search</mat-icon>{{ loading() ? 'Searching…' : 'Search reports' }}</button>
+      </div>
+    </form>
+  </section>
+
+  <section aria-labelledby="reports-list-heading">
+    <header class="list-heading">
+      <div><h2 id="reports-list-heading">{{ searched() ? 'Missing report results' : 'Your missing reports' }}</h2><p>{{ reports().length }} missing report{{ reports().length === 1 ? '' : 's' }} on this page · {{ totalElements() }} matching vehicle{{ totalElements() === 1 ? '' : 's' }} total</p></div>
+      <div class="list-controls"><label>Per page<select [value]="pageSize()" (change)="updatePageSize($any($event.target).value)" [disabled]="loading()" aria-label="Vehicles per page"><option value="2">2</option><option value="4">4</option><option value="6">6</option></select></label><nav class="list-pagination" aria-label="My report pages"><button type="button" aria-label="Previous page" (click)="loadReports(page() - 1)" [disabled]="page() === 0 || loading()"><mat-icon>chevron_left</mat-icon></button><span>Page <strong>{{ totalPages() ? page() + 1 : 0 }}</strong> of <strong>{{ totalPages() }}</strong></span><button type="button" aria-label="Next page" (click)="loadReports(page() + 1)" [disabled]="page() + 1 >= totalPages() || loading()"><mat-icon>chevron_right</mat-icon></button></nav></div>
+    </header>
+
+    @if (loading()) {
+      <div class="state-card" role="status"><mat-icon>hourglass_top</mat-icon><p>Loading your reports…</p></div>
+    } @else if (error()) {
+      <div class="state-card error-state" role="alert"><mat-icon>error_outline</mat-icon><p>{{ error() }}</p><button type="button" (click)="loadReports(page())">Try again</button></div>
+    } @else if (reports().length) {
+      <div class="report-list">
+        @for (entry of reports(); track entry.vehicle.id + '-' + entry.detail.id) {
+          @let vehicle = entry.vehicle;
+          @let detail = entry.detail;
+          <article class="report-card">
+            <div class="report-top">
+              @if (vehicle.imageUrls?.[0]; as imageUrl) {
+                <img class="vehicle-image" [src]="imageUrl" [alt]="vehicle.vehicleModel || vehicle.regNumber">
+              } @else {
+                <span class="vehicle-image placeholder"><mat-icon>directions_car</mat-icon></span>
+              }
+              <div class="vehicle-heading">
+                <span class="eyebrow">Missing report</span>
+                <h3>{{ vehicle.vehicleModel || vehicle.vehicleCompany || 'Vehicle' }}</h3>
+                <p class="registration">{{ vehicle.regNumber }}</p>
+                <div class="badges">
+                  <span class="status" [class.found]="vehicle.vehicleStatus === 'FOUND'">{{ vehicle.vehicleStatus || 'STATUS UNKNOWN' }}</span>
+                  @if (vehicle.type) {<span>{{ vehicle.type }}</span>}
+                  @if (vehicle.color) {<span>{{ vehicle.color }}</span>}
+                </div>
+              </div>
+              <a class="details-link" [routerLink]="['/dashboard/vehicle', vehicle.regNumber]">View details<mat-icon>arrow_forward</mat-icon></a>
+            </div>
+
+            <div class="report-meta">
+              <div><mat-icon>confirmation_number</mat-icon><span><small>Chassis number</small><strong>{{ vehicle.chassisNumber || 'Not provided' }}</strong></span></div>
+              <div><mat-icon>settings</mat-icon><span><small>Engine number</small><strong>{{ vehicle.engineNumber || 'Not provided' }}</strong></span></div>
+              <div><mat-icon>person_outline</mat-icon><span><small>Owner</small><strong>{{ vehicle.owner || 'Not provided' }}</strong></span></div>
+              <div><mat-icon>call</mat-icon><span><small>Contact</small><strong>{{ vehicle.ownerMobile || 'Not provided' }}</strong></span></div>
+              <div><mat-icon>event</mat-icon><span><small>Missing since</small><strong>{{ detail.missingDate ? (detail.missingDate | date:'dd MMM yyyy') : 'Date not provided' }}{{ detail.missingTime ? ' · ' + detail.missingTime : '' }}</strong></span></div>
+              <div><mat-icon>workspace_premium</mat-icon><span><small>Reward</small><strong>{{ detail.reward || 'Not specified' }}</strong></span></div>
+            </div>
+
+            <div class="location-panel">
+                <div><mat-icon>location_on</mat-icon><span><small>Last seen</small><strong>{{ detail.missingAddress || 'Address not provided' }}</strong></span></div>
+                <div><small>City / district</small><strong>{{ joinValues(detail.city, detail.district) }}</strong></div>
+                <div><small>State / country</small><strong>{{ joinValues(detail.state, detail.country) }}</strong></div>
+                <div><small>PIN code</small><strong>{{ detail.pinCode || 'Not provided' }}</strong></div>
+                @if (detail.foundDate) {<div><small>Found date</small><strong>{{ detail.foundDate | date:'dd MMM yyyy' }}</strong></div>}
+            </div>
+            @if (detail.description) {<p class="description"><strong>Report description</strong>{{ detail.description }}</p>}
+          </article>
+        }
+      </div>
+
+    } @else {
+      <div class="state-card empty-state"><span class="empty-icon"><mat-icon>description</mat-icon></span><h3>{{ searched() ? 'No missing reports match those filters' : 'No missing reports yet' }}</h3><p>{{ searched() ? 'Try changing or clearing your filters.' : 'Missing reports you submit will appear here, separate from your vehicle list.' }}</p>@if (!searched()) {<a routerLink="/dashboard/report-missing">Create a missing report</a>}</div>
+    }
+  </section>
+</main>

@@ -1,0 +1,39 @@
+<section class="statistics-section">
+
+    <div class="container">
+
+        <span class="section-tag">
+            PLATFORM STATISTICS
+        </span>
+
+        <h2>
+            Trusted by Thousands Across India
+        </h2>
+
+        <p class="section-description">
+            Our growing community helps recover vehicles faster through collaboration and technology.
+        </p>
+
+        <div class="statistics-grid">
+
+            @for (item of statistics; track item.label) {
+
+                <div class="stat-card">
+
+                    <mat-icon>
+                        {{ item.icon }}
+                    </mat-icon>
+
+                    <h3>{{ item.value }}</h3>
+
+                    <span>{{ item.label }}</span>
+
+                </div>
+
+            }
+
+        </div>
+
+    </div>
+
+</section>

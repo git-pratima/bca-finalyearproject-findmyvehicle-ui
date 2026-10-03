@@ -1,0 +1,145 @@
+/* ==========================================================
+   LIGHT THEME (DEFAULT)
+========================================================== */
+
+:root {
+
+    /* Primary */
+
+    --color-primary: #1976d2;
+    --color-primary-hover: #1565c0;
+
+    /* Backgrounds */
+
+    --color-background: #f5f7fb;
+    --color-surface: #ffffff;
+    --color-surface-hover: #f8fafc;
+
+    /* Text */
+
+    --color-text: #212121;
+    --color-text-secondary: #616161;
+
+    /* Borders */
+
+    --color-border: #e4e8ef;
+
+    /* Icons */
+
+    --theme-icon-color: #212121;
+
+    /* Cards */
+
+    --card-shadow: rgba(15, 23, 42, .08);
+    --card-shadow-hover: rgba(15, 23, 42, .18);
+
+    /* Glass */
+
+    --glass-bg: rgba(255,255,255,.18);
+    --glass-border: rgba(255,255,255,.25);
+
+    /* Status */
+
+    --success: #2e7d32;
+    --warning: #f9a825;
+    --danger: #d32f2f;
+
+    --success-bg: rgba(46,125,50,.12);
+    --warning-bg: rgba(249,168,37,.12);
+    --danger-bg: rgba(211,47,47,.12);
+
+    /* Gradients */
+
+    --button-gradient:
+        linear-gradient(
+            135deg,
+            #1976d2,
+            #42a5f5
+        );
+
+    --hero-gradient:
+        linear-gradient(
+            135deg,
+            #1976d2,
+            #64b5f6
+        );
+
+    --header-background: #071a36;
+    --header-border: rgba(255,255,255,.12);
+    --header-text: #ffffff;
+    --landing-bg: #f8fafc;
+
+}
+
+/* ==========================================================
+   DARK THEME
+========================================================== */
+
+[data-theme="dark"] {
+
+    /* Primary */
+
+    --color-primary: #90caf9;
+    --color-primary-hover: #64b5f6;
+
+    /* Backgrounds */
+
+    --color-background: #0f172a;
+    --color-surface: #172033;
+    --color-surface-hover: #1e293b;
+
+    /* Text */
+
+    --color-text: #ffffff;
+    --color-text-secondary: #bfc8d7;
+
+    /* Borders */
+
+    --color-border: #334155;
+
+    /* Icons */
+
+    --theme-icon-color: #FFC107;
+
+    /* Cards */
+
+    --card-shadow: rgba(0,0,0,.45);
+    --card-shadow-hover: rgba(0,0,0,.65);
+
+    /* Glass */
+
+    --glass-bg: rgba(255,255,255,.08);
+    --glass-border: rgba(255,255,255,.12);
+
+    /* Status */
+
+    --success: #81c784;
+    --warning: #ffd54f;
+    --danger: #ef5350;
+
+    --success-bg: rgba(129,199,132,.12);
+    --warning-bg: rgba(255,213,79,.12);
+    --danger-bg: rgba(239,83,80,.12);
+
+    /* Gradients */
+
+    --button-gradient:
+        linear-gradient(
+            135deg,
+            #4f46e5,
+            #6366f1
+        );
+
+    --hero-gradient:
+        linear-gradient(
+            135deg,
+            #1e3a8a,
+            #3b82f6
+        );
+
+    --header-background: #061226;
+    --header-border: rgba(255,255,255,.12);
+    --header-text: #ffffff;
+    --landing-bg: #0f172a;
+
+}

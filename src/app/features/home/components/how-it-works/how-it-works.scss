@@ -1,0 +1,22 @@
+:host{display:block}
+.how-section{padding:68px 25px 74px;background:var(--color-surface)}
+.container{max-width:1180px;margin:auto}
+.section-heading{max-width:590px;margin:0 auto 34px;text-align:center}
+.eyebrow{color:var(--color-primary);font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.section-heading h2{margin:9px 0;color:var(--color-text);font-size:clamp(25px,3vw,34px);letter-spacing:-1px}
+.section-heading p{margin:0;color:var(--color-text-secondary);font-size:13px;line-height:1.65}
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.step-card{position:relative;display:grid;grid-template-columns:46px 1fr;align-content:start;gap:17px 13px;min-height:174px;padding:20px 17px;border:1px solid var(--color-border);border-radius:13px;background:var(--color-surface);box-shadow:0 5px 16px var(--card-shadow);transition:transform .2s,border-color .2s}
+.step-card:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--color-primary) 40%,var(--color-border))}
+.step-number{position:absolute;top:14px;right:14px;color:var(--color-text-secondary);font-size:10px;font-weight:800;letter-spacing:.08em}
+.step-icon{display:grid;place-items:center;width:45px;height:45px;border-radius:12px;color:#2269d1;background:#eaf2ff}
+.step-icon mat-icon{font-size:24px}
+.step-card>div{grid-column:1/-1}
+.step-card h3{margin:0 0 7px;color:var(--color-text);font-size:13px}
+.step-card p{max-width:230px;margin:0;color:var(--color-text-secondary);font-size:11px;line-height:1.65}
+.step-card.green .step-icon{color:#07884b;background:#e4f6ec}
+.step-card.orange .step-icon{color:#d97706;background:#fff3e2}
+.step-card.purple .step-icon{color:#7652c5;background:#f0ebff}
+@media(max-width:850px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}.step-card{min-height:150px}}
+@media(max-width:600px){.how-section{padding:48px 17px}.section-heading{margin-bottom:23px;text-align:left}.section-heading h2{font-size:27px}.steps{gap:10px}.step-card{grid-template-columns:38px 1fr;gap:12px 10px;min-height:155px;padding:15px 12px}.step-icon{width:38px;height:38px;border-radius:10px}.step-icon mat-icon{font-size:21px}.step-number{top:12px;right:11px;font-size:9px}.step-card h3{font-size:12px}.step-card p{font-size:10px}}
+@media(max-width:360px){.steps{grid-template-columns:1fr}.step-card{grid-template-columns:44px 1fr;align-items:center;min-height:auto}.step-card>div{grid-column:2}.step-card p{max-width:none}}

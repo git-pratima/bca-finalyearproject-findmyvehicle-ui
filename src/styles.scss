@@ -1,0 +1,611 @@
+// Include theming for Angular Material with `mat.theme()`.
+// This Sass mixin will define CSS variables that are used for styling Angular Material
+// components according to the Material 3 design spec.
+// Learn more about theming and how to use it for your application's
+// custom components at https://material.angular.dev/guide/theming
+@use 'styles/themes';
+@use '@angular/material' as mat;
+
+.vehicle-details-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  padding: 9px 11px;
+  border-radius: 13px;
+  color: #008b4c;
+  background: #e8f8ef;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.vehicle-details-link:hover {
+  background: #d2f2df;
+}
+
+.vehicle-details-link mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+}
+
+.vehicle-row-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.search-error {
+  display: block;
+  margin-top: 8px;
+  color: #bd2634;
+  font-size: 12px;
+}
+
+.search-result-message {
+  padding: 20px 16px;
+}
+
+.dashboard-vehicle-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: min(730px, 58vw);
+  padding: 6px 9px 6px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--color-surface-hover);
+  color: var(--color-text);
+  text-align: left;
+}
+
+.dashboard-vehicle-search input {
+  min-width: 0;
+  flex: 1;
+  height: 34px;
+  border: 0;
+  outline: 0;
+  color: var(--color-text);
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+}
+
+.dashboard-vehicle-search select {
+  width: 170px;
+  min-width: 135px;
+  height: 34px;
+  padding: 0 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  font: inherit;
+  font-size: 12px;
+}
+
+.dashboard-vehicle-search .search-icon {
+  flex: 0 0 auto;
+  color: var(--color-text-secondary);
+}
+
+.dashboard-vehicle-search button {
+  display: flex;
+  place-items: center;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 7px;
+  color: #fff;
+  background: #008d4d;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dashboard-vehicle-search button mat-icon {
+  width: 17px;
+  height: 17px;
+  font-size: 17px;
+}
+
+.dashboard-vehicle-search button:disabled {
+  cursor: wait;
+  opacity: .6;
+}
+
+.dashboard-shell .topbar form.dashboard-vehicle-search {
+  width: min(730px, 58vw);
+  gap: 8px;
+  padding: 6px 9px 6px 12px;
+}
+
+.dashboard-shell .topbar form.dashboard-vehicle-search input {
+  width: auto;
+  min-width: 0;
+  flex: 1;
+  height: 34px;
+}
+
+.dashboard-shell .topbar form.dashboard-vehicle-search select {
+  width: 170px;
+  min-width: 135px;
+  height: 34px;
+  padding: 0 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  font: inherit;
+  font-size: 12px;
+}
+
+.dashboard-shell .topbar form.dashboard-vehicle-search .search-icon {
+  flex: 0 0 auto;
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.dashboard-shell .topbar form.dashboard-vehicle-search button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 7px;
+  color: #fff;
+  background: #008d4d;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dashboard-shell .topbar form.dashboard-vehicle-search button mat-icon {
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  font-size: 17px;
+}
+
+.dashboard-shell .topbar form.dashboard-vehicle-search button:disabled {
+  cursor: wait;
+  opacity: .6;
+}
+
+@media (max-width: 620px) {
+  .dashboard-vehicle-search {
+    gap: 5px;
+    width: auto;
+    flex: 1;
+    padding: 4px;
+  }
+
+  .dashboard-vehicle-search select {
+    width: 105px;
+    min-width: 0;
+    padding: 0 4px;
+    font-size: 10px;
+  }
+
+  .dashboard-vehicle-search input {
+    width: auto;
+    height: 32px;
+    font-size: 11px;
+  }
+
+  .dashboard-vehicle-search button {
+    min-height: 32px;
+    padding: 0 7px;
+  }
+
+  .dashboard-vehicle-search button span {
+    display: none;
+  }
+}
+
+@media (max-width: 850px) {
+  .dashboard-shell .topbar form.dashboard-vehicle-search {
+    width: auto;
+    flex: 1;
+  }
+}
+
+@media (max-width: 620px) {
+  .dashboard-shell .topbar form.dashboard-vehicle-search {
+    gap: 5px;
+    width: auto;
+    padding: 4px;
+  }
+
+  .dashboard-shell .topbar form.dashboard-vehicle-search input {
+    width: auto;
+    height: 32px;
+    font-size: 11px;
+  }
+
+  .dashboard-shell .topbar form.dashboard-vehicle-search select {
+    width: 105px;
+    min-width: 0;
+    padding: 0 4px;
+    font-size: 10px;
+  }
+
+  .dashboard-shell .topbar form.dashboard-vehicle-search button {
+    min-height: 32px;
+    padding: 0 7px;
+  }
+
+  .dashboard-shell .topbar form.dashboard-vehicle-search button span {
+    display: none;
+  }
+}
+
+.dashboard-shell .vehicle-list .vehicle-row-wrap.selected {
+  background: color-mix(in srgb, #00a85a 18%, var(--color-surface));
+  box-shadow: inset 4px 0 #00a85a;
+}
+
+[data-theme="dark"] .dashboard-shell .vehicle-list .vehicle-row-wrap.selected .vehicle-row small,
+[data-theme="dark"] .dashboard-shell .vehicle-list .vehicle-row-wrap.selected .vehicle-row small mat-icon {
+  color: #fff;
+}
+
+.dashboard-shell .sidebar {
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #49627c #06182e;
+}
+
+.dashboard-shell .sidebar > * {
+  flex-shrink: 0;
+}
+
+.dashboard-shell .sidebar .nav-links {
+  flex: 0 0 auto;
+}
+
+.dashboard-shell .sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dashboard-shell .sidebar::-webkit-scrollbar-track {
+  background: #06182e;
+}
+
+.dashboard-shell .sidebar::-webkit-scrollbar-thumb {
+  border: 2px solid #06182e;
+  border-radius: 8px;
+  background: #49627c;
+}
+
+.dashboard-shell .sidebar::-webkit-scrollbar-thumb:hover {
+  background: #6b849e;
+}
+
+.dashboard-shell .topbar-actions .theme-switch {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 68px;
+  height: 38px;
+  padding: 0 8px;
+  overflow: hidden;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  color: inherit;
+  background: linear-gradient(135deg, #e7f2ff, #d8e7fa);
+  box-shadow: inset 0 1px 2px #172b4214, 0 2px 7px #12243a14;
+  cursor: pointer;
+  transition: background .25s, border-color .25s, box-shadow .25s;
+}
+
+.dashboard-shell .topbar-actions .theme-switch:hover {
+  border-color: #8fb4e2;
+  box-shadow: 0 3px 10px #12243a20;
+}
+
+.dashboard-shell .topbar-actions .theme-switch:focus-visible {
+  outline: 3px solid #3182f666;
+  outline-offset: 3px;
+}
+
+.dashboard-shell .topbar-actions .theme-switch .switch-icon {
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  color: #667b94;
+}
+
+.dashboard-shell .topbar-actions .theme-switch .switch-icon mat-icon,
+.dashboard-shell .topbar-actions .theme-switch .switch-thumb mat-icon {
+  width: 17px;
+  height: 17px;
+  font-size: 17px;
+}
+
+.dashboard-shell .topbar-actions .theme-switch .switch-icon.sun {
+  color: #b66a08;
+}
+
+.dashboard-shell .topbar-actions .theme-switch .switch-thumb {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid #ffffffc9;
+  border-radius: 50%;
+  color: #b66a08;
+  background: #fff;
+  box-shadow: 0 2px 5px #172b4230;
+  transition: transform .25s, color .25s, background .25s;
+}
+
+.dashboard-shell .topbar-actions .theme-switch.is-dark {
+  border-color: #34465e;
+  background: linear-gradient(135deg, #192d48, #0b1b30);
+}
+
+.dashboard-shell .topbar-actions .theme-switch.is-dark .switch-thumb {
+  transform: translateX(30px);
+  border-color: #63758a;
+  color: #f5c451;
+  background: #24364c;
+}
+
+.dashboard-shell .topbar-actions .theme-switch.is-dark .switch-icon.sun {
+  color: #8093aa;
+}
+
+.dashboard-shell .topbar-actions .theme-switch.is-dark .switch-icon.moon {
+  color: #d7e7ff;
+}
+
+@media (max-width: 850px) {
+  .dashboard-shell .sidebar {
+    width: min(285px, calc(100vw - 48px));
+    padding: 20px 13px calc(20px + env(safe-area-inset-bottom));
+  }
+}
+
+.search-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 0;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+}
+
+.search-pagination button {
+  padding: 7px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.search-pagination button:disabled {
+  cursor: default;
+  opacity: .45;
+}
+
+html {
+  height: 100%;
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+}
+
+body {
+  // Default the application to a light color theme. This can be changed to
+  // `dark` to enable the dark color theme, or to `light dark` to defer to the
+  // user's system settings.
+  color-scheme: light;
+
+  // Set a default background, font and text colors for the application using
+  // Angular Material's system-level CSS variables. Learn more about these
+  // variables at https://material.angular.dev/guide/system-variables
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+
+  // Reset the user agent margin.
+  margin: 0;
+  height: 100%;
+}
+
+html,
+body {
+
+    margin: 0;
+
+    min-height: 100%;
+
+    background: var(--color-background);
+
+    color: var(--color-text);
+
+    transition:
+        background-color .25s ease,
+        color .25s ease;
+
+}
+
+body {
+
+  background: var(--color-background);
+
+  color: var(--color-text);
+
+  font: var(--mat-sys-body-medium);
+
+  margin: 0;
+
+  height: 100%;
+
+  transition:
+      background-color .25s ease,
+      color .25s ease;
+
+}
+
+/* ==========================================
+   Angular Material Global Overrides
+========================================== */
+
+.mat-mdc-checkbox .mdc-form-field {
+
+    color: var(--color-text);
+
+}
+
+.mat-mdc-checkbox label {
+
+    color: var(--color-text);
+
+}
+/* ==========================================================
+   Angular Material Input - Dark Theme Fix
+========================================================== */
+
+/* Input text */
+
+.mat-mdc-input-element {
+
+    color: var(--color-text) !important;
+
+}
+
+/* Placeholder */
+
+.mat-mdc-input-element::placeholder {
+
+    color: var(--color-text-secondary) !important;
+
+    opacity: 1;
+
+}
+
+/* Form field label */
+
+.mat-mdc-form-field .mdc-floating-label {
+
+    color: var(--color-text-secondary) !important;
+
+}
+
+/* Floating label */
+
+.mat-mdc-form-field.mat-focused .mdc-floating-label {
+
+    color: var(--color-primary) !important;
+
+}
+
+/* Prefix / Suffix icons */
+
+.mat-mdc-form-field mat-icon {
+
+    color: var(--color-text-secondary);
+
+}
+
+/* Input caret */
+
+.mat-mdc-input-element {
+
+    caret-color: var(--color-primary);
+
+}
+/* Missing vehicle report photo slots */
+.photo-slots { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; }
+.photo-preview,.photo-empty,.upload-tile { position:relative; display:grid; place-content:center; justify-items:center; gap:6px; min-height:126px; margin:0; border:1px solid var(--color-border); border-radius:9px; overflow:hidden; background:var(--color-surface-hover); }
+.photo-preview img { width:100%; height:126px; object-fit:cover; }
+.photo-preview button { position:absolute; top:6px; right:6px; display:grid; place-items:center; width:27px; height:27px; border:0; border-radius:50%; color:#fff; background:#18243acc; cursor:pointer; }
+.photo-preview button mat-icon { font-size:17px; }
+.photo-empty { color:var(--color-text-secondary); font-size:12px; }.photo-empty mat-icon { font-size:26px; }
+.upload-tile { border:1.5px dashed #42a875; color:#008d4d; background:color-mix(in srgb,#e8f8ef 55%,var(--color-surface)); cursor:pointer; }
+.upload-tile input { display:none; }.upload-tile mat-icon { font-size:30px; }.upload-tile strong { font-size:14px; }.upload-tile small { color:var(--color-text-secondary); font-size:11px; }.upload-tile.disabled { opacity:.55; cursor:not-allowed; }
+
+/* Keep the signed-in dashboard header and welcome area compact like the public home. */
+.dashboard-shell .topbar {
+  min-height: 52px;
+  gap: 18px;
+  padding-right: 22px;
+  padding-left: 22px;
+}
+
+.dashboard-shell .dashboard-content {
+  padding-top: 14px;
+}
+
+.dashboard-shell .page-heading h1 {
+  font-size: 23px;
+  line-height: 1.2;
+}
+
+.dashboard-shell .page-heading p {
+  margin-top: 3px;
+  font-size: 13px;
+}
+
+.dashboard-shell .page-heading .primary-action {
+  padding: 10px 16px;
+}
+
+@media (max-width: 850px) {
+  .dashboard-shell .topbar {
+    min-height: 48px;
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .dashboard-shell .dashboard-content {
+    padding-top: 12px;
+  }
+}
+
+@media (max-width: 620px) {
+  .dashboard-shell .topbar {
+    min-height: 46px;
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .dashboard-shell .page-heading h1 {
+    font-size: 20px;
+  }
+}
+@media (max-width:700px) { .photo-slots { grid-template-columns:repeat(3,minmax(0,1fr)); } }

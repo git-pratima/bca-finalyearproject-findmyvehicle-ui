@@ -1,0 +1,12 @@
+<section class="search-page">
+  <div>
+    <span>VEHICLE SEARCH</span>
+    <h1>Search Missing Vehicles</h1>
+    @if (query()) {
+      <p>Showing search results for <strong>“{{ query() }}”</strong>.</p>
+    } @else {
+      <p>Enter a registration number, model, or location to begin your search.</p>
+    }
+    <a routerLink="/">Back to home</a>
+  </div>
+</section>

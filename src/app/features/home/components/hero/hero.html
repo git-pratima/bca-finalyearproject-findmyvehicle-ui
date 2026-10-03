@@ -1,0 +1,58 @@
+<section class="hero">
+  <div class="hero-backdrop"></div>
+  <div class="hero-content">
+    <div class="hero-copy" appScrollReveal>
+      <span class="hero-eyebrow"><mat-icon>verified_user</mat-icon>{{ header?.eyebrow || 'A community-powered recovery network' }}</span>
+      @if (header?.title) {
+        <h1>{{ titleBeforeHighlight }}<span>{{ highlightedTitleWord }}</span>{{ titleAfterHighlight }}</h1>
+      } @else {
+        <h1>Every lead brings a vehicle <span>closer to home.</span></h1>
+      }
+      <p>{{ header?.description || 'When a vehicle goes missing, time matters. Report it, share the details, and help owners reconnect with what matters.' }}</p>
+
+      <button class="search-toggle" type="button" aria-controls="hero-search-panel" [attr.aria-expanded]="searchExpanded" (click)="searchExpanded = !searchExpanded">
+        <span><mat-icon>search</mat-icon>Search a vehicle</span><mat-icon class="toggle-chevron">{{ searchExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+      </button>
+      <div id="hero-search-panel" class="search-panel" [class.is-open]="searchExpanded" [attr.aria-hidden]="!searchExpanded" [attr.inert]="searchExpanded ? null : ''">
+        <div class="search-panel-inner">
+          <form class="hero-search" (ngSubmit)="searchVehicles()">
+            <mat-icon>search</mat-icon>
+            <input name="heroVehicleSearch" [(ngModel)]="searchTerm" [placeholder]="header?.searchPlaceholder || 'Enter a vehicle registration number'" aria-label="Search by registration number">
+            <button type="submit"><span>Search</span><mat-icon>arrow_forward</mat-icon></button>
+          </form>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <a class="primary-action" routerLink="/dashboard/report-missing"><mat-icon>campaign</mat-icon>Report a missing vehicle</a>
+        <a class="secondary-action" routerLink="/search">Browse missing vehicles<mat-icon>arrow_outward</mat-icon></a>
+      </div>
+      @if (header?.communityProof; as proof) {
+        @if (proof.count || proof.label) {
+          <div class="community-proof"><span class="proof-check"><mat-icon>groups</mat-icon></span><span><strong>{{ proof.count || 'A growing' }}</strong> {{ proof.label || 'community working together' }}</span></div>
+        }
+      } @else {
+        <div class="community-proof"><span class="proof-check"><mat-icon>groups</mat-icon></span><span><strong>One community.</strong> More eyes, more hope.</span></div>
+      }
+    </div>
+
+    <div class="hero-visual" aria-label="Vehicle recovery community">
+      <div class="visual-orbit orbit-one"></div><div class="visual-orbit orbit-two"></div>
+      <div class="visual-photo"><img src="/assets/images/landing/vehicle-recovery-night.jpg" alt="A vehicle on a city road at night"></div>
+      <div class="visual-label"><span class="live-dot"></span><span><strong>Community alert network</strong><small>Connecting people to the right lead</small></span></div>
+      <div class="visual-pin pin-one"><mat-icon>location_on</mat-icon></div>
+      <div class="visual-pin pin-two"><mat-icon>location_on</mat-icon></div>
+      <div class="visual-caption"><mat-icon>shield</mat-icon><span><strong>Every report matters</strong><small>Visibility can make the difference.</small></span></div>
+    </div>
+  </div>
+</section>
+
+@if (statistics.length) {
+  <section class="hero-stats" aria-label="Community impact" appScrollReveal [appScrollRevealDelay]="150">
+    @for (stat of statistics; track stat.key; let index = $index) {
+      <div class="stat" [class.stat-blue]="index === 0" [class.stat-green]="index === 1" [class.stat-orange]="index === 2" [class.stat-violet]="index === 3">
+        <span class="stat-icon"><mat-icon>{{ stat.icon }}</mat-icon></span>
+        <span class="stat-copy"><strong>{{ stat.value | number }}</strong><b>{{ stat.label }}</b><small>{{ stat.description }}</small></span>
+      </div>
+    }
+  </section>
+}

@@ -1,0 +1,178 @@
+<div class="dashboard-shell" [class.menu-open]="mobileMenuOpen()">
+  <aside class="sidebar">
+    <button class="close-sidebar" (click)="mobileMenuOpen.set(false)" aria-label="Close navigation"><mat-icon>close</mat-icon></button>
+    <a class="brand" routerLink="/dashboard"><span class="brand-mark"><mat-icon>shield</mat-icon></span><span><strong>Find My Vehicle</strong><small>We Locate. You Recover.</small></span></a>
+    <nav class="nav-links" aria-label="Member navigation">
+      <a routerLink="/dashboard" [class.active]="!isChildPage()"><mat-icon>home</mat-icon>Dashboard</a>
+      <a routerLink="/dashboard/my-reports" [class.active]="isMyReportsPage()"><mat-icon>description</mat-icon>My Reports</a>
+      <a routerLink="/dashboard/all-reports" [class.active]="isAllReportsPage()"><mat-icon>library_books</mat-icon>All Reports</a>
+      <a routerLink="/dashboard/report-missing"><mat-icon>add_circle_outline</mat-icon>Add New Vehicle/Report</a>
+      <a routerLink="/dashboard/my-vehicles" [class.active]="isMyVehiclesPage()"><mat-icon>directions_car</mat-icon>My Vehicles</a>
+      <a routerLink="/dashboard/all-vehicles" [class.active]="isAllVehiclesPage()"><mat-icon>directions_car_filled</mat-icon>All Vehicles</a>
+      <a><mat-icon>search</mat-icon>Search Vehicles</a>
+      <a><mat-icon>notifications_none</mat-icon>Alerts & Updates <b>{{ dashboardData()?.activity?.unreadNotifications ?? 0 }}</b></a>
+      <a><mat-icon>mail_outline</mat-icon>Messages <b>{{ dashboardData()?.activity?.unreadMessages ?? 0 }}</b></a>
+      <a><mat-icon>bookmark_border</mat-icon>Saved Searches</a>
+      <button class="sidebar-profile-toggle" (click)="sidebarProfileOpen.set(!sidebarProfileOpen())" [attr.aria-expanded]="sidebarProfileOpen()"><mat-icon>person_outline</mat-icon>Profile<mat-icon class="profile-chevron">{{ sidebarProfileOpen() ? 'expand_less' : 'expand_more' }}</mat-icon></button>
+      @if (sidebarProfileOpen()) {<div class="sidebar-profile-options"><div><span class="avatar">{{ initials() }}</span><strong>{{ displayName() }}</strong></div><button (click)="openEditProfile()"><mat-icon>edit</mat-icon>Edit Profile</button>@if (!isSocialLogin()) {<button (click)="openChangePassword()"><mat-icon>lock_reset</mat-icon>Change Password</button>}<button (click)="logout()"><mat-icon>logout</mat-icon>Logout</button></div>}
+      <a><mat-icon>settings</mat-icon>Settings</a>
+      <a><mat-icon>help_outline</mat-icon>Help & Support</a>
+    </nav>
+    <section class="report-prompt"><mat-icon>add_location_alt</mat-icon><strong>Report a Missing Vehicle</strong><p>Help us recover more vehicles and keep our community safe.</p><button routerLink="/dashboard/report-missing">Report a Vehicle <mat-icon>arrow_forward</mat-icon></button></section>
+    <footer>© 2025 Find My Vehicle<br><span>All rights reserved.</span></footer>
+  </aside>
+  @if (mobileMenuOpen()) {<button class="sidebar-backdrop" (click)="mobileMenuOpen.set(false)" aria-label="Close navigation"></button>}
+
+  <main class="dashboard-main">
+    <header class="topbar">
+      <button class="icon-button menu-button" (click)="mobileMenuOpen.set(!mobileMenuOpen())" aria-label="Toggle navigation"><mat-icon>menu</mat-icon></button>
+      <form class="dashboard-vehicle-search" (ngSubmit)="searchDashboardVehicles()"><mat-icon class="search-icon">search</mat-icon><select [value]="globalSearchType()" (change)="updateGlobalSearchType($any($event.target).value)" aria-label="Search type"><option value="regNumber">Registration number</option><option value="model">Model</option><option value="missingCity">Missing city</option><option value="pinCode">PIN code</option></select><input [value]="globalQuery()" (input)="updateGlobalQuery($any($event.target).value)" [placeholder]="'Enter ' + (globalSearchType() === 'regNumber' ? 'registration number' : globalSearchType() === 'missingCity' ? 'missing city' : globalSearchType() === 'pinCode' ? 'PIN code' : 'vehicle model')" aria-label="Search value"><button type="submit" [disabled]="globalSearchLoading()"><mat-icon>search</mat-icon><span>{{ globalSearchLoading() ? 'Searching…' : 'Search' }}</span></button></form>
+      <div class="topbar-actions"><button type="button" class="theme-switch" [class.is-dark]="theme() === 'dark'" role="switch" [attr.aria-checked]="theme() === 'dark'" [attr.aria-label]="theme() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'" (click)="toggleTheme()"><span class="switch-icon sun"><mat-icon>light_mode</mat-icon></span><span class="switch-icon moon"><mat-icon>dark_mode</mat-icon></span><span class="switch-thumb"><mat-icon>{{ theme() === 'dark' ? 'dark_mode' : 'light_mode' }}</mat-icon></span></button><button class="notification" aria-label="Notifications"><mat-icon>notifications_none</mat-icon><b>{{ dashboardData()?.activity?.unreadNotifications ?? 0 }}</b></button><div class="profile-menu"><button class="profile-trigger" (click)="profileMenuOpen.set(!profileMenuOpen())" [attr.aria-expanded]="profileMenuOpen()"><span class="avatar">{{ initials() }}</span><span class="account"><strong>{{ displayName() }}</strong><small>Member</small></span><mat-icon>keyboard_arrow_down</mat-icon></button>@if (profileMenuOpen()) {<div class="profile-dropdown"><div class="profile-summary"><span class="avatar">{{ initials() }}</span><span><strong>{{ displayName() }}</strong><small>Member account</small></span></div><button (click)="openEditProfile()"><mat-icon>person_outline</mat-icon>Edit Profile</button>@if (!isSocialLogin()) {<button (click)="openChangePassword()"><mat-icon>lock_reset</mat-icon>Change Password</button>}<button (click)="logout()"><mat-icon>logout</mat-icon>Logout</button></div>}</div></div>
+    </header>
+
+    @if (!isChildPage()) {
+    <div class="dashboard-content">
+      <section class="page-heading">
+        <div><h1>Welcome back, {{ displayName() }}! <span>👋</span></h1><p>Here's what's happening with your vehicle reports.</p></div>
+        <button class="primary-action" routerLink="/dashboard/report-missing"><mat-icon>add</mat-icon>Add New Report</button>
+      </section>
+
+      @if (dashboardError()) {<p class="dashboard-message" role="alert">{{ dashboardError() }}</p>}
+      @if (dashboardLoading()) {<p class="dashboard-message" role="status">Loading dashboard data…</p>}
+
+      <section class="stats-grid">
+        <article class="stat-card green"><span class="stat-icon"><mat-icon>description</mat-icon></span><div><small>Total Reports</small><strong>{{ dashboardData()?.summary?.totalReports ?? 0 }}</strong><p>All time</p></div><svg viewBox="0 0 220 28" preserveAspectRatio="none"><path d="M0 20 C15 25 19 10 34 16 S52 25 68 12 S88 26 105 15 S121 25 137 16 S152 25 169 9 S187 24 220 18"/></svg></article>
+        <article class="stat-card blue"><span class="stat-icon"><mat-icon>check_circle_outline</mat-icon></span><div><small>Recovered</small><strong>{{ dashboardData()?.summary?.recovered ?? 0 }}</strong><p>Recovered vehicles</p></div><svg viewBox="0 0 220 28" preserveAspectRatio="none"><path d="M0 20 C15 24 19 9 34 16 S52 25 68 12 S88 26 105 15 S121 25 137 16 S152 25 169 9 S187 24 220 18"/></svg></article>
+        <article class="stat-card orange"><span class="stat-icon"><mat-icon>schedule</mat-icon></span><div><small>In Progress</small><strong>{{ dashboardData()?.summary?.inProgress ?? 0 }}</strong><p>Active reports</p></div><svg viewBox="0 0 220 28" preserveAspectRatio="none"><path d="M0 20 C15 25 19 10 34 16 S52 25 68 12 S88 26 105 15 S121 25 137 16 S152 25 169 9 S187 24 220 18"/></svg></article>
+        <article class="stat-card red"><span class="stat-icon"><mat-icon>close</mat-icon></span><div><small>Closed</small><strong>{{ dashboardData()?.summary?.closed ?? 0 }}</strong><p>Closed reports</p></div><svg viewBox="0 0 220 28" preserveAspectRatio="none"><path d="M0 20 C15 25 19 10 34 16 S52 25 68 12 S88 26 105 15 S121 25 137 16 S152 25 169 9 S187 24 220 18"/></svg></article>
+      </section>
+
+      <section class="quick-actions"><h2>Quick Actions</h2><div class="quick-grid"><button><mat-icon>directions_car</mat-icon>Report Missing<br>Vehicle</button><button><mat-icon>directions_car_filled</mat-icon>Add<br>My Vehicle</button><button><mat-icon>search</mat-icon>Search<br>Vehicles</button><button><mat-icon>notifications_active</mat-icon>View<br>Alerts</button><button><mat-icon>bookmark_border</mat-icon>Saved<br>Searches</button><button><mat-icon>help_outline</mat-icon>Help<br>Center</button></div></section>
+
+      <section class="dashboard-grid">
+        <article class="panel vehicles-panel">
+          <header><h2>{{ globalSearchActive() ? 'Vehicle Search Results' : 'Last 3 Recently Missing Vehicles' }}</h2>@if (globalSearchActive()) {<button (click)="updateGlobalQuery('')">Clear search</button>} @else {<button>View All</button>}</header>
+          <div class="vehicle-list">
+            @if (globalSearchActive()) {
+              @if (globalSearchLoading()) {
+                <p class="dashboard-message" role="status">Searching missing vehicles…</p>
+              } @else if (globalSearchError()) {
+                <p class="dashboard-message search-error" role="alert">{{ globalSearchError() }}</p>
+              } @else if (globalSearchResults().length) {
+                @for (vehicle of globalSearchResults(); track vehicle.id; let i = $index) {
+                  <div class="vehicle-row-wrap" [class.selected]="globalSearchSelectedIndex() === i">
+                    <button class="vehicle-row" (click)="selectGlobalSearchVehicle(i)">
+                      @if (vehicle.image) {<img [src]="vehicle.image" [alt]="vehicle.name || 'Vehicle image'">} @else {<span class="vehicle-image-placeholder"><mat-icon>directions_car</mat-icon></span>}
+                      <span><strong>{{ vehicle.name || 'Vehicle' }}</strong><b>{{ vehicle.registration || 'Registration unavailable' }}</b><small><mat-icon>location_on</mat-icon>{{ vehicle.location || 'Location unavailable' }}</small><small><mat-icon>calendar_today</mat-icon>{{ vehicle.reportedAt ? (vehicle.reportedAt | date:'dd MMM yyyy, hh:mm a') : 'Date unavailable' }}</small></span>
+                    </button>
+                    @if (vehicle.registration) {
+                      <a class="vehicle-details-link" [routerLink]="['/dashboard/vehicle', vehicle.registration]">View Details <mat-icon>chevron_right</mat-icon></a>
+                    }
+                  </div>
+                }
+                @if (globalSearchTotalPages() > 1) {
+                  <nav class="search-pagination" aria-label="Search result pages">
+                    <button type="button" (click)="searchDashboardVehicles(globalSearchPage() - 1)" [disabled]="globalSearchPage() === 0 || globalSearchLoading()">Previous</button>
+                    <span>Page {{ globalSearchPage() + 1 }} of {{ globalSearchTotalPages() }}</span>
+                    <button type="button" (click)="searchDashboardVehicles(globalSearchPage() + 1)" [disabled]="globalSearchPage() + 1 >= globalSearchTotalPages() || globalSearchLoading()">Next</button>
+                  </nav>
+                }
+              } @else {
+                <p class="dashboard-message" role="status">No missing vehicles matched your search.</p>
+              }
+            } @else if (dashboardLoading()) {
+              <p class="dashboard-message" role="status">Loading vehicles…</p>
+            } @else if (vehicles().length) {
+              @for (vehicle of vehicles(); track vehicle.id; let i = $index) {
+                <div class="vehicle-row-wrap" [class.selected]="selectedVehicleIndex() === i">
+                  <button class="vehicle-row" (click)="selectVehicle(i)">
+                    @if (vehicle.image) {<img [src]="vehicle.image" [alt]="vehicle.name || 'Vehicle image'">} @else {<span class="vehicle-image-placeholder"><mat-icon>directions_car</mat-icon></span>}
+                    <span><strong>{{ vehicle.name || 'Vehicle' }}</strong><b>{{ vehicle.registration || 'Registration unavailable' }}</b><small><mat-icon>location_on</mat-icon>{{ vehicle.location || 'Location unavailable' }}</small><small><mat-icon>calendar_today</mat-icon>{{ vehicle.reportedAt ? (vehicle.reportedAt | date:'dd MMM yyyy, hh:mm a') : 'Date unavailable' }}</small></span>
+                  </button>
+                  @if (vehicle.registration) {
+                    <a class="vehicle-details-link" [routerLink]="['/dashboard/vehicle', vehicle.registration]">View Details <mat-icon>chevron_right</mat-icon></a>
+                  }
+                </div>
+              }
+            } @else {
+              <p class="dashboard-message">No recently missing vehicles to show.</p>
+            }
+          </div>
+          <button class="view-more">View All Recently Missing Vehicles <mat-icon>arrow_forward</mat-icon></button>
+        </article>
+
+        <article class="panel search-panel">
+          <section class="vehicle-search"><h2>Search Any Missing Vehicle</h2><div><input #searchBox [value]="query()" (input)="updateSearchQuery(searchBox.value)" (keyup.enter)="search()" placeholder="Enter Registration Number" aria-label="Vehicle registration number" [disabled]="searchLoading()"><button (click)="search()" [disabled]="searchLoading()"><mat-icon>search</mat-icon>{{ searchLoading() ? 'Searching…' : 'Search' }}</button></div><p>Search by vehicle registration number.</p>@if (searchError()) {<small class="search-error" role="alert">{{ searchError() }}</small>}</section>
+          @if (selectedVehicle; as vehicle) {
+            <section class="vehicle-details">
+              <div class="details-heading">
+                <div><h2>Missing Vehicle Details</h2><p>{{ globalSearchActive() ? 'Search result' : searched() ? 'Search result' : 'Selected reported vehicle' }}</p></div>
+                @if (globalSearchActive() && globalSearchResults().length) {
+                  <select [value]="globalSearchSelectedIndex()" (change)="selectGlobalSearchVehicle(+$any($event.target).value)" aria-label="Choose a vehicle from search results">
+                    @for (item of globalSearchResults(); track item.id; let i = $index) {
+                      <option [value]="i">{{ item.registration || 'Unknown registration' }} - {{ item.name || 'Vehicle' }}</option>
+                    }
+                  </select>
+                } @else if (!globalSearchActive() && !searchResult() && vehicles().length) {
+                  <select [value]="selectedVehicleIndex()" (change)="selectVehicle(+$any($event.target).value)" aria-label="Choose a recently reported vehicle">
+                    @for (item of vehicles(); track item.id; let i = $index) {
+                      <option [value]="i">{{ item.registration || 'Unknown registration' }} - {{ item.name || 'Vehicle' }}</option>
+                    }
+                  </select>
+                }
+              </div>
+              <div class="details-content">
+                @if (vehicle.image) {<img [src]="vehicle.image" [alt]="vehicle.name || 'Vehicle image'">} @else {<span class="vehicle-image-placeholder detail-image-placeholder"><mat-icon>directions_car</mat-icon></span>}
+                <div class="detail-info"><h3>{{ vehicle.name || 'Vehicle' }}</h3><div class="detail-grid"><p><mat-icon>directions_car</mat-icon><span>Registration No.<b>{{ vehicle.registration || 'Not provided' }}</b></span></p><p><mat-icon>key</mat-icon><span>Chassis No.<b>{{ vehicle.chassis || 'Not provided' }}</b></span></p><p><mat-icon>location_on</mat-icon><span>Location<b>{{ vehicle.location || 'Not provided' }}</b></span></p><p><mat-icon>settings</mat-icon><span>Engine No.<b>{{ vehicle.engine || 'Not provided' }}</b></span></p><p><mat-icon>calendar_today</mat-icon><span>Date & Time Reported<b>{{ vehicle.reportedAt ? (vehicle.reportedAt | date:'dd MMM yyyy, hh:mm a') : 'Not provided' }}</b></span></p><p><mat-icon>palette</mat-icon><span>Color<b>{{ vehicle.color || 'Not provided' }}</b></span></p>@if (vehicle.type) {<p><mat-icon>category</mat-icon><span>Type<b>{{ vehicle.type }}</b></span></p>}@if (vehicle.owner) {<p><mat-icon>person</mat-icon><span>Owner<b>{{ vehicle.owner }}</b></span></p>}</div></div>
+              </div>
+              <div class="description"><strong>Description</strong><p>{{ vehicle.description || 'No description provided.' }}</p></div>
+              <p class="information"><mat-icon>info_outline</mat-icon>If you have any information about this vehicle, please contact your nearest police station.</p>
+            </section>
+          } @else if (searchLoading()) {
+            <p class="dashboard-message search-result-message" role="status">Searching vehicle details…</p>
+          } @else if (searchError()) {
+            <p class="dashboard-message search-result-message" role="alert">{{ searchError() }}</p>
+          } @else if (!dashboardLoading()) {
+            <p class="dashboard-message">Select a reported vehicle to view its details.</p>
+          }
+        </article>
+      </section>
+    </div>
+    }
+    <router-outlet></router-outlet>
+  </main>
+</div>
+
+@if (editProfileOpen()) {
+  <div class="edit-profile-backdrop" (click)="closeEditProfileFromBackdrop($event)">
+    <section class="edit-profile-modal" role="dialog" aria-modal="true" aria-labelledby="edit-profile-title">
+      <header><div><span class="modal-icon"><mat-icon>person_outline</mat-icon></span><div><h2 id="edit-profile-title">Edit Profile</h2><p>Keep your account details up to date.</p></div></div><button class="modal-close" type="button" (click)="closeEditProfile()" aria-label="Close edit profile"><mat-icon>close</mat-icon></button></header>
+      <form #editForm="ngForm" novalidate>
+        @if (profileLoading()) {<p class="profile-loading" role="status">Loading profile details…</p>}
+        <section class="profile-section"><h3>Personal information</h3><div class="profile-photo-row"><div class="profile-photo">@if (profileImagePreview(); as preview) {<img [src]="preview" alt="Selected profile photo">} @else {<mat-icon>person</mat-icon>}</div><div><strong>Profile picture</strong><p>JPG, PNG or WEBP image.</p><label class="photo-upload"><input type="file" accept="image/png,image/jpeg,image/webp" (change)="onProfileImageSelected($event)"><mat-icon>add_a_photo</mat-icon>{{ profileImagePreview() ? 'Change photo' : 'Upload photo' }}</label>@if (profileImagePreview()) {<button class="remove-photo" type="button" (click)="removeProfileImage()">Remove</button>}</div></div><div class="form-grid"><label class="full-width">Full name<input name="fullName" [(ngModel)]="profile.fullName" required autocomplete="name" placeholder="Enter your full name"></label><label>Email address<input name="email" [(ngModel)]="profile.email" type="email" required readonly autocomplete="email" placeholder="you@example.com"></label><label>Phone number<input name="phone" [(ngModel)]="profile.phone" type="tel" autocomplete="tel" placeholder="+91 98765 43210"></label></div></section>
+        <section class="profile-section address-section"><div class="section-heading"><h3>Address</h3><span>Optional</span></div><div class="form-grid"><label class="full-width">Address line 1<input name="addressLine1" [(ngModel)]="profile.addressLine1" autocomplete="address-line1" placeholder="House / flat number, street, area"></label><label class="full-width">Address line 2<input name="addressLine2" [(ngModel)]="profile.addressLine2" autocomplete="address-line2" placeholder="Landmark, locality (optional)"></label><label>City<input name="city" [(ngModel)]="profile.city" autocomplete="address-level2" placeholder="City"></label><label>State<select name="state" [(ngModel)]="profile.state" autocomplete="address-level1"><option value="">Select state</option><option value="ANDHRA_PRADESH">Andhra Pradesh</option><option value="ARUNACHAL_PRADESH">Arunachal Pradesh</option><option value="ASSAM">Assam</option><option value="BIHAR">Bihar</option><option value="CHHATTISGARH">Chhattisgarh</option><option value="GOA">Goa</option><option value="GUJARAT">Gujarat</option><option value="HARYANA">Haryana</option><option value="HIMACHAL_PRADESH">Himachal Pradesh</option><option value="JHARKHAND">Jharkhand</option><option value="KARNATAKA">Karnataka</option><option value="KERALA">Kerala</option><option value="MADHYA_PRADESH">Madhya Pradesh</option><option value="MAHARASHTRA">Maharashtra</option><option value="MANIPUR">Manipur</option><option value="MEGHALAYA">Meghalaya</option><option value="MIZORAM">Mizoram</option><option value="NAGALAND">Nagaland</option><option value="ODISHA">Odisha</option><option value="PUNJAB">Punjab</option><option value="RAJASTHAN">Rajasthan</option><option value="SIKKIM">Sikkim</option><option value="TAMIL_NADU">Tamil Nadu</option><option value="TELANGANA">Telangana</option><option value="TRIPURA">Tripura</option><option value="UTTAR_PRADESH">Uttar Pradesh</option><option value="UTTARAKHAND">Uttarakhand</option><option value="WEST_BENGAL">West Bengal</option><option value="ANDAMAN_AND_NICOBAR_ISLANDS">Andaman and Nicobar Islands</option><option value="CHANDIGARH">Chandigarh</option><option value="DADRA_AND_NAGAR_HAVELI_AND_DAMAN_AND_DIU">Dadra and Nagar Haveli and Daman and Diu</option><option value="DELHI">Delhi</option><option value="JAMMU_AND_KASHMIR">Jammu and Kashmir</option><option value="LADAKH">Ladakh</option><option value="LAKSHADWEEP">Lakshadweep</option><option value="PUDUCHERRY">Puducherry</option></select></label><label>PIN code<input name="postalCode" [(ngModel)]="profile.postalCode" autocomplete="postal-code" placeholder="PIN code"></label><label>Country<input name="country" [(ngModel)]="profile.country" autocomplete="country-name" placeholder="Country"></label></div></section>
+        @if (profileError()) {<p class="profile-form-error" role="alert"><mat-icon>error_outline</mat-icon>{{ profileError() }}</p>}<footer><button type="button" class="secondary-button" (click)="closeEditProfile()" [disabled]="profileSaving()">Cancel</button><button type="button" class="save-profile-button" (click)="saveProfile()" [disabled]="profileSaving() || profileLoading()">@if (profileSaving()) {Saving…} @else if (profileLoading()) {Loading…} @else {<mat-icon>check</mat-icon>Save changes}</button></footer>
+      </form>
+    </section>
+  </div>
+}
+
+@if (changePasswordOpen()) {
+  <div class="edit-profile-backdrop" (click)="closeChangePasswordFromBackdrop($event)">
+    <section class="edit-profile-modal" role="dialog" aria-modal="true" aria-labelledby="change-password-title">
+      <header><div><span class="modal-icon"><mat-icon>lock_reset</mat-icon></span><div><h2 id="change-password-title">Change Password</h2><p>Choose a new password for your account.</p></div></div><button class="modal-close" type="button" (click)="closeChangePassword()" [disabled]="changePasswordSaving()" aria-label="Close change password"><mat-icon>close</mat-icon></button></header>
+      <form (ngSubmit)="savePassword()" novalidate>
+        <section class="profile-section"><div class="form-grid">
+          <label class="full-width">Current password<input name="currentPassword" [(ngModel)]="changePassword.currentPassword" type="password" autocomplete="current-password" required></label>
+          <label class="full-width">New password<input name="newPassword" [(ngModel)]="changePassword.newPassword" type="password" autocomplete="new-password" minlength="5" required></label>
+          <label class="full-width">Confirm new password<input name="confirmPassword" [(ngModel)]="changePassword.confirmPassword" type="password" autocomplete="new-password" required></label>
+        </div>
+        </section>
+        @if (changePasswordError()) {<p class="profile-form-error" role="alert"><mat-icon>error_outline</mat-icon>{{ changePasswordError() }}</p>}
+        <footer><button type="button" class="secondary-button" (click)="closeChangePassword()" [disabled]="changePasswordSaving()">Cancel</button><button type="submit" class="save-profile-button" [disabled]="changePasswordSaving() || !isChangePasswordValid()">@if (changePasswordSaving()) {Saving…} @else {<mat-icon>check</mat-icon>Save}</button></footer>
+      </form>
+    </section>
+  </div>
+}
+
+@if (changePasswordSuccess()) {<div class="password-success" role="status"><mat-icon>check_circle</mat-icon><span>{{ changePasswordSuccess() }}</span><button type="button" (click)="changePasswordSuccess.set('')" aria-label="Dismiss success message"><mat-icon>close</mat-icon></button></div>}
