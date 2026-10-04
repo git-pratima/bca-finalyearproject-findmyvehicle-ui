@@ -169,18 +169,38 @@
             @if (item.ownerEmail) {
               <a class="primary-action" [href]="notifyOwnerHref()" target="_blank" rel="noopener noreferrer"><mat-icon>mail_outline</mat-icon>Notify Owner</a>
               <div class="action-divider"><span>OR</span></div>
-              <form (ngSubmit)="sendSighting()">
-                <h3>Seen At</h3>
-                <label for="sighting-location">Where did you see it?</label>
-                <input id="sighting-location" name="sightingLocation" [ngModel]="sightingLocation()" (ngModelChange)="sightingLocation.set($event)" required placeholder="Area, street or landmark">
-                <label for="sighting-notes">Additional details <span>Optional</span></label>
-                <textarea id="sighting-notes" name="sightingNotes" [ngModel]="sightingNotes()" (ngModelChange)="sightingNotes.set($event)" rows="3" placeholder="Time, direction of travel, or other helpful details"></textarea>
-                <button class="secondary-action" type="submit"><mat-icon>location_on</mat-icon>Send sighting</button>
-                <small>This opens your email app to send the sighting directly to the owner.</small>
-              </form>
-            } @else {
-              <p class="contact-unavailable"><mat-icon>info_outline</mat-icon>Owner contact details are not available for this report.</p>
             }
+            <form (ngSubmit)="sendSighting()">
+              <h3>Seen At</h3>
+              <label for="sighting-datetime">Date and time seen</label>
+              <input
+                id="sighting-datetime"
+                name="sightingDateTime"
+                type="datetime-local"
+                [ngModel]="sightingDateTime()"
+                (ngModelChange)="sightingDateTime.set($event)"
+                required>
+              <label for="sighting-location">Where did you see it?</label>
+              <input id="sighting-location" name="sightingLocation" [ngModel]="sightingLocation()" (ngModelChange)="sightingLocation.set($event)" required placeholder="Area, street or landmark">
+              <label for="sighting-map-location">Vehicle live Google Maps location <span>Optional</span></label>
+              <input
+                id="sighting-map-location"
+                name="sightingMapLocation"
+                type="text"
+                [ngModel]="sightingMapLocation()"
+                (ngModelChange)="sightingMapLocation.set($event)"
+                placeholder="Paste a Google Maps link or coordinates"
+                title="Open Google Maps, copy the vehicle's live location link, and paste it here."
+                aria-describedby="sighting-map-location-help">
+              <small id="sighting-map-location-help" class="field-help">Open Google Maps, copy the vehicle's live location link, and paste it here.</small>
+              <label for="sighting-notes">Additional details <span>Optional</span></label>
+              <textarea id="sighting-notes" name="sightingNotes" [ngModel]="sightingNotes()" (ngModelChange)="sightingNotes.set($event)" rows="3" placeholder="Time, direction of travel, or other helpful details"></textarea>
+              <button class="secondary-action" type="submit" [disabled]="submittingSighting()">
+                <mat-icon>{{ submittingSighting() ? 'hourglass_top' : 'location_on' }}</mat-icon>
+                {{ submittingSighting() ? 'Sending sighting…' : 'Send sighting' }}
+              </button>
+              <small>Your sighting will be sent to the vehicle owner.</small>
+            </form>
             @if (item.ownerMobile) {
               <a class="phone-link" [href]="'tel:' + item.ownerMobile"><mat-icon>call</mat-icon>Call {{ item.ownerMobile }}</a>
             }

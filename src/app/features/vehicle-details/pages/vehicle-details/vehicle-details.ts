@@ -52,6 +52,21 @@ type VehicleDetailsResponse = {
   data: VehicleDetails;
 };
 
+type SightingNotificationRequest = {
+  regNo: string;
+  missingDetailsId: number;
+  seenAt: string;
+  seenArea: string;
+  liveMapLink: string;
+  message: string;
+  seen: 'N';
+};
+
+type SightingNotificationResponse = {
+  status: { status: number; message: string };
+  data: { id: number; vehicleId: number; missingDetailsId: number };
+};
+
 @Component({
   selector: 'app-vehicle-details',
   standalone: true,
@@ -74,7 +89,10 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
   readonly imageIndex = signal(0);
   readonly selectedReportId = signal<number | null>(null);
   readonly sightingLocation = signal('');
+  readonly sightingDateTime = signal('');
+  readonly sightingMapLocation = signal('');
   readonly sightingNotes = signal('');
+  readonly submittingSighting = signal(false);
   readonly feedbackRating = signal(0);
   readonly feedbackComment = signal('');
   readonly ratingOptions = [1, 2, 3, 4, 5];
@@ -297,16 +315,66 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
 
   sendSighting(): void {
     const vehicle = this.vehicle();
+    const report = this.selectedReport() ??
+      (this.reports().length === 1 ? this.reports()[0] : null);
     const location = this.sightingLocation().trim();
-    if (!vehicle?.ownerEmail || !location) return;
+    const dateTime = this.sightingDateTime();
+    if (this.submittingSighting()) return;
+    if (!vehicle || !report || !location || !dateTime) {
+      this.snackBar.open(
+        'Select a specific missing report and enter the sighting date, time, and location.',
+        'Close',
+        { duration: 5000 }
+      );
+      return;
+    }
 
-    const body = [
-      `I may have seen your vehicle ${vehicle.regNumber}.`,
-      `Location: ${location}`,
-      this.sightingNotes().trim() ? `Details: ${this.sightingNotes().trim()}` : ''
-    ].filter(Boolean).join('\n');
+    const seenAt = new Date(dateTime);
+    if (Number.isNaN(seenAt.getTime())) {
+      this.snackBar.open('Enter a valid date and time for the sighting.', 'Close', { duration: 5000 });
+      return;
+    }
 
-    window.location.href = `mailto:${vehicle.ownerEmail}?subject=${encodeURIComponent(`Vehicle sighting: ${vehicle.regNumber}`)}&body=${encodeURIComponent(body)}`;
+    const request: SightingNotificationRequest = {
+      regNo: vehicle.regNumber,
+      missingDetailsId: report.id,
+      seenAt: seenAt.toISOString(),
+      seenArea: location,
+      liveMapLink: this.sightingMapLocation().trim(),
+      message: this.sightingNotes().trim(),
+      seen: 'N'
+    };
+
+    this.submittingSighting.set(true);
+    this.apiService
+      .post<SightingNotificationResponse>('/notifications', request)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.submittingSighting.set(false))
+      )
+      .subscribe({
+        next: response => {
+          this.sightingLocation.set('');
+          this.sightingDateTime.set('');
+          this.sightingMapLocation.set('');
+          this.sightingNotes.set('');
+          this.snackBar.open(
+            response.status?.message || 'Sighting submitted successfully.',
+            'Close',
+            { duration: 5000 }
+          );
+        },
+        error: error => {
+          console.error('Failed to submit vehicle sighting.', error);
+          this.snackBar.open(
+            error?.error?.status?.message ??
+              error?.error?.message ??
+              'Unable to submit the sighting. Please try again.',
+            'Close',
+            { duration: 6000 }
+          );
+        }
+      });
   }
 
   private startSlideshow(): void {
