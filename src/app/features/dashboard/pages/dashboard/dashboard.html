@@ -18,6 +18,16 @@
       <a><mat-icon>settings</mat-icon>Settings</a>
       <a><mat-icon>help_outline</mat-icon>Help & Support</a>
     </nav>
+    <button
+      type="button"
+      class="sidebar-theme-toggle"
+      role="switch"
+      [attr.aria-checked]="theme() === 'dark'"
+      [attr.aria-label]="theme() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'"
+      (click)="toggleTheme()">
+      <mat-icon>{{ theme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      <span>{{ theme() === 'dark' ? 'Light mode' : 'Dark mode' }}</span>
+    </button>
     <section class="report-prompt"><mat-icon>add_location_alt</mat-icon><strong>Report a Missing Vehicle</strong><p>Help us recover more vehicles and keep our community safe.</p><button routerLink="/dashboard/report-missing">Report a Vehicle <mat-icon>arrow_forward</mat-icon></button></section>
     <footer>© 2025 Find My Vehicle<br><span>All rights reserved.</span></footer>
   </aside>
