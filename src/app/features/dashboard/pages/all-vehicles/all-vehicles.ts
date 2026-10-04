@@ -77,7 +77,7 @@ export class AllVehiclesComponent implements OnInit {
   readonly error = signal('');
   readonly searched = signal(false);
   readonly page = signal(0);
-  readonly pageSize = signal(4);
+  readonly pageSize = signal(6);
   readonly totalPages = signal(0);
   readonly totalElements = signal(0);
 
@@ -143,7 +143,7 @@ export class AllVehiclesComponent implements OnInit {
 
   updatePageSize(value: string): void {
     const pageSize = Number(value);
-    if (pageSize !== 2 && pageSize !== 4 && pageSize !== 6) return;
+    if (pageSize !== 4 && pageSize !== 6 && pageSize !== 8 && pageSize !== 10) return;
     this.pageSize.set(pageSize);
     this.loadVehicles(0);
   }

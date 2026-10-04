@@ -84,7 +84,8 @@ export class MyReportsComponent implements OnInit {
   readonly error = signal('');
   readonly searched = signal(false);
   readonly page = signal(0);
-  readonly pageSize = signal(4);
+  readonly pageSize = signal(6);
+  readonly expandedReportId = signal<number | null>(null);
   readonly reports = computed<MissingReportEntry[]>(() =>
     this.vehicles().flatMap(vehicle =>
       (vehicle.missingDetails ?? []).map(detail => ({ vehicle, detail }))
@@ -173,13 +174,17 @@ export class MyReportsComponent implements OnInit {
 
   updatePageSize(value: string): void {
     const pageSize = Number(value);
-    if (pageSize !== 2 && pageSize !== 4 && pageSize !== 6) return;
+    if (pageSize !== 4 && pageSize !== 6 && pageSize !== 8 && pageSize !== 10) return;
     this.pageSize.set(pageSize);
     this.page.set(0);
   }
 
   changePage(page: number): void {
     if (page >= 0 && page < this.totalPages()) this.page.set(page);
+  }
+
+  toggleReport(reportId: number): void {
+    this.expandedReportId.update(current => current === reportId ? null : reportId);
   }
 
   joinValues(...values: (string | null)[]): string {

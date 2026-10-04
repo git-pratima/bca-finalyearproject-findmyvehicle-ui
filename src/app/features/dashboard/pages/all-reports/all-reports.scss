@@ -4,6 +4,8 @@
 .incident-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .incident-heading>div{display:grid;gap:5px}
 .incident-heading>div>strong{font-size:13px}
+@keyframes report-expand{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.report-details{animation:none}.expand-button mat-icon{transition:none}}
 .listing-page{max-width:1500px;margin:0 auto;padding:28px 30px 44px}
 .page-heading,.filter-heading,.report-top,.list-heading,.report-meta>div,.location-panel>div{display:flex}
 .page-heading,.list-heading{align-items:center;justify-content:space-between;gap:16px}
@@ -32,6 +34,11 @@
 .report-list{display:grid;gap:10px}
 .report-card{overflow:hidden;padding:12px 14px}
 .report-top{align-items:center;gap:10px;padding-bottom:9px;border-bottom:1px solid var(--color-border)}
+.expand-button{display:grid;place-items:center;flex:0 0 36px;width:36px;height:36px;border:1px solid var(--color-border);border-radius:8px;color:var(--color-primary);background:var(--color-surface);cursor:pointer}
+.expand-button:hover{background:var(--color-surface-hover)}
+.expand-button:focus-visible{outline:2px solid var(--color-primary);outline-offset:2px}
+.expand-button mat-icon{transition:transform .2s ease}
+.report-details{animation:report-expand .22s ease-out}
 .vehicle-image{display:grid;place-items:center;flex:0 0 70px;width:70px;height:60px;border-radius:8px;background:var(--color-surface-hover);object-fit:cover}
 .vehicle-image.placeholder{color:var(--color-text-secondary)}
 .vehicle-image.placeholder mat-icon{font-size:32px}

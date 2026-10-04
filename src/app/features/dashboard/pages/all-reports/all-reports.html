@@ -16,7 +16,7 @@
   </section>
 
   <section aria-labelledby="all-reports-heading">
-    <header class="list-heading"><div><h2 id="all-reports-heading">{{ searched() ? 'Search results' : 'Community reports' }}</h2><p>{{ visibleReports().length }} report{{ visibleReports().length === 1 ? '' : 's' }} on this page · {{ totalElements() }} report{{ totalElements() === 1 ? '' : 's' }} total</p></div><div class="list-controls"><label>Per page<select [value]="pageSize()" (change)="updatePageSize($any($event.target).value)" [disabled]="loading()" aria-label="Reports per page"><option value="2">2</option><option value="4">4</option><option value="6">6</option></select></label><nav class="list-pagination" aria-label="All report pages"><button type="button" aria-label="Previous page" (click)="changePage(page() - 1)" [disabled]="page() === 0 || loading()"><mat-icon>chevron_left</mat-icon></button><span>Page <strong>{{ totalPages() ? page() + 1 : 0 }}</strong> of <strong>{{ totalPages() }}</strong></span><button type="button" aria-label="Next page" (click)="changePage(page() + 1)" [disabled]="page() + 1 >= totalPages() || loading()"><mat-icon>chevron_right</mat-icon></button></nav></div></header>
+    <header class="list-heading"><div><h2 id="all-reports-heading">{{ searched() ? 'Search results' : 'Community reports' }}</h2><p>{{ visibleReports().length }} report{{ visibleReports().length === 1 ? '' : 's' }} on this page · {{ totalElements() }} report{{ totalElements() === 1 ? '' : 's' }} total</p></div><div class="list-controls"><label>Per page<select [value]="pageSize()" (change)="updatePageSize($any($event.target).value)" [disabled]="loading()" aria-label="Reports per page"><option value="4">4</option><option value="6">6</option><option value="8">8</option><option value="10">10</option></select></label><nav class="list-pagination" aria-label="All report pages"><button type="button" aria-label="Previous page" (click)="changePage(page() - 1)" [disabled]="page() === 0 || loading()"><mat-icon>chevron_left</mat-icon></button><span>Page <strong>{{ totalPages() ? page() + 1 : 0 }}</strong> of <strong>{{ totalPages() }}</strong></span><button type="button" aria-label="Next page" (click)="changePage(page() + 1)" [disabled]="page() + 1 >= totalPages() || loading()"><mat-icon>chevron_right</mat-icon></button></nav></div></header>
 
     @if (loading()) {
       <div class="state-card" role="status"><mat-icon>hourglass_top</mat-icon><p>Loading community reports…</p></div>
@@ -27,17 +27,28 @@
         @for (entry of visibleReports(); track entry.vehicle.id + '-' + entry.detail.id) {
           @let vehicle = entry.vehicle;
           @let detail = entry.detail;
-          <article class="report-card">
+          <article class="report-card" [class.expanded]="expandedReportId() === detail.id">
             <div class="report-top">
               @if (vehicle.imageUrls?.[0]; as imageUrl) {<img class="vehicle-image" [src]="imageUrl" [alt]="vehicle.vehicleModel || vehicle.regNumber" loading="lazy">}
               @else {<span class="vehicle-image placeholder"><mat-icon>directions_car</mat-icon></span>}
               <div class="vehicle-heading"><span class="eyebrow">Missing vehicle report</span><h3>{{ vehicle.vehicleModel || vehicle.vehicleCompany || 'Vehicle' }}</h3><p class="registration">{{ vehicle.regNumber }}</p><div class="badges"><span class="status" [class.found]="detail.vehicleStatus === 'FOUND' || detail.status === 'CLOSED'">{{ detail.vehicleStatus || detail.status || vehicle.vehicleStatus || 'STATUS UNKNOWN' }}</span>@if (vehicle.type) {<span>{{ vehicle.type }}</span>}@if (vehicle.color) {<span>{{ vehicle.color }}</span>}</div></div>
+              <button
+                class="expand-button"
+                type="button"
+                [attr.aria-expanded]="expandedReportId() === detail.id"
+                [attr.aria-controls]="'report-details-' + detail.id"
+                [attr.aria-label]="(expandedReportId() === detail.id ? 'Collapse' : 'Expand') + ' report details for ' + vehicle.regNumber"
+                (click)="toggleReport(detail.id)">
+                <mat-icon>{{ expandedReportId() === detail.id ? 'expand_less' : 'expand_more' }}</mat-icon>
+              </button>
             </div>
-            <div class="report-meta">
-              <div><mat-icon>person_outline</mat-icon><span><small>Owner</small><strong>{{ vehicle.owner || 'Not provided' }}</strong></span></div>
-              <div><mat-icon>call</mat-icon><span><small>Contact</small><strong>{{ vehicle.ownerMobile || 'Not provided' }}</strong></span></div>
-            </div>
-            <section class="incident-details">
+            @if (expandedReportId() === detail.id) {
+              <div class="report-details" [id]="'report-details-' + detail.id">
+                <div class="report-meta">
+                  <div><mat-icon>person_outline</mat-icon><span><small>Owner</small><strong>{{ vehicle.owner || 'Not provided' }}</strong></span></div>
+                  <div><mat-icon>call</mat-icon><span><small>Contact</small><strong>{{ vehicle.ownerMobile || 'Not provided' }}</strong></span></div>
+                </div>
+                <section class="incident-details">
                 <div class="incident-heading">
                   <div>
                     <span class="eyebrow">Missing report</span>
@@ -55,7 +66,9 @@
                   <div><small>PIN code</small><strong>{{ detail.pinCode || 'Not provided' }}</strong></div>
                 </div>
                 @if (detail.description) {<p class="description"><strong>Report description</strong>{{ detail.description }}</p>}
-            </section>
+                </section>
+              </div>
+            }
           </article>
         }
       </div>
