@@ -3,6 +3,7 @@ import { Component, DestroyRef, computed, inject, signal, OnDestroy, OnInit, PLA
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { catchError, finalize, map, of, switchMap } from 'rxjs';
 
@@ -22,6 +23,7 @@ type MissingReport = {
   description: string | null;
   vehicleStatus: string | null;
   reward: string | null;
+  ownReport: boolean;
 };
 
 type VehicleDetails = {
@@ -37,6 +39,7 @@ type VehicleDetails = {
   vehicleCompany: string | null;
   vehicleStatus: string | null;
   vehicleModel: string | null;
+  ownVehicle: boolean;
   imageUrls: string[] | null;
   missingDetails: MissingReport[] | null;
 };
@@ -49,7 +52,7 @@ type VehicleDetailsResponse = {
 @Component({
   selector: 'app-vehicle-details',
   standalone: true,
-  imports: [DatePipe, FormsModule, MatIconModule, RouterLink],
+  imports: [DatePipe, FormsModule, MatIconModule, MatSnackBarModule, RouterLink],
   templateUrl: './vehicle-details.html',
   styleUrl: './vehicle-details.scss'
 })
@@ -58,21 +61,47 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly snackBar = inject(MatSnackBar);
   private slideshowTimer: number | undefined;
 
   readonly backLink = this.route.parent?.routeConfig?.path === 'dashboard' ? '/dashboard' : '/';
   readonly vehicle = signal<VehicleDetails | null>(null);
   readonly loading = signal(false);
+  readonly updatingReportId = signal<number | null>(null);
   readonly error = signal('');
   readonly imageIndex = signal(0);
+  readonly selectedReportId = signal<number | null>(null);
   readonly sightingLocation = signal('');
   readonly sightingNotes = signal('');
+  readonly feedbackRating = signal(0);
+  readonly feedbackComment = signal('');
+  readonly ratingOptions = [1, 2, 3, 4, 5];
   readonly images = computed(() => this.vehicle()?.imageUrls?.filter(Boolean) ?? []);
   readonly currentImage = computed(() => this.images()[this.imageIndex()] ?? null);
   readonly reports = computed(() => this.vehicle()?.missingDetails ?? []);
+  readonly ownReports = computed(() => this.reports().filter(report => report.ownReport === true));
+  readonly activeOwnReport = computed(() => {
+    const ownReports = this.ownReports();
+    const selectedReportId = this.selectedReportId();
+    return selectedReportId === null
+      ? ownReports[0] ?? null
+      : ownReports.find(report => report.id === selectedReportId) ?? null;
+  });
+  readonly isOwnReport = computed(() =>
+    this.vehicle()?.ownVehicle === true &&
+    this.activeOwnReport() !== null
+  );
+  readonly feedbackAvailable = computed(() => this.activeOwnReport()?.vehicleStatus === 'FOUND');
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
+
+    this.route.queryParamMap.pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(params => {
+      const reportId = Number(params.get('missingDetailsId'));
+      this.selectedReportId.set(Number.isInteger(reportId) && reportId > 0 ? reportId : null);
+    });
 
     this.route.paramMap.pipe(
       map(params => params.get('regNumber')?.trim() ?? ''),
@@ -122,6 +151,68 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
 
   selectImage(index: number): void {
     if (index >= 0 && index < this.images().length) this.imageIndex.set(index);
+  }
+
+  selectFeedbackRating(rating: number): void {
+    if (this.ratingOptions.includes(rating)) this.feedbackRating.set(rating);
+  }
+
+  markReportFound(report: MissingReport): void {
+    if (
+      !this.isOwnReport() ||
+      this.updatingReportId() !== null ||
+      report.vehicleStatus === 'FOUND'
+    ) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      'Have you found this vehicle? Confirm to change its status to Found.'
+    );
+    if (!confirmed) return;
+
+    this.updatingReportId.set(report.id);
+    this.apiService
+      .put<unknown>(`/missing-details/${report.id}/found`, null)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.updatingReportId.set(null))
+      )
+      .subscribe({
+        next: () => {
+          this.vehicle.update(vehicle => {
+            if (!vehicle) return vehicle;
+            const missingDetails = vehicle.missingDetails?.map(detail =>
+              detail.id === report.id
+                ? {
+                    ...detail,
+                    vehicleStatus: 'FOUND',
+                    foundDate: detail.foundDate ?? new Date().toISOString().slice(0, 10)
+                  }
+                : detail
+            ) ?? null;
+
+            return {
+              ...vehicle,
+              vehicleStatus: 'FOUND',
+              missingDetails
+            };
+          });
+          this.snackBar.open('Vehicle status updated to Found.', 'Close', {
+            duration: 5000
+          });
+        },
+        error: error => {
+          console.error('Failed to mark vehicle as found.', error);
+          this.snackBar.open(
+            error?.error?.status?.message ??
+              error?.error?.message ??
+              'Unable to update the vehicle status. Please try again.',
+            'Close',
+            { duration: 5000 }
+          );
+        }
+      });
   }
 
   joinValues(...values: (string | null)[]): string {

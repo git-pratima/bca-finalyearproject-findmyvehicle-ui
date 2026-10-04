@@ -57,7 +57,7 @@
                   @if (vehicle.color) {<span>{{ vehicle.color }}</span>}
                 </div>
               </div>
-              <a class="details-link" [routerLink]="['/dashboard/vehicle', vehicle.regNumber]">View details<mat-icon>arrow_forward</mat-icon></a>
+              <a class="details-link" [routerLink]="['/dashboard/vehicle', vehicle.regNumber]" [queryParams]="{ missingDetailsId: detail.id }">View details<mat-icon>arrow_forward</mat-icon></a>
             </div>
 
             <div class="report-meta">

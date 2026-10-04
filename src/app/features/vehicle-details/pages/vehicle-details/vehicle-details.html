@@ -77,26 +77,83 @@
         </section>
 
         <aside class="action-card">
-          <span class="action-kicker">Help bring this vehicle home</span>
-          <h2>Have information?</h2>
-          <p>Contact the owner or share where you saw this vehicle.</p>
-          @if (item.ownerEmail) {
-            <a class="primary-action" [href]="notifyOwnerHref()" target="_blank" rel="noopener noreferrer"><mat-icon>mail_outline</mat-icon>Notify Owner</a>
-            <div class="action-divider"><span>OR</span></div>
-            <form (ngSubmit)="sendSighting()">
-              <h3>Seen At</h3>
-              <label for="sighting-location">Where did you see it?</label>
-              <input id="sighting-location" name="sightingLocation" [ngModel]="sightingLocation()" (ngModelChange)="sightingLocation.set($event)" required placeholder="Area, street or landmark">
-              <label for="sighting-notes">Additional details <span>Optional</span></label>
-              <textarea id="sighting-notes" name="sightingNotes" [ngModel]="sightingNotes()" (ngModelChange)="sightingNotes.set($event)" rows="3" placeholder="Time, direction of travel, or other helpful details"></textarea>
-              <button class="secondary-action" type="submit"><mat-icon>location_on</mat-icon>Send sighting</button>
-              <small>This opens your email app to send the sighting directly to the owner.</small>
-            </form>
+          @if (isOwnReport()) {
+            <span class="action-kicker">Your report</span>
+            @if (activeOwnReport(); as report) {
+              <button
+                class="primary-action found-action"
+                type="button"
+                [disabled]="feedbackAvailable() || updatingReportId() !== null"
+                [attr.aria-label]="'Mark report from ' + (report.missingDate || 'unknown date') + ' as found'"
+                (click)="markReportFound(report)">
+                <mat-icon>{{ updatingReportId() === report.id ? 'hourglass_top' : 'check_circle' }}</mat-icon>
+                {{ updatingReportId() === report.id ? 'Updating…' : 'Found' }}
+              </button>
+              @if (feedbackAvailable()) {
+                <p class="found-status">
+                  <mat-icon>check_circle</mat-icon>
+                  Congratulations, you already recovered your vehicle on
+                  {{ report.foundDate ? (report.foundDate | date:'dd MMM yyyy') : 'the recorded date' }}.
+                </p>
+              } @else {
+                <p>This is your vehicle and report. Confirm once it has been found to update its status.</p>
+              }
+            } @else {
+              <p class="contact-unavailable"><mat-icon>info_outline</mat-icon>The selected report is unavailable. Return to My Reports and open its details again.</p>
+            }
+            @if (activeOwnReport()) {
+              <form class="feedback-form" (ngSubmit)="$event.preventDefault()">
+                <h3>Feedback</h3>
+                <span class="rating-label" id="feedback-rating-label">Your rating</span>
+                <div class="rating-stars" role="group" aria-labelledby="feedback-rating-label">
+                  @for (star of ratingOptions; track star) {
+                    <button
+                      class="rating-star"
+                      [class.selected]="feedbackRating() >= star"
+                      type="button"
+                      [attr.aria-label]="star + ' out of 5 stars'"
+                      [attr.aria-pressed]="feedbackRating() === star"
+                      (click)="selectFeedbackRating(star)">
+                      <mat-icon>{{ feedbackRating() >= star ? 'star' : 'star_border' }}</mat-icon>
+                    </button>
+                  }
+                </div>
+                <label for="feedback-comment">Comment <span>Optional</span></label>
+                <textarea
+                  id="feedback-comment"
+                  name="feedbackComment"
+                  [ngModel]="feedbackComment()"
+                  (ngModelChange)="feedbackComment.set($event)"
+                  rows="4"
+                  placeholder="Tell us about your experience"></textarea>
+                <button class="secondary-action" type="submit" disabled>
+                  <mat-icon>send</mat-icon>Submit feedback
+                </button>
+                <small role="status">Feedback submission will be available when the service is ready.</small>
+              </form>
+            }
           } @else {
-            <p class="contact-unavailable"><mat-icon>info_outline</mat-icon>Owner contact details are not available for this report.</p>
-          }
-          @if (item.ownerMobile) {
-            <a class="phone-link" [href]="'tel:' + item.ownerMobile"><mat-icon>call</mat-icon>Call {{ item.ownerMobile }}</a>
+            <span class="action-kicker">Help bring this vehicle home</span>
+            <h2>Have information?</h2>
+            <p>Contact the owner or share where you saw this vehicle.</p>
+            @if (item.ownerEmail) {
+              <a class="primary-action" [href]="notifyOwnerHref()" target="_blank" rel="noopener noreferrer"><mat-icon>mail_outline</mat-icon>Notify Owner</a>
+              <div class="action-divider"><span>OR</span></div>
+              <form (ngSubmit)="sendSighting()">
+                <h3>Seen At</h3>
+                <label for="sighting-location">Where did you see it?</label>
+                <input id="sighting-location" name="sightingLocation" [ngModel]="sightingLocation()" (ngModelChange)="sightingLocation.set($event)" required placeholder="Area, street or landmark">
+                <label for="sighting-notes">Additional details <span>Optional</span></label>
+                <textarea id="sighting-notes" name="sightingNotes" [ngModel]="sightingNotes()" (ngModelChange)="sightingNotes.set($event)" rows="3" placeholder="Time, direction of travel, or other helpful details"></textarea>
+                <button class="secondary-action" type="submit"><mat-icon>location_on</mat-icon>Send sighting</button>
+                <small>This opens your email app to send the sighting directly to the owner.</small>
+              </form>
+            } @else {
+              <p class="contact-unavailable"><mat-icon>info_outline</mat-icon>Owner contact details are not available for this report.</p>
+            }
+            @if (item.ownerMobile) {
+              <a class="phone-link" [href]="'tel:' + item.ownerMobile"><mat-icon>call</mat-icon>Call {{ item.ownerMobile }}</a>
+            }
           }
         </aside>
       </div>
