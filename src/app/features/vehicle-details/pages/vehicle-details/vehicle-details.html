@@ -1,6 +1,8 @@
 <main class="vehicle-page">
   <div class="vehicle-container">
-    <a class="back-link" [routerLink]="backLink"><mat-icon>arrow_back</mat-icon> {{ backLink === '/dashboard' ? 'Back to dashboard' : 'Back to home' }}</a>
+    @if (backLink !== '/dashboard') {
+      <a class="back-link" [routerLink]="backLink"><mat-icon>arrow_back</mat-icon>Back to home</a>
+    }
 
     @if (loading()) {
       <p class="page-message" role="status">Loading vehicle details…</p>
@@ -48,31 +50,63 @@
           </article>
 
           <article class="information-card">
-            <div class="card-heading"><span class="heading-icon"><mat-icon>directions_car</mat-icon></span><div><h2>Vehicle information</h2><p>Identification and owner details</p></div></div>
+            <div class="card-heading"><span class="heading-icon"><mat-icon>directions_car</mat-icon></span><div><h2>Vehicle information</h2><p>Identification, specifications and owner details</p></div></div>
             <dl class="detail-grid">
               <div><dt>Registration number</dt><dd>{{ item.regNumber }}</dd></div>
               <div><dt>Vehicle</dt><dd>{{ item.vehicleCompany || 'Not provided' }} {{ item.vehicleModel || '' }}</dd></div>
               <div><dt>Type</dt><dd>{{ item.type || 'Not provided' }}</dd></div>
               <div><dt>Color</dt><dd>{{ item.color || 'Not provided' }}</dd></div>
+              <div><dt>Vehicle status</dt><dd><span class="detail-status" [class.found]="item.vehicleStatus === 'FOUND'">{{ item.vehicleStatus || 'Not provided' }}</span></dd></div>
               <div><dt>Chassis number</dt><dd>{{ item.chassisNumber || 'Not provided' }}</dd></div>
               <div><dt>Engine number</dt><dd>{{ item.engineNumber || 'Not provided' }}</dd></div>
               <div><dt>Owner</dt><dd>{{ item.owner || 'Not provided' }}</dd></div>
               <div><dt>Owner mobile</dt><dd>{{ item.ownerMobile || 'Not provided' }}</dd></div>
+              <div><dt>Owner email</dt><dd>{{ item.ownerEmail || 'Not provided' }}</dd></div>
             </dl>
           </article>
 
-          @for (report of reports(); track report.id) {
+          @for (report of displayedReports(); track report.id) {
             <article class="information-card report-card">
-              <div class="card-heading"><span class="heading-icon alert"><mat-icon>location_on</mat-icon></span><div><h2>Missing report</h2><p>{{ report.missingDate ? (report.missingDate | date:'dd MMM yyyy') : 'Date not provided' }}{{ report.missingTime ? ' at ' + report.missingTime : '' }}</p></div></div>
+              <div class="card-heading">
+                <span class="heading-icon alert"><mat-icon>location_on</mat-icon></span>
+                <div class="report-title">
+                  <h2>Missing report</h2>
+                  <p>{{ report.missingDate ? (report.missingDate | date:'dd MMM yyyy') : 'Date not provided' }}{{ report.missingTime ? ' at ' + report.missingTime : '' }}</p>
+                </div>
+                <span class="report-status" [class.found]="isReportFound(report)">
+                  <mat-icon>{{ isReportFound(report) ? 'check_circle' : 'search' }}</mat-icon>
+                  {{ isReportFound(report) ? 'Found' : 'Missing' }}
+                </span>
+              </div>
               <dl class="detail-grid">
+                <div><dt>Report reference</dt><dd>#{{ report.id }}</dd></div>
+                <div><dt>Report status</dt><dd><span class="detail-status" [class.found]="isReportFound(report)">{{ isReportFound(report) ? 'FOUND' : (report.vehicleStatus || report.status || 'MISSING') }}</span></dd></div>
                 <div><dt>Last seen near</dt><dd>{{ report.missingAddress || 'Not provided' }}</dd></div>
                 <div><dt>City / district</dt><dd>{{ joinValues(report.city, report.district) }}</dd></div>
                 <div><dt>State / country</dt><dd>{{ joinValues(report.state, report.country) }}</dd></div>
                 <div><dt>PIN code</dt><dd>{{ report.pinCode || 'Not provided' }}</dd></div>
-                @if (report.reward) {<div><dt>Reward</dt><dd>{{ report.reward }}</dd></div>}
+                @if (report.foundDate) {<div><dt>Found date</dt><dd>{{ report.foundDate | date:'dd MMM yyyy' }}</dd></div>}
+                @if (report.reward) {<div class="reward-detail"><dt>Reward offered</dt><dd><mat-icon>workspace_premium</mat-icon>{{ report.reward }}</dd></div>}
               </dl>
-              @if (report.description) {<p class="report-description">{{ report.description }}</p>}
+              @if (report.description) {
+                <section class="report-description">
+                  <h3><mat-icon>notes</mat-icon>Report description</h3>
+                  <p>{{ report.description }}</p>
+                </section>
+              }
             </article>
+          } @empty {
+            <p class="page-message" role="status">
+              @if (selectedReportLoading()) {
+                Loading the selected report…
+              } @else if (selectedReportError()) {
+                {{ selectedReportError() }}
+              } @else if (selectedReportId() === null) {
+                Open a specific report from My Reports or All Reports to view its details.
+              } @else {
+                The selected report is unavailable. Return to the report list and open its details again.
+              }
+            </p>
           }
         </section>
 

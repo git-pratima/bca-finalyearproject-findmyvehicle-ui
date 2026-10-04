@@ -5,7 +5,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
-import { catchError, finalize, map, of, switchMap } from 'rxjs';
+import { Subscription, catchError, finalize, map, of, switchMap } from 'rxjs';
 
 import { ApiService } from '../../../../core/services/api.service';
 
@@ -25,6 +25,7 @@ type MissingReport = {
   status?: string | null;
   reward: string | null;
   ownReport: boolean;
+  found?: boolean;
 };
 
 type VehicleDetails = {
@@ -41,6 +42,7 @@ type VehicleDetails = {
   vehicleStatus: string | null;
   vehicleModel: string | null;
   ownVehicle: boolean;
+  found?: boolean;
   imageUrls: string[] | null;
   missingDetails: MissingReport[] | null;
 };
@@ -64,10 +66,13 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly snackBar = inject(MatSnackBar);
   private slideshowTimer: number | undefined;
+  private selectedReportRequest?: Subscription;
 
   readonly backLink = this.route.parent?.routeConfig?.path === 'dashboard' ? '/dashboard' : '/';
   readonly vehicle = signal<VehicleDetails | null>(null);
   readonly loading = signal(false);
+  readonly selectedReportLoading = signal(false);
+  readonly selectedReportError = signal('');
   readonly updatingReportId = signal<number | null>(null);
   readonly error = signal('');
   readonly imageIndex = signal(0);
@@ -86,6 +91,10 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
     return selectedReportId === null
       ? null
       : this.reports().find(report => report.id === selectedReportId) ?? null;
+  });
+  readonly displayedReports = computed(() => {
+    const report = this.selectedReport();
+    return report ? [report] : [];
   });
   readonly activeOwnReport = computed(() => {
     const selectedReport = this.selectedReport();
@@ -111,13 +120,18 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
     ).subscribe(params => {
       const reportId = Number(params.get('missingDetailsId'));
       this.selectedReportId.set(Number.isInteger(reportId) && reportId > 0 ? reportId : null);
+      this.loadSelectedReport();
     });
 
     this.route.paramMap.pipe(
       map(params => params.get('regNumber')?.trim() ?? ''),
       switchMap(regNumber => {
+        this.selectedReportRequest?.unsubscribe();
+        this.selectedReportRequest = undefined;
+        this.selectedReportLoading.set(false);
         this.vehicle.set(null);
         this.imageIndex.set(0);
+        this.selectedReportError.set('');
         this.error.set('');
         this.loading.set(!!regNumber);
 
@@ -139,6 +153,7 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
       if (result.response?.data) {
         this.vehicle.set(result.response.data);
         this.startSlideshow();
+        this.loadSelectedReport();
       } else {
         this.error.set(result.error || 'Vehicle details are unavailable.');
       }
@@ -147,6 +162,50 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.stopSlideshow();
+    this.selectedReportRequest?.unsubscribe();
+  }
+
+  private loadSelectedReport(): void {
+    this.selectedReportRequest?.unsubscribe();
+    this.selectedReportRequest = undefined;
+    this.selectedReportLoading.set(false);
+    this.selectedReportError.set('');
+
+    const vehicle = this.vehicle();
+    const reportId = this.selectedReportId();
+    if (!vehicle || reportId === null) return;
+
+    this.vehicle.update(current => current ? { ...current, missingDetails: null } : current);
+    this.selectedReportLoading.set(true);
+    this.selectedReportRequest = this.apiService
+      .get<VehicleDetailsResponse>(
+        `/vehicles/${encodeURIComponent(vehicle.regNumber)}/missing-details/${reportId}`
+      )
+      .pipe(finalize(() => this.selectedReportLoading.set(false)))
+      .subscribe({
+        next: response => {
+          const report = response.data.missingDetails?.find(detail => detail.id === reportId);
+          if (response.data.regNumber !== vehicle.regNumber || !report) {
+            this.selectedReportError.set(
+              'The requested report does not match the selected vehicle.'
+            );
+            return;
+          }
+          this.vehicle.update(current =>
+            current
+              ? { ...response.data, missingDetails: [report] }
+              : current
+          );
+        },
+        error: error => {
+          console.error('Failed to load selected missing report.', error);
+          this.selectedReportError.set(
+            error?.error?.status?.message ??
+              error?.error?.message ??
+              'Unable to load the selected report. Please return to the report list and try again.'
+          );
+        }
+      });
   }
 
   previousImage(): void {
