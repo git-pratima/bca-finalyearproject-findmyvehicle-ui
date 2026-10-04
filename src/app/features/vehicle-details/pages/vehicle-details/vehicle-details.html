@@ -18,7 +18,7 @@
           <h1>{{ item.vehicleModel || item.vehicleCompany || 'Vehicle details' }}</h1>
           <p>{{ item.regNumber }}</p>
         </div>
-        <span class="status-pill" [class.found]="item.vehicleStatus === 'FOUND'">{{ item.vehicleStatus || 'STATUS UNAVAILABLE' }}</span>
+        <span class="status-pill" [class.found]="isReportFound(selectedReport()) || (!selectedReport() && item.vehicleStatus === 'FOUND')">{{ displayedStatus() }}</span>
       </header>
 
       <div class="details-layout">

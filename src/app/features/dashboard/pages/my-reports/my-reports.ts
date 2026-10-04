@@ -4,7 +4,7 @@ import { Component, computed, DestroyRef, inject, OnInit, PLATFORM_ID, signal } 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { finalize, Subscription } from 'rxjs';
+import { EMPTY, expand, finalize, map, Subscription, toArray } from 'rxjs';
 
 import { ApiService } from '../../../../core/services/api.service';
 
@@ -21,6 +21,7 @@ type MissingReport = {
   missingAddress: string | null;
   description: string | null;
   vehicleStatus: string | null;
+  status?: string | null;
   reward: string | null;
 };
 
@@ -79,18 +80,22 @@ export class MyReportsComponent implements OnInit {
   readonly missingCity = signal('');
   readonly pinCode = signal('');
   readonly vehicles = signal<ReportedVehicle[]>([]);
-  readonly reports = computed<MissingReportEntry[]>(() =>
-    this.vehicles().flatMap(vehicle =>
-      (vehicle.missingDetails ?? []).map(detail => ({ vehicle, detail }))
-    )
-  );
   readonly loading = signal(false);
   readonly error = signal('');
   readonly searched = signal(false);
   readonly page = signal(0);
   readonly pageSize = signal(4);
-  readonly totalPages = signal(0);
-  readonly totalElements = signal(0);
+  readonly reports = computed<MissingReportEntry[]>(() =>
+    this.vehicles().flatMap(vehicle =>
+      (vehicle.missingDetails ?? []).map(detail => ({ vehicle, detail }))
+    )
+  );
+  readonly visibleReports = computed(() => {
+    const start = this.page() * this.pageSize();
+    return this.reports().slice(start, start + this.pageSize());
+  });
+  readonly totalPages = computed(() => Math.ceil(this.reports().length / this.pageSize()));
+  readonly totalElements = computed(() => this.reports().length);
 
   ngOnInit(): void {
     const regNumber = this.route.snapshot.queryParamMap.get('regNumber')?.trim() ?? '';
@@ -98,12 +103,12 @@ export class MyReportsComponent implements OnInit {
       this.regNumber.set(regNumber);
       this.searched.set(true);
     }
-    if (isPlatformBrowser(this.platformId)) this.loadReports(0);
+    if (isPlatformBrowser(this.platformId)) this.loadReports();
   }
 
   search(): void {
     this.searched.set(true);
-    this.loadReports(0);
+    this.loadReports();
   }
 
   clearFilters(): void {
@@ -112,12 +117,12 @@ export class MyReportsComponent implements OnInit {
     this.missingCity.set('');
     this.pinCode.set('');
     this.searched.set(false);
-    this.loadReports(0);
+    this.loadReports();
   }
 
-  loadReports(page: number): void {
+  loadReports(): void {
     this.requestSubscription?.unsubscribe();
-    let params = new HttpParams().set('page', page).set('size', this.pageSize());
+    let params = new HttpParams().set('page', 0).set('size', this.pageSize());
     const filters = [
       ['regNumber', this.regNumber()],
       ['model', this.model()],
@@ -130,22 +135,33 @@ export class MyReportsComponent implements OnInit {
 
     this.loading.set(true);
     this.error.set('');
-    this.requestSubscription = this.apiService.get<ReportedVehiclesResponse>('/vehicles/reported-by-me', params)
+    this.requestSubscription = this.apiService.get<ReportedVehiclesResponse>('/vehicles/reported-by-me', params).pipe(
+      expand(response => {
+        const nextPage = response.data.number + 1;
+        if (response.data.last || nextPage >= response.data.totalPages) return EMPTY;
+        return this.apiService.get<ReportedVehiclesResponse>(
+          '/vehicles/reported-by-me',
+          params.set('page', nextPage)
+        );
+      }),
+      toArray(),
+      map(pages => ({
+        vehicles: pages.flatMap(response => response.data.content ?? []),
+        totalPages: pages.at(-1)?.data.totalPages ?? 0
+      }))
+    )
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         finalize(() => this.loading.set(false))
       )
       .subscribe({
         next: response => {
-          this.vehicles.set(response.data.content ?? []);
-          this.page.set(response.data.number);
-          this.totalPages.set(response.data.totalPages);
-          this.totalElements.set(response.data.totalElements);
+          this.vehicles.set(response.vehicles);
+          this.page.set(0);
         },
         error: error => {
           this.vehicles.set([]);
-          this.totalPages.set(0);
-          this.totalElements.set(0);
+          this.page.set(0);
           this.error.set(
             error?.error?.status?.message ||
             error?.error?.message ||
@@ -159,7 +175,11 @@ export class MyReportsComponent implements OnInit {
     const pageSize = Number(value);
     if (pageSize !== 2 && pageSize !== 4 && pageSize !== 6) return;
     this.pageSize.set(pageSize);
-    this.loadReports(0);
+    this.page.set(0);
+  }
+
+  changePage(page: number): void {
+    if (page >= 0 && page < this.totalPages()) this.page.set(page);
   }
 
   joinValues(...values: (string | null)[]): string {

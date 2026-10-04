@@ -22,6 +22,7 @@ type MissingReport = {
   missingAddress: string | null;
   description: string | null;
   vehicleStatus: string | null;
+  status?: string | null;
   reward: string | null;
   ownReport: boolean;
 };
@@ -80,18 +81,27 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
   readonly currentImage = computed(() => this.images()[this.imageIndex()] ?? null);
   readonly reports = computed(() => this.vehicle()?.missingDetails ?? []);
   readonly ownReports = computed(() => this.reports().filter(report => report.ownReport === true));
-  readonly activeOwnReport = computed(() => {
-    const ownReports = this.ownReports();
+  readonly selectedReport = computed(() => {
     const selectedReportId = this.selectedReportId();
     return selectedReportId === null
-      ? ownReports[0] ?? null
-      : ownReports.find(report => report.id === selectedReportId) ?? null;
+      ? null
+      : this.reports().find(report => report.id === selectedReportId) ?? null;
+  });
+  readonly activeOwnReport = computed(() => {
+    const selectedReport = this.selectedReport();
+    if (selectedReport) return selectedReport;
+    if (this.selectedReportId() !== null) return null;
+    const ownReports = this.ownReports();
+    return ownReports.length === 1 ? ownReports[0] : null;
   });
   readonly isOwnReport = computed(() =>
     this.vehicle()?.ownVehicle === true &&
-    this.activeOwnReport() !== null
+    this.activeOwnReport()?.ownReport === true
   );
-  readonly feedbackAvailable = computed(() => this.activeOwnReport()?.vehicleStatus === 'FOUND');
+  readonly feedbackAvailable = computed(() => this.isReportFound(this.activeOwnReport()));
+  readonly displayedStatus = computed(() =>
+    this.selectedReport()?.vehicleStatus ?? this.vehicle()?.vehicleStatus ?? 'STATUS UNAVAILABLE'
+  );
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
@@ -157,11 +167,18 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
     if (this.ratingOptions.includes(rating)) this.feedbackRating.set(rating);
   }
 
+  isReportFound(report: MissingReport | null | undefined): boolean {
+    const statuses = [report?.vehicleStatus, report?.status]
+      .filter((status): status is string => typeof status === 'string')
+      .map(status => status.toUpperCase());
+    return statuses.some(status => ['FOUND', 'CLOSED', 'CLOSE'].includes(status));
+  }
+
   markReportFound(report: MissingReport): void {
     if (
       !this.isOwnReport() ||
       this.updatingReportId() !== null ||
-      report.vehicleStatus === 'FOUND'
+      this.isReportFound(report)
     ) {
       return;
     }
@@ -184,17 +201,14 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
             if (!vehicle) return vehicle;
             const missingDetails = vehicle.missingDetails?.map(detail =>
               detail.id === report.id
-                ? {
-                    ...detail,
-                    vehicleStatus: 'FOUND',
-                    foundDate: detail.foundDate ?? new Date().toISOString().slice(0, 10)
-                  }
+                ? { ...detail, vehicleStatus: 'FOUND', status: 'CLOSED', foundDate: detail.foundDate ?? new Date().toISOString().slice(0, 10) }
                 : detail
             ) ?? null;
+            const allReportsFound = missingDetails?.every(detail => this.isReportFound(detail)) ?? true;
 
             return {
               ...vehicle,
-              vehicleStatus: 'FOUND',
+              vehicleStatus: allReportsFound ? 'FOUND' : vehicle.vehicleStatus,
               missingDetails
             };
           });
