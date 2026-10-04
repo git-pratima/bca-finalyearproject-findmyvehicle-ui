@@ -83,8 +83,16 @@ type VehicleSearchResponse = {
 
 type DashboardPayload = {
   user: { id: number; name: string; email: string; profileImageUrl: string | null };
-  summary: { totalReports: number; recovered: number; inProgress: number; closed: number };
-  activity: { unreadNotifications: number; unreadMessages: number };
+  summary: {
+    totalReports: number;
+    recovered: number;
+    inProgress: number;
+    closed: number;
+    totalRegisteredVehicles?: number | null;
+  };
+  activity: { unreadNotifications: number | null; unreadMessages: number | null };
+  unreadNotificationCount?: number | null;
+  totalRegisteredVehicles?: number | null;
   recentMissingVehicles: DashboardVehicle[];
 };
 
@@ -132,6 +140,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
   readonly dashboardData = signal<DashboardPayload | null>(null);
   readonly dashboardLoading = signal(false);
   readonly dashboardError = signal('');
+  readonly unreadNotificationCount = computed(() =>
+    this.dashboardData()?.unreadNotificationCount ??
+    this.dashboardData()?.activity?.unreadNotifications ??
+    0
+  );
+  readonly totalRegisteredVehicles = computed(() =>
+    this.dashboardData()?.totalRegisteredVehicles ??
+    this.dashboardData()?.summary?.totalRegisteredVehicles ??
+    0
+  );
   readonly vehicles = computed(() =>
     (this.dashboardData()?.recentMissingVehicles ?? []).map(vehicle => ({
       ...vehicle,
