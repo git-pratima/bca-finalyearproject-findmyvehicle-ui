@@ -97,11 +97,7 @@
             </article>
           } @empty {
             <p class="page-message" role="status">
-              @if (selectedReportLoading()) {
-                Loading the selected report…
-              } @else if (selectedReportError()) {
-                {{ selectedReportError() }}
-              } @else if (selectedReportId() === null) {
+              @if (selectedReportId() === null) {
                 Open a specific report from My Reports or All Reports to view its details.
               } @else {
                 The selected report is unavailable. Return to the report list and open its details again.

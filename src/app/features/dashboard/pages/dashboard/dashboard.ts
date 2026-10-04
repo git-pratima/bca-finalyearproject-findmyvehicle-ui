@@ -17,6 +17,7 @@ type DashboardVehicle = {
   id: number;
   name: string | null;
   registration: string | null;
+  missingDetailsId?: number | null;
   location: string | null;
   reportedAt: string | null;
   image: string | null;
@@ -32,6 +33,7 @@ type DashboardVehicle = {
 };
 
 type VehicleLookupMissingDetail = {
+  id: number;
   missingDate: string | null;
   missingTime: string | null;
   country: string | null;
@@ -130,7 +132,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
   readonly dashboardData = signal<DashboardPayload | null>(null);
   readonly dashboardLoading = signal(false);
   readonly dashboardError = signal('');
-  readonly vehicles = computed(() => this.dashboardData()?.recentMissingVehicles ?? []);
+  readonly vehicles = computed(() =>
+    (this.dashboardData()?.recentMissingVehicles ?? []).map(vehicle => ({
+      ...vehicle,
+      missingDetailsId: vehicle.missingDetailsId ?? vehicle.id
+    }))
+  );
   readonly selectedVehicleIndex = signal(0);
   readonly query = signal('');
   readonly searched = signal(false);
@@ -449,6 +456,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             id: vehicle.id,
             name: vehicle.vehicleModel || vehicle.vehicleCompany,
             registration: vehicle.regNumber,
+            missingDetailsId: report?.id ?? null,
             location: location || null,
             reportedAt: report?.missingDate
               ? `${report.missingDate}${report.missingTime ? `T${report.missingTime}` : ''}`
@@ -549,6 +557,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       id: vehicle.id,
       name: vehicle.vehicleModel || vehicle.vehicleCompany,
       registration: vehicle.regNumber,
+      missingDetailsId: report?.id ?? null,
       location: location || null,
       reportedAt: report?.missingDate
         ? `${report.missingDate}${report.missingTime ? `T${report.missingTime}` : ''}`
@@ -564,6 +573,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
       type: vehicle.type,
       vehicleCompany: vehicle.vehicleCompany
     };
+  }
+
+  openVehicleDetails(vehicle: DashboardVehicle): void {
+    const registration = vehicle.registration?.trim();
+    const missingDetailsId = vehicle.missingDetailsId;
+    if (!registration || !missingDetailsId) return;
+
+    void this.router.navigate(['/dashboard/vehicle', registration], {
+      queryParams: { missingDetailsId }
+    });
   }
 
   private createProfile(): ProfileForm {

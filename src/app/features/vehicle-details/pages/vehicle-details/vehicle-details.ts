@@ -5,7 +5,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
-import { Subscription, catchError, finalize, map, of, switchMap } from 'rxjs';
+import { catchError, combineLatest, finalize, map, of, switchMap } from 'rxjs';
 
 import { ApiService } from '../../../../core/services/api.service';
 
@@ -66,13 +66,9 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly snackBar = inject(MatSnackBar);
   private slideshowTimer: number | undefined;
-  private selectedReportRequest?: Subscription;
-
   readonly backLink = this.route.parent?.routeConfig?.path === 'dashboard' ? '/dashboard' : '/';
   readonly vehicle = signal<VehicleDetails | null>(null);
   readonly loading = signal(false);
-  readonly selectedReportLoading = signal(false);
-  readonly selectedReportError = signal('');
   readonly updatingReportId = signal<number | null>(null);
   readonly error = signal('');
   readonly imageIndex = signal(0);
@@ -115,34 +111,38 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    this.route.queryParamMap.pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(params => {
-      const reportId = Number(params.get('missingDetailsId'));
-      this.selectedReportId.set(Number.isInteger(reportId) && reportId > 0 ? reportId : null);
-      this.loadSelectedReport();
-    });
-
-    this.route.paramMap.pipe(
-      map(params => params.get('regNumber')?.trim() ?? ''),
-      switchMap(regNumber => {
-        this.selectedReportRequest?.unsubscribe();
-        this.selectedReportRequest = undefined;
-        this.selectedReportLoading.set(false);
+    combineLatest([this.route.paramMap, this.route.queryParamMap]).pipe(
+      map(([params, queryParams]) => {
+        const reportId = Number(queryParams.get('missingDetailsId'));
+        return {
+          regNumber: params.get('regNumber')?.trim() ?? '',
+          reportId: Number.isInteger(reportId) && reportId > 0 ? reportId : null
+        };
+      }),
+      switchMap(({ regNumber, reportId }) => {
+        this.selectedReportId.set(reportId);
         this.vehicle.set(null);
         this.imageIndex.set(0);
-        this.selectedReportError.set('');
         this.error.set('');
         this.loading.set(!!regNumber);
 
         if (!regNumber) {
-          return of({ response: null, error: 'A vehicle registration number is required.' });
+          return of({
+            response: null,
+            reportId,
+            error: 'A vehicle registration number is required.'
+          });
         }
 
-        return this.apiService.get<VehicleDetailsResponse>(`/vehicle/${encodeURIComponent(regNumber)}`).pipe(
-          map(response => ({ response, error: '' })),
+        const endpoint = reportId === null
+          ? `/vehicle/${encodeURIComponent(regNumber)}`
+          : `/vehicles/${encodeURIComponent(regNumber)}/missing-details/${reportId}`;
+
+        return this.apiService.get<VehicleDetailsResponse>(endpoint).pipe(
+          map(response => ({ response, reportId, error: '' })),
           catchError(error => of({
             response: null,
+            reportId,
             error: error?.error?.status?.message || error?.error?.message || 'Unable to load vehicle details. Please try again.'
           })),
           finalize(() => this.loading.set(false))
@@ -151,9 +151,32 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(result => {
       if (result.response?.data) {
-        this.vehicle.set(result.response.data);
+        const data = result.response.data;
+        const matchingReport = result.reportId === null
+          ? null
+          : data.missingDetails?.find(report => report.id === result.reportId) ?? null;
+        const requestedRegistration = this.route.snapshot.paramMap.get('regNumber')?.trim();
+        const selectedReports = result.reportId === null
+          ? data.missingDetails
+          : matchingReport
+            ? [matchingReport]
+            : null;
+
+        if (
+          data.regNumber.toUpperCase() !== requestedRegistration?.toUpperCase() ||
+          selectedReports === null
+        ) {
+          this.error.set(
+            'The selected vehicle report could not be verified. Return to the dashboard and try again.'
+          );
+          return;
+        }
+
+        this.vehicle.set({
+          ...data,
+          missingDetails: selectedReports
+        });
         this.startSlideshow();
-        this.loadSelectedReport();
       } else {
         this.error.set(result.error || 'Vehicle details are unavailable.');
       }
@@ -162,50 +185,6 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.stopSlideshow();
-    this.selectedReportRequest?.unsubscribe();
-  }
-
-  private loadSelectedReport(): void {
-    this.selectedReportRequest?.unsubscribe();
-    this.selectedReportRequest = undefined;
-    this.selectedReportLoading.set(false);
-    this.selectedReportError.set('');
-
-    const vehicle = this.vehicle();
-    const reportId = this.selectedReportId();
-    if (!vehicle || reportId === null) return;
-
-    this.vehicle.update(current => current ? { ...current, missingDetails: null } : current);
-    this.selectedReportLoading.set(true);
-    this.selectedReportRequest = this.apiService
-      .get<VehicleDetailsResponse>(
-        `/vehicles/${encodeURIComponent(vehicle.regNumber)}/missing-details/${reportId}`
-      )
-      .pipe(finalize(() => this.selectedReportLoading.set(false)))
-      .subscribe({
-        next: response => {
-          const report = response.data.missingDetails?.find(detail => detail.id === reportId);
-          if (response.data.regNumber !== vehicle.regNumber || !report) {
-            this.selectedReportError.set(
-              'The requested report does not match the selected vehicle.'
-            );
-            return;
-          }
-          this.vehicle.update(current =>
-            current
-              ? { ...response.data, missingDetails: [report] }
-              : current
-          );
-        },
-        error: error => {
-          console.error('Failed to load selected missing report.', error);
-          this.selectedReportError.set(
-            error?.error?.status?.message ??
-              error?.error?.message ??
-              'Unable to load the selected report. Please return to the report list and try again.'
-          );
-        }
-      });
   }
 
   previousImage(): void {

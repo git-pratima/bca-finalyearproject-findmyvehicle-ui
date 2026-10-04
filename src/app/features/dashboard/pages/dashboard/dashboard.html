@@ -66,7 +66,9 @@
                       <span><strong>{{ vehicle.name || 'Vehicle' }}</strong><b>{{ vehicle.registration || 'Registration unavailable' }}</b><small><mat-icon>location_on</mat-icon>{{ vehicle.location || 'Location unavailable' }}</small><small><mat-icon>calendar_today</mat-icon>{{ vehicle.reportedAt ? (vehicle.reportedAt | date:'dd MMM yyyy, hh:mm a') : 'Date unavailable' }}</small></span>
                     </button>
                     @if (vehicle.registration) {
-                      <a class="vehicle-details-link" [routerLink]="['/dashboard/vehicle', vehicle.registration]">View Details <mat-icon>chevron_right</mat-icon></a>
+                      <button class="vehicle-details-link" type="button" (click)="openVehicleDetails(vehicle)">
+                        View Details <mat-icon>chevron_right</mat-icon>
+                      </button>
                     }
                   </div>
                 }
@@ -90,7 +92,9 @@
                     <span><strong>{{ vehicle.name || 'Vehicle' }}</strong><b>{{ vehicle.registration || 'Registration unavailable' }}</b><small><mat-icon>location_on</mat-icon>{{ vehicle.location || 'Location unavailable' }}</small><small><mat-icon>calendar_today</mat-icon>{{ vehicle.reportedAt ? (vehicle.reportedAt | date:'dd MMM yyyy, hh:mm a') : 'Date unavailable' }}</small></span>
                   </button>
                   @if (vehicle.registration) {
-                    <a class="vehicle-details-link" [routerLink]="['/dashboard/vehicle', vehicle.registration]">View Details <mat-icon>chevron_right</mat-icon></a>
+                    <button class="vehicle-details-link" type="button" (click)="openVehicleDetails(vehicle)">
+                      View Details <mat-icon>chevron_right</mat-icon>
+                    </button>
                   }
                 </div>
               }
