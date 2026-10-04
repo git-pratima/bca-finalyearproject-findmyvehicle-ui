@@ -201,6 +201,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   readonly isMyVehiclesPage = computed(() => this.currentUrl().startsWith('/dashboard/my-vehicles'));
   readonly isAllReportsPage = computed(() => this.currentUrl().startsWith('/dashboard/all-reports'));
   readonly isAllVehiclesPage = computed(() => this.currentUrl().startsWith('/dashboard/all-vehicles'));
+  readonly isNotificationsPage = computed(() => this.currentUrl().startsWith('/dashboard/notifications'));
 
   private savedProfile: ProfileForm = this.createProfile();
   profile: ProfileForm = { ...this.savedProfile };

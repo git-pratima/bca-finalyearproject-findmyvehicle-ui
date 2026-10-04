@@ -11,7 +11,7 @@
       <a routerLink="/dashboard/all-vehicles" [class.active]="isAllVehiclesPage()"><mat-icon>directions_car_filled</mat-icon>All Vehicles</a>
       <a><mat-icon>search</mat-icon>Search Vehicles</a>
       <a><mat-icon>notifications_none</mat-icon>Alerts & Updates <b>{{ dashboardData()?.activity?.unreadNotifications ?? 0 }}</b></a>
-      <a><mat-icon>notifications</mat-icon>Notification <b>{{ unreadNotificationCount() }}</b></a>
+      <a routerLink="/dashboard/notifications" [class.active]="isNotificationsPage()"><mat-icon>notifications</mat-icon>Notification <b>{{ unreadNotificationCount() }}</b></a>
       <a><mat-icon>bookmark_border</mat-icon>Saved Searches</a>
       <button class="sidebar-profile-toggle" (click)="sidebarProfileOpen.set(!sidebarProfileOpen())" [attr.aria-expanded]="sidebarProfileOpen()"><mat-icon>person_outline</mat-icon>Profile<mat-icon class="profile-chevron">{{ sidebarProfileOpen() ? 'expand_less' : 'expand_more' }}</mat-icon></button>
       @if (sidebarProfileOpen()) {<div class="sidebar-profile-options"><div><span class="avatar">{{ initials() }}</span><strong>{{ displayName() }}</strong></div><button (click)="openEditProfile()"><mat-icon>edit</mat-icon>Edit Profile</button>@if (!isSocialLogin()) {<button (click)="openChangePassword()"><mat-icon>lock_reset</mat-icon>Change Password</button>}<button (click)="logout()"><mat-icon>logout</mat-icon>Logout</button></div>}

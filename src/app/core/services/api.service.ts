@@ -26,12 +26,14 @@ export class ApiService {
 
   post<T>(
     url: string,
-    body: unknown
+    body: unknown,
+    params?: HttpParams
   ): Observable<T> {
 
     return this.http.post<T>(
       this.config.apiUrl + url,
-      body
+      body,
+      { params }
     );
 
   }

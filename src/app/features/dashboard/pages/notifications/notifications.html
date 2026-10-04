@@ -1,0 +1,123 @@
+<section class="notifications-page" aria-labelledby="notifications-title">
+  <header class="page-heading">
+    <div>
+      <span class="eyebrow">Vehicle updates</span>
+      <h1 id="notifications-title">Notifications</h1>
+      <p>Review reported sightings and location information shared by the community.</p>
+    </div>
+    <div class="page-count">
+      <mat-icon>notifications</mat-icon>
+      {{ totalElements() }} total
+    </div>
+  </header>
+
+  <section class="notification-panel" aria-label="Vehicle sighting notifications">
+    <header class="list-heading">
+      <div>
+        <h2>Sighting alerts</h2>
+        <p>{{ notifications().length }} notification{{ notifications().length === 1 ? '' : 's' }} on this page</p>
+      </div>
+      <label class="page-size">
+        Per page
+        <select [value]="pageSize()" (change)="updatePageSize($any($event.target).value)" [disabled]="loading()" aria-label="Notifications per page">
+          <option value="4">4</option>
+          <option value="6">6</option>
+          <option value="8">8</option>
+          <option value="10">10</option>
+        </select>
+      </label>
+    </header>
+
+    @if (loading()) {
+      <p class="state-message" role="status">Loading notifications…</p>
+    } @else if (error()) {
+      <div class="state-message error-state" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        <p>{{ error() }}</p>
+        <button type="button" (click)="loadNotifications()">Try again</button>
+      </div>
+    } @else if (notifications().length) {
+      <div class="notification-list">
+        @for (notification of notifications(); track notification.id) {
+          <article class="notification-card">
+            <button
+              class="notification-summary"
+              type="button"
+              [attr.aria-expanded]="expandedNotificationIds().has(notification.id)"
+              [attr.aria-controls]="'notification-details-' + notification.id"
+              (click)="toggleNotification(notification.id)">
+              <span class="notification-icon"><mat-icon>directions_car</mat-icon></span>
+              <span class="summary-content">
+                <span class="summary-heading">Vehicle sighting · {{ notification.regNo }}</span>
+                <span class="summary-meta">
+                  <span>{{ notification.seenAt | date:'dd MMM yyyy, hh:mm a' }}</span>
+                  <span class="summary-location">{{ notification.seenArea || 'Location not provided' }}</span>
+                  <span>Report #{{ notification.missingDetailsId }}</span>
+                </span>
+              </span>
+              <span class="summary-trailing">
+                <span class="seen-status" [class.seen]="notification.seenByVehicleOwner === 'Y'">
+                  {{ notification.seenByVehicleOwner === 'Y' ? 'Seen' : 'New' }}
+                </span>
+                <mat-icon class="expand-icon">
+                  {{ expandedNotificationIds().has(notification.id) ? 'expand_less' : 'expand_more' }}
+                </mat-icon>
+              </span>
+            </button>
+
+            @if (expandedNotificationIds().has(notification.id)) {
+              <div class="notification-content" [id]="'notification-details-' + notification.id">
+                <dl class="notification-details">
+                  <div><dt>Reported location</dt><dd>{{ notification.seenArea || 'Not provided' }}</dd></div>
+                  <div><dt>Report reference</dt><dd>#{{ notification.missingDetailsId }}</dd></div>
+                </dl>
+
+                @if (notification.message) {
+                  <p class="notification-message">{{ notification.message }}</p>
+                }
+
+                <footer class="notification-actions">
+                  @if (isGoogleMapsLink(notification.liveMapLink)) {
+                    <a class="map-link" [href]="notification.liveMapLink" target="_blank" rel="noopener noreferrer">
+                      <mat-icon>map</mat-icon>Open location in Google Maps
+                    </a>
+                  } @else if (notification.liveMapLink) {
+                    <p class="invalid-map-link"><mat-icon>info_outline</mat-icon>Map link is unavailable or invalid.</p>
+                  }
+                  <button
+                    class="mark-seen-button"
+                    type="button"
+                    [disabled]="notification.seenByVehicleOwner === 'Y' || markingSeenId() !== null"
+                    (click)="markSeen(notification)">
+                    <mat-icon>
+                      {{ markingSeenId() === notification.id ? 'hourglass_top' : notification.seenByVehicleOwner === 'Y' ? 'check_circle' : 'done' }}
+                    </mat-icon>
+                    {{ markingSeenId() === notification.id ? 'Updating…' : notification.seenByVehicleOwner === 'Y' ? 'Already seen' : 'Mark Seen' }}
+                  </button>
+                </footer>
+              </div>
+            }
+          </article>
+        }
+      </div>
+
+      <footer class="pagination">
+        <span>Page {{ totalPages() ? page() + 1 : 0 }} of {{ totalPages() }}</span>
+        <div>
+          <button type="button" aria-label="Previous page" (click)="changePage(page() - 1)" [disabled]="page() === 0 || loading()">
+            <mat-icon>chevron_left</mat-icon>Previous
+          </button>
+          <button type="button" aria-label="Next page" (click)="changePage(page() + 1)" [disabled]="page() + 1 >= totalPages() || loading()">
+            Next<mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+      </footer>
+    } @else {
+      <div class="state-message empty-state">
+        <mat-icon>notifications_none</mat-icon>
+        <h3>No notifications yet</h3>
+        <p>Vehicle sighting alerts will appear here.</p>
+      </div>
+    }
+  </section>
+</section>

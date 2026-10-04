@@ -212,6 +212,19 @@ export const routes: Routes = [
             .then(c => c.AllVehiclesComponent)
       },
       {
+        path: 'notifications',
+        data: {
+            seo: {
+              title: 'Notifications | Find My Vehicle',
+              description: 'Review vehicle sighting notifications.',
+              robots: 'noindex, nofollow'
+            }
+        },
+        loadComponent: () =>
+            import('./features/dashboard/pages/notifications/notifications')
+              .then(c => c.NotificationsComponent)
+      },
+      {
         path: 'report-missing',
         loadComponent: () => import('./features/vehicle-reports/pages/report-missing/report-missing')
           .then(c => c.ReportMissingComponent)

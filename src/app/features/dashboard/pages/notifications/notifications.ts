@@ -1,0 +1,179 @@
+import { DatePipe, isPlatformBrowser } from '@angular/common';
+import { HttpParams } from '@angular/common/http';
+import { Component, DestroyRef, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { finalize } from 'rxjs';
+
+import { ApiService } from '../../../../core/services/api.service';
+
+type Notification = {
+  id: number;
+  vehicleId: number;
+  regNo: string;
+  missingDetailsId: number;
+  notifiedByUserId: number;
+  vehicleOwnerUserId: number;
+  seenAt: string;
+  seenArea: string;
+  liveMapLink: string | null;
+  message: string | null;
+  seenByVehicleOwner: string;
+};
+
+type NotificationsResponse = {
+  status: { status: number; message: string };
+  data: {
+    content: Notification[];
+    totalPages: number;
+    totalElements: number;
+    number: number;
+    size: number;
+    first: boolean;
+    last: boolean;
+    empty: boolean;
+  };
+};
+
+@Component({
+  selector: 'app-notifications',
+  imports: [DatePipe, MatIconModule, MatSnackBarModule],
+  templateUrl: './notifications.html',
+  styleUrl: './notifications.scss'
+})
+export class NotificationsComponent implements OnInit {
+  private readonly apiService = inject(ApiService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly snackBar = inject(MatSnackBar);
+
+  readonly notifications = signal<Notification[]>([]);
+  readonly page = signal(0);
+  readonly pageSize = signal(6);
+  readonly totalPages = signal(0);
+  readonly totalElements = signal(0);
+  readonly loading = signal(false);
+  readonly error = signal('');
+  readonly markingSeenId = signal<number | null>(null);
+  readonly expandedNotificationIds = signal<Set<number>>(new Set());
+
+  ngOnInit(): void {
+    if (isPlatformBrowser(this.platformId)) this.loadNotifications();
+  }
+
+  loadNotifications(page = this.page()): void {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', this.pageSize());
+
+    this.loading.set(true);
+    this.error.set('');
+    this.apiService
+      .get<NotificationsResponse>('/notifications', params)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.loading.set(false))
+      )
+      .subscribe({
+        next: response => {
+          this.notifications.set(response.data.content ?? []);
+          this.page.set(response.data.number ?? page);
+          this.pageSize.set(response.data.size ?? this.pageSize());
+          this.totalPages.set(response.data.totalPages ?? 0);
+          this.totalElements.set(response.data.totalElements ?? 0);
+        },
+        error: error => {
+          console.error('Failed to load notifications.', error);
+          this.notifications.set([]);
+          this.error.set(
+            error?.error?.status?.message ??
+              error?.error?.message ??
+              'Unable to load notifications. Please try again.'
+          );
+        }
+      });
+  }
+
+  updatePageSize(value: string): void {
+    const size = Number(value);
+    if (![4, 6, 8, 10].includes(size)) return;
+    this.pageSize.set(size);
+    this.loadNotifications(0);
+  }
+
+  changePage(page: number): void {
+    if (page >= 0 && page < this.totalPages() && !this.loading()) {
+      this.loadNotifications(page);
+    }
+  }
+
+  toggleNotification(notificationId: number): void {
+    this.expandedNotificationIds.update(expandedIds => {
+      const nextExpandedIds = new Set(expandedIds);
+      if (nextExpandedIds.has(notificationId)) {
+        nextExpandedIds.delete(notificationId);
+      } else {
+        nextExpandedIds.add(notificationId);
+      }
+      return nextExpandedIds;
+    });
+  }
+
+  markSeen(notification: Notification): void {
+    if (
+      notification.seenByVehicleOwner === 'Y' ||
+      this.markingSeenId() !== null
+    ) return;
+
+    const confirmed = window.confirm(
+      `Mark the sighting notification for ${notification.regNo} as seen?`
+    );
+    if (!confirmed) return;
+
+    this.markingSeenId.set(notification.id);
+    this.apiService
+      .patch<unknown>(`/notifications/${notification.id}/seen?seen=Y`, null)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.markingSeenId.set(null))
+      )
+      .subscribe({
+        next: () => {
+          this.notifications.update(items =>
+            items.map(item =>
+              item.id === notification.id
+                ? { ...item, seenByVehicleOwner: 'Y' }
+                : item
+            )
+          );
+          this.snackBar.open('Notification marked as seen.', 'Close', {
+            duration: 5000
+          });
+        },
+        error: error => {
+          console.error('Failed to mark notification as seen.', error);
+          this.snackBar.open(
+            error?.error?.status?.message ??
+              error?.error?.message ??
+              'Unable to mark the notification as seen. Please try again.',
+            'Close',
+            { duration: 6000 }
+          );
+        }
+      });
+  }
+
+  isGoogleMapsLink(link: string | null): boolean {
+    if (!link) return false;
+    try {
+      const host = new URL(link).hostname.toLowerCase();
+      return host === 'maps.app.goo.gl' ||
+        host === 'maps.google.com' ||
+        host === 'www.google.com' ||
+        host === 'google.com';
+    } catch {
+      return false;
+    }
+  }
+}
