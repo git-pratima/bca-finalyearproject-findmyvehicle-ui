@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 import { PublicLayoutComponent } from './layouts/public-layout/public-layout';
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout';
 import { authGuard } from './core/guards/auth.guard';
+import { clearAuthOnHomeGuard } from './core/guards/clear-auth-on-home.guard';
 
 export const routes: Routes = [
 
@@ -14,6 +15,7 @@ export const routes: Routes = [
     children: [
       {
         path: '',
+        canActivate: [clearAuthOnHomeGuard],
         data: {
           seo: {
             title: 'Find My Vehicle | Missing & Stolen Vehicle Recovery',
