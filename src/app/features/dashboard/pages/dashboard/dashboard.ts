@@ -1,10 +1,10 @@
-import { Component, computed, ElementRef, HostBinding, HostListener, inject, OnDestroy, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { Component, computed, DestroyRef, ElementRef, HostBinding, HostListener, inject, OnDestroy, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { DatePipe, isPlatformBrowser } from '@angular/common';
 import { HttpParams } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { filter, finalize, fromEvent, map, Subscription } from 'rxjs';
 
 import { ThemeService } from '../../../../core/services/theme.service';
@@ -12,6 +12,7 @@ import { TokenService } from '../../../../core/services/token.service';
 import { AuthService, ChangePasswordRequest, ChangePasswordResponse } from '../../../../core/services/auth.service';
 import { ProfileService, UserProfileRequest, UserProfileResponse } from '../../../../core/services/profile.service';
 import { ApiService } from '../../../../core/services/api.service';
+import { DashboardRefreshService } from '../../../../core/services/dashboard-refresh.service';
 
 type DashboardVehicle = {
   id: number;
@@ -129,6 +130,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly profileService = inject(ProfileService);
   private readonly apiService = inject(ApiService);
+  private readonly dashboardRefreshService = inject(DashboardRefreshService);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly elementRef = inject(ElementRef<HTMLElement>);
@@ -218,18 +221,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
-    this.dashboardLoading.set(true);
-    this.apiService.get<DashboardResponse>('/dashboard')
-      .pipe(finalize(() => this.dashboardLoading.set(false)))
-      .subscribe({
-        next: response => {
-          this.dashboardData.set(response.data);
-          this.profileImageUrl.set(response.data.user.profileImageUrl);
-        },
-        error: error => this.dashboardError.set(
-          error?.error?.status?.message || 'Unable to load dashboard data. Please try again.'
-        )
-      });
+    this.dashboardRefreshService.refreshRequested$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.loadDashboardData());
+    this.loadDashboardData();
 
     window.history.pushState(null, '', window.location.href);
     this.backNavigationSubscription = fromEvent<PopStateEvent>(window, 'popstate').subscribe(() => {
@@ -241,6 +236,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.backNavigationSubscription?.unsubscribe();
     this.searchRequestSubscription?.unsubscribe();
     this.globalSearchSubscription?.unsubscribe();
+  }
+
+  private loadDashboardData(): void {
+    this.dashboardLoading.set(true);
+    this.dashboardError.set('');
+    this.apiService.get<DashboardResponse>('/dashboard')
+      .pipe(finalize(() => this.dashboardLoading.set(false)))
+      .subscribe({
+        next: response => {
+          this.dashboardData.set(response.data);
+          this.profileImageUrl.set(response.data.user.profileImageUrl);
+        },
+        error: error => this.dashboardError.set(
+          error?.error?.status?.message || 'Unable to load dashboard data. Please try again.'
+        )
+      });
   }
 
   @HostBinding('class.has-profile-image')

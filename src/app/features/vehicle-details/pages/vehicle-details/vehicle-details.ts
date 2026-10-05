@@ -92,6 +92,8 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
   readonly sightingDateTime = signal('');
   readonly sightingMapLocation = signal('');
   readonly sightingNotes = signal('');
+  readonly sightingImage = signal<File | null>(null);
+  readonly sightingImagePreview = signal<string | null>(null);
   readonly submittingSighting = signal(false);
   readonly feedbackRating = signal(0);
   readonly feedbackComment = signal('');
@@ -203,6 +205,7 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.stopSlideshow();
+    this.clearSightingImagePreview();
   }
 
   previousImage(): void {
@@ -313,6 +316,29 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
     return `https://mail.google.com/mail/?${params.toString()}`;
   }
 
+  onSightingImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      this.snackBar.open('Choose an image file for the sighting photo.', 'Close', {
+        duration: 5000
+      });
+      return;
+    }
+
+    this.clearSightingImagePreview();
+    this.sightingImage.set(file);
+    this.sightingImagePreview.set(URL.createObjectURL(file));
+  }
+
+  removeSightingImage(): void {
+    this.clearSightingImagePreview();
+    this.sightingImage.set(null);
+  }
+
   sendSighting(): void {
     const vehicle = this.vehicle();
     const report = this.selectedReport() ??
@@ -345,9 +371,17 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
       seen: 'N'
     };
 
+    const formData = new FormData();
+    formData.append(
+      'notification',
+      new Blob([JSON.stringify(request)], { type: 'application/json' })
+    );
+    const image = this.sightingImage();
+    if (image) formData.append('imageFile', image, image.name);
+
     this.submittingSighting.set(true);
     this.apiService
-      .post<SightingNotificationResponse>('/notifications', request)
+      .post<SightingNotificationResponse>('/notifications', formData)
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         finalize(() => this.submittingSighting.set(false))
@@ -358,6 +392,7 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
           this.sightingDateTime.set('');
           this.sightingMapLocation.set('');
           this.sightingNotes.set('');
+          this.removeSightingImage();
           this.snackBar.open(
             response.status?.message || 'Sighting submitted successfully.',
             'Close',
@@ -375,6 +410,12 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
           );
         }
       });
+  }
+
+  private clearSightingImagePreview(): void {
+    const preview = this.sightingImagePreview();
+    if (preview) URL.revokeObjectURL(preview);
+    this.sightingImagePreview.set(null);
   }
 
   private startSlideshow(): void {

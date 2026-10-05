@@ -1,17 +1,19 @@
 import { DatePipe, isPlatformBrowser } from '@angular/common';
 import { HttpParams } from '@angular/common/http';
-import { Component, DestroyRef, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { Component, DestroyRef, ElementRef, inject, OnInit, PLATFORM_ID, signal, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { finalize } from 'rxjs';
 
 import { ApiService } from '../../../../core/services/api.service';
+import { DashboardRefreshService } from '../../../../core/services/dashboard-refresh.service';
 
 type Notification = {
   id: number;
   vehicleId: number;
   regNo: string;
+  imageUrl?: string | null;
   missingDetailsId: number;
   notifiedByUserId: number;
   vehicleOwnerUserId: number;
@@ -43,7 +45,10 @@ type NotificationsResponse = {
   styleUrl: './notifications.scss'
 })
 export class NotificationsComponent implements OnInit {
+  @ViewChild('imageDialog') private imageDialog!: ElementRef<HTMLDialogElement>;
+
   private readonly apiService = inject(ApiService);
+  private readonly dashboardRefreshService = inject(DashboardRefreshService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly snackBar = inject(MatSnackBar);
@@ -57,6 +62,7 @@ export class NotificationsComponent implements OnInit {
   readonly error = signal('');
   readonly markingSeenId = signal<number | null>(null);
   readonly expandedNotificationIds = signal<Set<number>>(new Set());
+  readonly selectedImageUrl = signal<string | null>(null);
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) this.loadNotifications();
@@ -109,15 +115,26 @@ export class NotificationsComponent implements OnInit {
   }
 
   toggleNotification(notificationId: number): void {
-    this.expandedNotificationIds.update(expandedIds => {
-      const nextExpandedIds = new Set(expandedIds);
-      if (nextExpandedIds.has(notificationId)) {
-        nextExpandedIds.delete(notificationId);
-      } else {
-        nextExpandedIds.add(notificationId);
-      }
-      return nextExpandedIds;
-    });
+    this.expandedNotificationIds.set(
+      this.expandedNotificationIds().has(notificationId)
+        ? new Set()
+        : new Set([notificationId])
+    );
+  }
+
+  openImage(imageUrl: string): void {
+    this.selectedImageUrl.set(imageUrl);
+    this.imageDialog.nativeElement.showModal();
+  }
+
+  closeImage(): void {
+    if (this.imageDialog.nativeElement.open) {
+      this.imageDialog.nativeElement.close();
+    }
+  }
+
+  onImageDialogClosed(): void {
+    this.selectedImageUrl.set(null);
   }
 
   markSeen(notification: Notification): void {
@@ -140,6 +157,7 @@ export class NotificationsComponent implements OnInit {
       )
       .subscribe({
         next: () => {
+          this.dashboardRefreshService.requestRefresh();
           this.notifications.update(items =>
             items.map(item =>
               item.id === notification.id

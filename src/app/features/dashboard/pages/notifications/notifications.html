@@ -39,31 +39,47 @@
     } @else if (notifications().length) {
       <div class="notification-list">
         @for (notification of notifications(); track notification.id) {
-          <article class="notification-card">
-            <button
-              class="notification-summary"
-              type="button"
-              [attr.aria-expanded]="expandedNotificationIds().has(notification.id)"
-              [attr.aria-controls]="'notification-details-' + notification.id"
-              (click)="toggleNotification(notification.id)">
-              <span class="notification-icon"><mat-icon>directions_car</mat-icon></span>
-              <span class="summary-content">
-                <span class="summary-heading">Vehicle sighting · {{ notification.regNo }}</span>
-                <span class="summary-meta">
-                  <span>{{ notification.seenAt | date:'dd MMM yyyy, hh:mm a' }}</span>
-                  <span class="summary-location">{{ notification.seenArea || 'Location not provided' }}</span>
-                  <span>Report #{{ notification.missingDetailsId }}</span>
+          <article
+            class="notification-card"
+            [class.expanded-with-image]="expandedNotificationIds().has(notification.id) && !!notification.imageUrl">
+            <div class="notification-row">
+              <div class="notification-image-cell">
+                @if (notification.imageUrl) {
+                  <button
+                    class="notification-image-button"
+                    type="button"
+                    (click)="openImage(notification.imageUrl)"
+                    [attr.aria-label]="'View sighting photo for ' + notification.regNo">
+                    <img [src]="notification.imageUrl" [alt]="'Sighting photo for ' + notification.regNo">
+                  </button>
+                } @else {
+                  <span class="notification-icon"><mat-icon>directions_car</mat-icon></span>
+                }
+              </div>
+              <button
+                class="notification-summary"
+                type="button"
+                [attr.aria-expanded]="expandedNotificationIds().has(notification.id)"
+                [attr.aria-controls]="'notification-details-' + notification.id"
+                (click)="toggleNotification(notification.id)">
+                <span class="summary-content">
+                  <span class="summary-heading">Vehicle sighting · {{ notification.regNo }}</span>
+                  <span class="summary-meta">
+                    <span>{{ notification.seenAt | date:'dd MMM yyyy, hh:mm a' }}</span>
+                    <span class="summary-location">{{ notification.seenArea || 'Location not provided' }}</span>
+                    <span>Report #{{ notification.missingDetailsId }}</span>
+                  </span>
                 </span>
-              </span>
-              <span class="summary-trailing">
-                <span class="seen-status" [class.seen]="notification.seenByVehicleOwner === 'Y'">
-                  {{ notification.seenByVehicleOwner === 'Y' ? 'Seen' : 'New' }}
+                <span class="summary-trailing">
+                  <span class="seen-status" [class.seen]="notification.seenByVehicleOwner === 'Y'">
+                    {{ notification.seenByVehicleOwner === 'Y' ? 'Seen' : 'New' }}
+                  </span>
+                  <mat-icon class="expand-icon">
+                    {{ expandedNotificationIds().has(notification.id) ? 'expand_less' : 'expand_more' }}
+                  </mat-icon>
                 </span>
-                <mat-icon class="expand-icon">
-                  {{ expandedNotificationIds().has(notification.id) ? 'expand_less' : 'expand_more' }}
-                </mat-icon>
-              </span>
-            </button>
+              </button>
+            </div>
 
             @if (expandedNotificationIds().has(notification.id)) {
               <div class="notification-content" [id]="'notification-details-' + notification.id">
@@ -121,3 +137,20 @@
     }
   </section>
 </section>
+
+<dialog
+  #imageDialog
+  class="image-viewer"
+  aria-label="Sighting photo"
+  (close)="onImageDialogClosed()">
+  @if (selectedImageUrl(); as imageUrl) {
+    <button
+      class="image-viewer-close"
+      type="button"
+      aria-label="Close photo"
+      (click)="closeImage()">
+      <mat-icon>close</mat-icon>
+    </button>
+    <img class="image-viewer-photo" [src]="imageUrl" alt="Full-size vehicle sighting photo">
+  }
+</dialog>

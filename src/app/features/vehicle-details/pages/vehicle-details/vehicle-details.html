@@ -195,6 +195,25 @@
               <small id="sighting-map-location-help" class="field-help">Open Google Maps, copy the vehicle's live location link, and paste it here.</small>
               <label for="sighting-notes">Additional details <span>Optional</span></label>
               <textarea id="sighting-notes" name="sightingNotes" [ngModel]="sightingNotes()" (ngModelChange)="sightingNotes.set($event)" rows="3" placeholder="Time, direction of travel, or other helpful details"></textarea>
+              <label for="sighting-image">Sighting photo <span>Optional</span></label>
+              <input
+                id="sighting-image"
+                name="sightingImage"
+                type="file"
+                accept="image/*"
+                [disabled]="submittingSighting()"
+                (change)="onSightingImageSelected($event)"
+                aria-describedby="sighting-image-help">
+              <small id="sighting-image-help" class="field-help">Choose a current photo to help the owner verify the sighting.</small>
+              @if (sightingImagePreview(); as preview) {
+                <div class="sighting-image-preview">
+                  <img [src]="preview" [alt]="'Selected sighting photo: ' + sightingImage()?.name">
+                  <div>
+                    <span>{{ sightingImage()?.name }}</span>
+                    <button type="button" (click)="removeSightingImage()" [disabled]="submittingSighting()">Remove photo</button>
+                  </div>
+                </div>
+              }
               <button class="secondary-action" type="submit" [disabled]="submittingSighting()">
                 <mat-icon>{{ submittingSighting() ? 'hourglass_top' : 'location_on' }}</mat-icon>
                 {{ submittingSighting() ? 'Sending sighting…' : 'Send sighting' }}

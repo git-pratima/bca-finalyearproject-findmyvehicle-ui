@@ -606,6 +606,56 @@
   font-size: 10px;
 }
 
+.sighting-image-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+  background: var(--color-background);
+}
+
+.sighting-image-preview img {
+  flex: 0 0 64px;
+  width: 64px;
+  height: 64px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.sighting-image-preview > div {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.sighting-image-preview span {
+  overflow: hidden;
+  color: var(--color-text-secondary);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sighting-image-preview button {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  color: var(--color-primary);
+  background: transparent;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sighting-image-preview button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
 .contact-unavailable {
   display: flex;
   align-items: flex-start;
