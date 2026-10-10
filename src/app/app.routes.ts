@@ -240,6 +240,19 @@ export const routes: Routes = [
             .then(c => c.FeedbackComponent)
       },
       {
+        path: 'help-support',
+        data: {
+          seo: {
+            title: 'Help & Support | Find My Vehicle',
+            description: 'Find nearby emergency services and helpful contact numbers.',
+            robots: 'noindex, nofollow'
+          }
+        },
+        loadComponent: () =>
+          import('./features/dashboard/pages/help-support/help-support')
+            .then(c => c.HelpSupportComponent)
+      },
+      {
         path: 'report-missing',
         loadComponent: () => import('./features/vehicle-reports/pages/report-missing/report-missing')
           .then(c => c.ReportMissingComponent)

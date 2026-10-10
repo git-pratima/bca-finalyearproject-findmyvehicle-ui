@@ -13,6 +13,7 @@ import { AuthService, ChangePasswordRequest, ChangePasswordResponse } from '../.
 import { ProfileService, UserProfileRequest, UserProfileResponse } from '../../../../core/services/profile.service';
 import { ApiService } from '../../../../core/services/api.service';
 import { DashboardRefreshService } from '../../../../core/services/dashboard-refresh.service';
+import { HelpSupportService } from '../../services/help-support.service';
 
 type DashboardVehicle = {
   id: number;
@@ -131,6 +132,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private readonly profileService = inject(ProfileService);
   private readonly apiService = inject(ApiService);
   private readonly dashboardRefreshService = inject(DashboardRefreshService);
+  private readonly helpSupportService = inject(HelpSupportService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
@@ -206,6 +208,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   readonly isAllVehiclesPage = computed(() => this.currentUrl().startsWith('/dashboard/all-vehicles'));
   readonly isNotificationsPage = computed(() => this.currentUrl().startsWith('/dashboard/notifications'));
   readonly isFeedbackPage = computed(() => this.currentUrl().startsWith('/dashboard/feedback'));
+  readonly isHelpSupportPage = computed(() => this.currentUrl().startsWith('/dashboard/help-support'));
 
   private savedProfile: ProfileForm = this.createProfile();
   profile: ProfileForm = { ...this.savedProfile };
@@ -231,6 +234,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.backNavigationSubscription = fromEvent<PopStateEvent>(window, 'popstate').subscribe(() => {
       window.history.pushState(null, '', window.location.href);
     });
+  }
+
+  requestHelpSupportLocation(): void {
+    this.mobileMenuOpen.set(false);
+    this.helpSupportService.findNearbyHelp();
   }
 
   ngOnDestroy(): void {
