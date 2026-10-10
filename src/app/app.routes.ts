@@ -4,6 +4,7 @@ import { PublicLayoutComponent } from './layouts/public-layout/public-layout';
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout';
 import { authGuard } from './core/guards/auth.guard';
 import { clearAuthOnHomeGuard } from './core/guards/clear-auth-on-home.guard';
+import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
 
@@ -238,6 +239,20 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/dashboard/pages/feedback/feedback')
             .then(c => c.FeedbackComponent)
+      },
+      {
+        path: 'app-feedback',
+        canActivate: [adminGuard],
+        data: {
+          seo: {
+            title: 'Application Feedback | Find My Vehicle',
+            description: 'Review application feedback submitted by users.',
+            robots: 'noindex, nofollow'
+          }
+        },
+        loadComponent: () =>
+          import('./features/dashboard/pages/app-feedback/app-feedback')
+            .then(c => c.AppFeedbackComponent)
       },
       {
         path: 'help-support',

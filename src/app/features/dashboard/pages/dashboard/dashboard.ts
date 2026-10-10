@@ -119,6 +119,24 @@ type ProfileForm = {
 type ChangePasswordForm = ChangePasswordRequest;
 type VehicleSearchType = 'regNumber' | 'model' | 'missingCity' | 'pinCode';
 
+type AppFeedbackRequest = {
+  rating: number;
+  comment: string;
+};
+
+type AppFeedbackResponse = {
+  status: { status: number; message: string };
+  data: {
+    id: number;
+    rating: number;
+    comment: string;
+    seen: string;
+    seenBy: string | null;
+    feedbackGivenBy: string;
+    createdDate: string;
+  };
+};
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -193,6 +211,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
   readonly changePasswordSaving = signal(false);
   readonly changePasswordError = signal('');
   readonly changePasswordSuccess = signal('');
+  readonly appFeedbackOpen = signal(false);
+  readonly appFeedbackRating = signal(0);
+  readonly appFeedbackComment = signal('');
+  readonly appFeedbackSubmitting = signal(false);
+  readonly appFeedbackError = signal('');
+  readonly appFeedbackSuccess = signal('');
   readonly theme = this.themeService.theme;
   readonly userName = this.tokenService.currentUserName;
   readonly userEmail = this.tokenService.currentUserEmail;
@@ -209,6 +233,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   readonly isAllVehiclesPage = computed(() => this.currentUrl().startsWith('/dashboard/all-vehicles'));
   readonly isNotificationsPage = computed(() => this.currentUrl().startsWith('/dashboard/notifications'));
   readonly isFeedbackPage = computed(() => this.currentUrl().startsWith('/dashboard/feedback'));
+  readonly isAppFeedbackPage = computed(() => this.currentUrl().startsWith('/dashboard/app-feedback'));
   readonly isHelpSupportPage = computed(() => this.currentUrl().startsWith('/dashboard/help-support'));
   readonly isSettingsPage = computed(() => this.currentUrl().startsWith('/dashboard/settings'));
 
@@ -225,8 +250,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
       : this.vehicles()[this.selectedVehicleIndex()] ?? null;
   }
 
+  isAdmin(): boolean {
+    return isPlatformBrowser(this.platformId) &&
+      localStorage.getItem('user_role')?.trim() === 'ADMIN';
+  }
+
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
+    this.tokenService.refreshRole();
     this.dashboardRefreshService.refreshRequested$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.loadDashboardData());
@@ -443,6 +474,69 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   toggleTheme(): void { this.themeService.toggleTheme(); }
+
+  openAppFeedback(): void {
+    this.appFeedbackRating.set(0);
+    this.appFeedbackComment.set('');
+    this.appFeedbackError.set('');
+    this.appFeedbackSuccess.set('');
+    this.appFeedbackOpen.set(true);
+  }
+
+  closeAppFeedback(): void {
+    if (this.appFeedbackSubmitting()) return;
+    this.appFeedbackOpen.set(false);
+    this.appFeedbackError.set('');
+  }
+
+  closeAppFeedbackFromBackdrop(event: MouseEvent): void {
+    if (event.target === event.currentTarget) this.closeAppFeedback();
+  }
+
+  selectAppFeedbackRating(rating: number): void {
+    if (rating >= 1 && rating <= 5) {
+      this.appFeedbackRating.set(rating);
+      this.appFeedbackError.set('');
+    }
+  }
+
+  submitAppFeedback(): void {
+    if (this.appFeedbackSubmitting()) return;
+    const rating = this.appFeedbackRating();
+    if (rating < 1 || rating > 5) {
+      this.appFeedbackError.set(this.languageService.text('Choose a star rating before submitting.', 'सबमिट करने से पहले स्टार रेटिंग चुनें।'));
+      return;
+    }
+
+    const request: AppFeedbackRequest = {
+      rating,
+      comment: this.appFeedbackComment().trim()
+    };
+
+    this.appFeedbackError.set('');
+    this.appFeedbackSubmitting.set(true);
+    this.apiService.post<AppFeedbackResponse>('/app-feedbacks', request)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.appFeedbackSubmitting.set(false))
+      )
+      .subscribe({
+        next: response => {
+          this.appFeedbackSuccess.set(
+            response.status?.message ||
+            this.languageService.text('Thank you for your feedback.', 'आपकी प्रतिक्रिया के लिए धन्यवाद।')
+          );
+        },
+        error: error => {
+          console.error('Failed to submit application feedback.', error);
+          this.appFeedbackError.set(
+            error?.error?.status?.message ||
+            error?.error?.message ||
+            this.languageService.text('Unable to submit feedback. Please try again.', 'प्रतिक्रिया सबमिट नहीं हो सकी। कृपया फिर से प्रयास करें।')
+          );
+        }
+      });
+  }
 
   logout(): void { this.authService.logout(); this.router.navigate(['/']); }
 

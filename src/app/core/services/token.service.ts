@@ -62,6 +62,8 @@ export class TokenService {
 
   readonly currentRole = this.role.asReadonly();
 
+  readonly isAdmin = computed(() => this.role()?.trim() === 'ADMIN');
+
   readonly currentUserName = this.userName.asReadonly();
 
   readonly currentUserEmail = this.userEmail.asReadonly();
@@ -134,6 +136,11 @@ export class TokenService {
 
     return this.role();
 
+  }
+
+  refreshRole(): void {
+    if (!this.isBrowser()) return;
+    this.role.set(localStorage.getItem(this.ROLE_KEY));
   }
 
   /* ---------------------------------------------------------- */

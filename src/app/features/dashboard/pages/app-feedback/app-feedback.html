@@ -1,0 +1,86 @@
+<main class="app-feedback-page" aria-labelledby="app-feedback-title">
+  <header class="page-heading">
+    <div>
+      <span class="eyebrow">{{ 'Admin' | translate:'व्यवस्थापक' }}</span>
+      <h1 id="app-feedback-title">{{ 'Application Feedback' | translate:'ऐप प्रतिक्रिया' }}</h1>
+      <p>{{ 'Review user feedback about the application and its functionality.' | translate:'ऐप और इसकी कार्यक्षमता के बारे में उपयोगकर्ताओं की प्रतिक्रिया देखें।' }}</p>
+    </div>
+    <div class="page-count"><mat-icon>rate_review</mat-icon>{{ totalElements() }} {{ 'total' | translate:'कुल' }}</div>
+  </header>
+
+  <section class="feedback-panel" aria-label="{{ 'Application feedback entries' | translate:'ऐप प्रतिक्रिया प्रविष्टियाँ' }}">
+    <header class="list-heading">
+      <div>
+        <h2>{{ 'Submitted feedback' | translate:'प्राप्त प्रतिक्रियाएँ' }}</h2>
+        <p>{{ feedback().length }} {{ 'entries on this page' | translate:'प्रविष्टियाँ इस पृष्ठ पर' }}</p>
+      </div>
+      <label class="page-size">{{ 'Per page' | translate:'प्रति पृष्ठ' }}
+        <select [value]="pageSize()" (change)="updatePageSize($any($event.target).value)" [disabled]="loading()" aria-label="{{ 'Feedback per page' | translate:'प्रति पृष्ठ प्रतिक्रियाएँ' }}">
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+        </select>
+      </label>
+    </header>
+
+    @if (error()) {
+      <p class="feedback-error" role="alert"><mat-icon>error_outline</mat-icon>{{ error() }}</p>
+    }
+
+    @if (loading()) {
+      <p class="state-message" role="status">{{ 'Loading application feedback…' | translate:'ऐप प्रतिक्रिया लोड हो रही है…' }}</p>
+    } @else if (error() && !feedback().length) {
+      <div class="state-message error-state">
+        <button type="button" (click)="loadFeedback()">{{ 'Try again' | translate:'फिर से प्रयास करें' }}</button>
+      </div>
+    } @else if (feedback().length) {
+      <div class="feedback-list">
+        @for (entry of feedback(); track entry.id) {
+          <article class="feedback-card">
+            <header class="feedback-heading">
+              <div class="user-icon"><mat-icon>person_outline</mat-icon></div>
+              <div class="user-details">
+                <h3>{{ entry.feedbackGivenBy || ('User not provided' | translate:'उपयोगकर्ता उपलब्ध नहीं') }}</h3>
+                @if (entry.createdDate) {<time [attr.datetime]="entry.createdDate">{{ entry.createdDate | date:'dd MMM yyyy, hh:mm a' }}</time>}
+              </div>
+              <span class="seen-status" [class.is-seen]="entry.seen === 'Y'">
+                <mat-icon>{{ entry.seen === 'Y' ? 'visibility' : 'visibility_off' }}</mat-icon>
+                {{ entry.seen === 'Y' ? ('Seen' | translate:'देखा गया') : ('Unseen' | translate:'नहीं देखा गया') }}
+              </span>
+            </header>
+            <div class="rating" [attr.aria-label]="entry.rating + (' out of 5 stars' | translate:' में से 5 स्टार')">
+              @for (star of ratingStars; track star) {
+                <mat-icon [class.filled]="star <= entry.rating">{{ star <= entry.rating ? 'star' : 'star_border' }}</mat-icon>
+              }
+              <span>{{ entry.rating }} / 5</span>
+            </div>
+            <p class="comment">{{ entry.comment || ('No comment provided.' | translate:'कोई टिप्पणी नहीं दी गई।') }}</p>
+            @if (entry.seenBy) {
+              <p class="seen-by">{{ 'Seen by' | translate:'द्वारा देखा गया' }}: {{ entry.seenBy }}</p>
+            }
+            <footer class="feedback-actions">
+              <button type="button" [class.mark-seen]="entry.seen !== 'Y'" [class.mark-unseen]="entry.seen === 'Y'" [disabled]="updatingFeedbackId() !== null" (click)="toggleSeen(entry)">
+                @if (updatingFeedbackId() === entry.id) {
+                  <mat-icon>hourglass_top</mat-icon>{{ 'Updating…' | translate:'अपडेट हो रहा है…' }}
+                } @else if (entry.seen === 'Y') {
+                  <mat-icon>visibility_off</mat-icon>{{ 'Mark as unseen' | translate:'नहीं देखा गया चिह्नित करें' }}
+                } @else {
+                  <mat-icon>visibility</mat-icon>{{ 'Mark as seen' | translate:'देखा गया चिह्नित करें' }}
+                }
+              </button>
+            </footer>
+          </article>
+        }
+      </div>
+      <nav class="pagination" aria-label="{{ 'Application feedback pages' | translate:'ऐप प्रतिक्रिया पृष्ठ' }}">
+        <span>{{ 'Page' | translate:'पृष्ठ' }} {{ totalPages() ? page() + 1 : 0 }} {{ 'of' | translate:'में से' }} {{ totalPages() }}</span>
+        <div>
+          <button type="button" (click)="changePage(page() - 1)" [disabled]="page() === 0 || loading()"><mat-icon>chevron_left</mat-icon>{{ 'Previous' | translate:'पिछला' }}</button>
+          <button type="button" (click)="changePage(page() + 1)" [disabled]="page() + 1 >= totalPages() || loading()">{{ 'Next' | translate:'अगला' }}<mat-icon>chevron_right</mat-icon></button>
+        </div>
+      </nav>
+    } @else {
+      <div class="state-message empty-state"><mat-icon>rate_review</mat-icon><h3>{{ 'No application feedback yet' | translate:'अभी तक कोई ऐप प्रतिक्रिया नहीं' }}</h3><p>{{ 'Application feedback submitted by users will appear here.' | translate:'उपयोगकर्ताओं द्वारा दी गई ऐप प्रतिक्रिया यहाँ दिखाई देगी।' }}</p></div>
+    }
+  </section>
+</main>

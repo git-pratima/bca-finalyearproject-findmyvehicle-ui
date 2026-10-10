@@ -4,16 +4,14 @@
     <a class="brand" routerLink="/dashboard"><span class="brand-mark"><mat-icon>shield</mat-icon></span><span><strong>{{ 'Find My Vehicle' | translate:'Find My Vehicle' }}</strong><small>{{ 'We Locate. You Recover.' | translate:'हम खोजते हैं। आप अपने वाहन वापस पाते हैं।' }}</small></span></a>
     <nav class="nav-links" aria-label="{{ 'Member navigation' | translate:'सदस्य नेविगेशन' }}">
       <a routerLink="/dashboard" [class.active]="!isChildPage()"><mat-icon>home</mat-icon>{{ 'Dashboard' | translate:'डैशबोर्ड' }}</a>
+      <a routerLink="/dashboard/app-feedback" [class.active]="isAppFeedbackPage()" [hidden]="!isAdmin()"><mat-icon>rate_review</mat-icon>{{ 'App Feedback' | translate:'ऐप प्रतिक्रिया' }}</a>
       <a routerLink="/dashboard/my-reports" [class.active]="isMyReportsPage()"><mat-icon>description</mat-icon>{{ 'My Reports' | translate:'मेरी रिपोर्टें' }}</a>
       <a routerLink="/dashboard/all-reports" [class.active]="isAllReportsPage()"><mat-icon>library_books</mat-icon>{{ 'All Reports' | translate:'सभी रिपोर्टें' }}</a>
       <a routerLink="/dashboard/report-missing"><mat-icon>add_circle_outline</mat-icon>{{ 'Add New Vehicle/Report' | translate:'नया वाहन/रिपोर्ट जोड़ें' }}</a>
       <a routerLink="/dashboard/my-vehicles" [class.active]="isMyVehiclesPage()"><mat-icon>directions_car</mat-icon>{{ 'My Vehicles' | translate:'मेरे वाहन' }}</a>
       <a routerLink="/dashboard/all-vehicles" [class.active]="isAllVehiclesPage()"><mat-icon>directions_car_filled</mat-icon>{{ 'All Vehicles' | translate:'सभी वाहन' }}</a>
-      <a><mat-icon>search</mat-icon>{{ 'Search Vehicles' | translate:'वाहन खोजें' }}</a>
-      <a><mat-icon>notifications_none</mat-icon>{{ 'Alerts & Updates' | translate:'अलर्ट और अपडेट' }} <b>{{ dashboardData()?.activity?.unreadNotifications ?? 0 }}</b></a>
       <a routerLink="/dashboard/notifications" [class.active]="isNotificationsPage()"><mat-icon>notifications</mat-icon>{{ 'Notification' | translate:'सूचना' }} <b>{{ unreadNotificationCount() }}</b></a>
-      <a routerLink="/dashboard/feedback" [class.active]="isFeedbackPage()"><mat-icon>reviews</mat-icon>{{ 'Feedback' | translate:'प्रतिक्रिया' }}</a>
-      <a><mat-icon>bookmark_border</mat-icon>{{ 'Saved Searches' | translate:'सहेजी गई खोजें' }}</a>
+      <a routerLink="/dashboard/feedback" [class.active]="isFeedbackPage()"><mat-icon>reviews</mat-icon>{{ 'Report Feedback' | translate:'रिपोर्ट प्रतिक्रिया' }}</a>
       <button class="sidebar-profile-toggle" (click)="sidebarProfileOpen.set(!sidebarProfileOpen())" [attr.aria-expanded]="sidebarProfileOpen()"><mat-icon>person_outline</mat-icon>{{ 'Profile' | translate:'प्रोफ़ाइल' }}<mat-icon class="profile-chevron">{{ sidebarProfileOpen() ? 'expand_less' : 'expand_more' }}</mat-icon></button>
       @if (sidebarProfileOpen()) {<div class="sidebar-profile-options"><div><span class="avatar">{{ initials() }}</span><strong>{{ displayName() }}</strong></div><button (click)="openEditProfile()"><mat-icon>edit</mat-icon>{{ 'Edit Profile' | translate:'प्रोफ़ाइल संपादित करें' }}</button>@if (!isSocialLogin()) {<button (click)="openChangePassword()"><mat-icon>lock_reset</mat-icon>{{ 'Change Password' | translate:'पासवर्ड बदलें' }}</button>}<button (click)="logout()"><mat-icon>logout</mat-icon>{{ 'Logout' | translate:'लॉग आउट' }}</button></div>}
       <a routerLink="/dashboard/settings" [class.active]="isSettingsPage()"><mat-icon>settings</mat-icon>{{ 'Settings' | translate:'सेटिंग्स' }}</a>
@@ -42,7 +40,7 @@
     <header class="topbar">
       <button class="icon-button menu-button" (click)="mobileMenuOpen.set(!mobileMenuOpen())" aria-label="{{ 'Toggle navigation' | translate:'नेविगेशन टॉगल करें' }}"><mat-icon>menu</mat-icon></button>
       <form class="dashboard-vehicle-search" (ngSubmit)="searchDashboardVehicles()"><mat-icon class="search-icon">search</mat-icon><select [value]="globalSearchType()" (change)="updateGlobalSearchType($any($event.target).value)" aria-label="{{ 'Search type' | translate:'खोज का प्रकार' }}"><option value="regNumber">{{ 'Registration number' | translate:'पंजीकरण संख्या' }}</option><option value="model">{{ 'Model' | translate:'मॉडल' }}</option><option value="missingCity">{{ 'Missing city' | translate:'लापता होने का शहर' }}</option><option value="pinCode">{{ 'PIN code' | translate:'पिन कोड' }}</option></select><input [value]="globalQuery()" (input)="updateGlobalQuery($any($event.target).value)" [placeholder]="('Enter ' | translate:'दर्ज करें ') + (globalSearchType() === 'regNumber' ? ('registration number' | translate:'पंजीकरण संख्या') : globalSearchType() === 'missingCity' ? ('missing city' | translate:'लापता होने का शहर') : globalSearchType() === 'pinCode' ? ('PIN code' | translate:'पिन कोड') : ('vehicle model' | translate:'वाहन मॉडल'))" aria-label="{{ 'Search value' | translate:'खोज मान' }}"><button type="submit" [disabled]="globalSearchLoading()"><mat-icon>search</mat-icon><span>{{ globalSearchLoading() ? ('Searching…' | translate:'खोज रहे हैं…') : ('Search' | translate:'खोजें') }}</span></button></form>
-      <div class="topbar-actions"><button type="button" class="theme-switch" [class.is-dark]="theme() === 'dark'" role="switch" [attr.aria-checked]="theme() === 'dark'" [attr.aria-label]="theme() === 'dark' ? ('Switch to light theme' | translate:'लाइट थीम पर स्विच करें') : ('Switch to dark theme' | translate:'डार्क थीम पर स्विच करें')" (click)="toggleTheme()"><span class="switch-icon sun"><mat-icon>light_mode</mat-icon></span><span class="switch-icon moon"><mat-icon>dark_mode</mat-icon></span><span class="switch-thumb"><mat-icon>{{ theme() === 'dark' ? 'dark_mode' : 'light_mode' }}</mat-icon></span></button><button class="notification" aria-label="{{ 'Notifications' | translate:'सूचनाएँ' }}"><mat-icon>notifications_none</mat-icon><b>{{ unreadNotificationCount() }}</b></button><div class="profile-menu"><button class="profile-trigger" (click)="profileMenuOpen.set(!profileMenuOpen())" [attr.aria-expanded]="profileMenuOpen()"><span class="avatar">{{ initials() }}</span><span class="account"><strong>{{ displayName() }}</strong><small>{{ 'Member' | translate:'सदस्य' }}</small></span><mat-icon>keyboard_arrow_down</mat-icon></button>@if (profileMenuOpen()) {<div class="profile-dropdown"><div class="profile-summary"><span class="avatar">{{ initials() }}</span><span><strong>{{ displayName() }}</strong><small>{{ 'Member account' | translate:'सदस्य खाता' }}</small></span></div><button (click)="openEditProfile()"><mat-icon>person_outline</mat-icon>{{ 'Edit Profile' | translate:'प्रोफ़ाइल संपादित करें' }}</button>@if (!isSocialLogin()) {<button (click)="openChangePassword()"><mat-icon>lock_reset</mat-icon>{{ 'Change Password' | translate:'पासवर्ड बदलें' }}</button>}<button (click)="logout()"><mat-icon>logout</mat-icon>{{ 'Logout' | translate:'लॉग आउट' }}</button></div>}</div></div>
+      <div class="topbar-actions"><button type="button" class="app-feedback-trigger" (click)="openAppFeedback()"><mat-icon>rate_review</mat-icon><span>{{ 'Application Feedback' | translate:'ऐप प्रतिक्रिया' }}</span></button><button type="button" class="theme-switch" [class.is-dark]="theme() === 'dark'" role="switch" [attr.aria-checked]="theme() === 'dark'" [attr.aria-label]="theme() === 'dark' ? ('Switch to light theme' | translate:'लाइट थीम पर स्विच करें') : ('Switch to dark theme' | translate:'डार्क थीम पर स्विच करें')" (click)="toggleTheme()"><span class="switch-icon sun"><mat-icon>light_mode</mat-icon></span><span class="switch-icon moon"><mat-icon>dark_mode</mat-icon></span><span class="switch-thumb"><mat-icon>{{ theme() === 'dark' ? 'dark_mode' : 'light_mode' }}</mat-icon></span></button><button class="notification" aria-label="{{ 'Notifications' | translate:'सूचनाएँ' }}"><mat-icon>notifications_none</mat-icon><b>{{ unreadNotificationCount() }}</b></button><div class="profile-menu"><button class="profile-trigger" (click)="profileMenuOpen.set(!profileMenuOpen())" [attr.aria-expanded]="profileMenuOpen()"><span class="avatar">{{ initials() }}</span><span class="account"><strong>{{ displayName() }}</strong><small>{{ 'Member' | translate:'सदस्य' }}</small></span><mat-icon>keyboard_arrow_down</mat-icon></button>@if (profileMenuOpen()) {<div class="profile-dropdown"><div class="profile-summary"><span class="avatar">{{ initials() }}</span><span><strong>{{ displayName() }}</strong><small>{{ 'Member account' | translate:'सदस्य खाता' }}</small></span></div><button (click)="openEditProfile()"><mat-icon>person_outline</mat-icon>{{ 'Edit Profile' | translate:'प्रोफ़ाइल संपादित करें' }}</button>@if (!isSocialLogin()) {<button (click)="openChangePassword()"><mat-icon>lock_reset</mat-icon>{{ 'Change Password' | translate:'पासवर्ड बदलें' }}</button>}<button (click)="logout()"><mat-icon>logout</mat-icon>{{ 'Logout' | translate:'लॉग आउट' }}</button></div>}</div></div>
     </header>
 
     @if (!isChildPage()) {
@@ -195,3 +193,43 @@
 }
 
 @if (changePasswordSuccess()) {<div class="password-success" role="status"><mat-icon>check_circle</mat-icon><span>{{ changePasswordSuccess() }}</span><button type="button" (click)="changePasswordSuccess.set('')" aria-label="{{ 'Dismiss success message' | translate:'सफलता संदेश बंद करें' }}"><mat-icon>close</mat-icon></button></div>}
+
+@if (appFeedbackOpen()) {
+  <div class="edit-profile-backdrop" (click)="closeAppFeedbackFromBackdrop($event)">
+    <section class="edit-profile-modal app-feedback-modal" role="dialog" aria-modal="true" aria-labelledby="app-feedback-title" (keydown.escape)="closeAppFeedback()">
+      <header>
+        <div><span class="modal-icon"><mat-icon>rate_review</mat-icon></span><div><h2 id="app-feedback-title">{{ 'Application Feedback' | translate:'ऐप प्रतिक्रिया' }}</h2><p>{{ 'Tell us about the app’s functionality and your experience.' | translate:'ऐप की कार्यक्षमता और अपने अनुभव के बारे में बताएं।' }}</p></div></div>
+        <button class="modal-close" type="button" (click)="closeAppFeedback()" [disabled]="appFeedbackSubmitting()" aria-label="{{ 'Close app feedback' | translate:'ऐप प्रतिक्रिया बंद करें' }}"><mat-icon>close</mat-icon></button>
+      </header>
+      @if (appFeedbackSuccess()) {
+        <div class="app-feedback-success" role="status"><mat-icon>check_circle</mat-icon><p>{{ appFeedbackSuccess() }}</p><button type="button" class="save-profile-button" (click)="closeAppFeedback()">{{ 'Done' | translate:'हो गया' }}</button></div>
+      } @else {
+        <form (ngSubmit)="submitAppFeedback()">
+          <section class="profile-section app-feedback-fields">
+            <fieldset class="app-feedback-rating">
+              <legend>{{ 'How would you rate the app?' | translate:'आप ऐप को कितनी रेटिंग देंगे?' }}</legend>
+              <div role="group" [attr.aria-label]="'Rating from 1 to 5 stars' | translate:'1 से 5 स्टार तक रेटिंग'">
+                @for (rating of [1, 2, 3, 4, 5]; track rating) {
+                  <button type="button" class="app-feedback-star" [class.selected]="rating <= appFeedbackRating()" [attr.aria-label]="('Rate ' | translate:'रेटिंग दें ') + rating + (' stars' | translate:' स्टार')" [attr.aria-pressed]="appFeedbackRating() === rating" (click)="selectAppFeedbackRating(rating)"><mat-icon>{{ rating <= appFeedbackRating() ? 'star' : 'star_border' }}</mat-icon></button>
+                }
+              </div>
+              <span class="app-feedback-rating-label" aria-live="polite">{{ appFeedbackRating() ? appFeedbackRating() + ' / 5' : ('Select a rating' | translate:'रेटिंग चुनें') }}</span>
+            </fieldset>
+            <label class="app-feedback-comment">{{ 'Your comments' | translate:'आपकी टिप्पणी' }} <span>({{ 'optional' | translate:'वैकल्पिक' }})</span><textarea [value]="appFeedbackComment()" (input)="appFeedbackComment.set($any($event.target).value)" rows="6" [placeholder]="'Share what works well or what we can improve…' | translate:'बताएं कि क्या अच्छा काम करता है या हम क्या बेहतर कर सकते हैं…'"></textarea></label>
+          </section>
+          @if (appFeedbackError()) {<p class="profile-form-error app-feedback-error" role="alert"><mat-icon>error_outline</mat-icon>{{ appFeedbackError() }}</p>}
+          <footer>
+            <button type="button" class="secondary-button" (click)="closeAppFeedback()" [disabled]="appFeedbackSubmitting()">{{ 'Cancel' | translate:'रद्द करें' }}</button>
+            <button type="submit" class="save-profile-button" [disabled]="appFeedbackSubmitting()">
+              @if (appFeedbackSubmitting()) {
+                <span>{{ 'Submitting…' | translate:'सबमिट हो रहा है…' }}</span>
+              } @else {
+                <mat-icon>send</mat-icon>{{ 'Send feedback' | translate:'प्रतिक्रिया भेजें' }}
+              }
+            </button>
+          </footer>
+        </form>
+      }
+    </section>
+  </div>
+}
