@@ -30,6 +30,12 @@ export const ApiEndpoints = {
 
     MY_REPORTS: '/vehicles/my-reports'
 
+  },
+
+  FEEDBACK: {
+
+    CREATE: '/feedbacks'
+
   }
 
 } as const;

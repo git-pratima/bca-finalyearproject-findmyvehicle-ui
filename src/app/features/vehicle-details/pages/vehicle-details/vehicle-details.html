@@ -132,7 +132,7 @@
               <p class="contact-unavailable"><mat-icon>info_outline</mat-icon>The selected report is unavailable. Return to My Reports and open its details again.</p>
             }
             @if (activeOwnReport()) {
-              <form class="feedback-form" (ngSubmit)="$event.preventDefault()">
+              <form class="feedback-form" (ngSubmit)="submitFeedback()">
                 <h3>Feedback</h3>
                 <span class="rating-label" id="feedback-rating-label">Your rating</span>
                 <div class="rating-stars" role="group" aria-labelledby="feedback-rating-label">
@@ -156,10 +156,16 @@
                   (ngModelChange)="feedbackComment.set($event)"
                   rows="4"
                   placeholder="Tell us about your experience"></textarea>
-                <button class="secondary-action" type="submit" disabled>
-                  <mat-icon>send</mat-icon>Submit feedback
+                <button
+                  class="secondary-action"
+                  type="submit"
+                  [disabled]="submittingFeedback() || feedbackRating() === 0">
+                  <mat-icon>{{ submittingFeedback() ? 'hourglass_top' : 'send' }}</mat-icon>
+                  {{ submittingFeedback() ? 'Submitting feedback…' : 'Submit feedback' }}
                 </button>
-                <small role="status">Feedback submission will be available when the service is ready.</small>
+                <small role="status">
+                  {{ submittingFeedback() ? 'Submitting feedback…' : feedbackRating() === 0 ? 'Choose a rating to submit feedback.' : 'Your rating is ready to submit.' }}
+                </small>
               </form>
             }
           } @else {

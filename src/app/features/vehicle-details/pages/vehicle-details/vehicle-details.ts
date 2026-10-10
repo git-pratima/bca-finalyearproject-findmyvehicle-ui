@@ -7,6 +7,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { catchError, combineLatest, finalize, map, of, switchMap } from 'rxjs';
 
+import { ApiEndpoints } from '../../../../core/constants/api-endpoints';
 import { ApiService } from '../../../../core/services/api.service';
 
 type MissingReport = {
@@ -67,6 +68,22 @@ type SightingNotificationResponse = {
   data: { id: number; vehicleId: number; missingDetailsId: number };
 };
 
+type FeedbackRequest = {
+  missingReportId: number;
+  rating: number;
+  comment: string;
+};
+
+type FeedbackResponse = {
+  status: { status: number; message: string };
+  data: {
+    id: number;
+    missingReportId: number;
+    rating: number;
+    comment: string;
+  };
+};
+
 @Component({
   selector: 'app-vehicle-details',
   standalone: true,
@@ -97,6 +114,7 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
   readonly submittingSighting = signal(false);
   readonly feedbackRating = signal(0);
   readonly feedbackComment = signal('');
+  readonly submittingFeedback = signal(false);
   readonly ratingOptions = [1, 2, 3, 4, 5];
   readonly images = computed(() => this.vehicle()?.imageUrls?.filter(Boolean) ?? []);
   readonly currentImage = computed(() => this.images()[this.imageIndex()] ?? null);
@@ -224,6 +242,59 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
 
   selectFeedbackRating(rating: number): void {
     if (this.ratingOptions.includes(rating)) this.feedbackRating.set(rating);
+  }
+
+  submitFeedback(): void {
+    const report = this.activeOwnReport();
+    const rating = this.feedbackRating();
+    if (this.submittingFeedback()) return;
+    if (!report) {
+      this.snackBar.open('Select a missing report before submitting feedback.', 'Close', {
+        duration: 5000
+      });
+      return;
+    }
+    if (!this.ratingOptions.includes(rating)) {
+      this.snackBar.open('Choose a rating from 1 to 5 before submitting feedback.', 'Close', {
+        duration: 5000
+      });
+      return;
+    }
+
+    const request: FeedbackRequest = {
+      missingReportId: report.id,
+      rating,
+      comment: this.feedbackComment().trim()
+    };
+
+    this.submittingFeedback.set(true);
+    this.apiService
+      .post<FeedbackResponse>(ApiEndpoints.FEEDBACK.CREATE, request)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.submittingFeedback.set(false))
+      )
+      .subscribe({
+        next: response => {
+          this.feedbackRating.set(0);
+          this.feedbackComment.set('');
+          this.snackBar.open(
+            response.status?.message || 'Feedback submitted successfully.',
+            'Close',
+            { duration: 5000 }
+          );
+        },
+        error: error => {
+          console.error('Failed to submit feedback.', error);
+          this.snackBar.open(
+            error?.error?.status?.message ??
+              error?.error?.message ??
+              'Unable to submit feedback. Please try again.',
+            'Close',
+            { duration: 6000 }
+          );
+        }
+      });
   }
 
   isReportFound(report: MissingReport | null | undefined): boolean {
