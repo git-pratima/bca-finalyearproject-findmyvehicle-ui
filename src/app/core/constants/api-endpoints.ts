@@ -34,7 +34,9 @@ export const ApiEndpoints = {
 
   FEEDBACK: {
 
-    CREATE: '/feedbacks'
+    CREATE: '/feedbacks',
+
+    LIST: '/feedbacks'
 
   }
 
