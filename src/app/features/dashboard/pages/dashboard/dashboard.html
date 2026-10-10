@@ -16,7 +16,7 @@
       <a><mat-icon>bookmark_border</mat-icon>Saved Searches</a>
       <button class="sidebar-profile-toggle" (click)="sidebarProfileOpen.set(!sidebarProfileOpen())" [attr.aria-expanded]="sidebarProfileOpen()"><mat-icon>person_outline</mat-icon>Profile<mat-icon class="profile-chevron">{{ sidebarProfileOpen() ? 'expand_less' : 'expand_more' }}</mat-icon></button>
       @if (sidebarProfileOpen()) {<div class="sidebar-profile-options"><div><span class="avatar">{{ initials() }}</span><strong>{{ displayName() }}</strong></div><button (click)="openEditProfile()"><mat-icon>edit</mat-icon>Edit Profile</button>@if (!isSocialLogin()) {<button (click)="openChangePassword()"><mat-icon>lock_reset</mat-icon>Change Password</button>}<button (click)="logout()"><mat-icon>logout</mat-icon>Logout</button></div>}
-      <a><mat-icon>settings</mat-icon>Settings</a>
+      <a routerLink="/dashboard/settings" [class.active]="isSettingsPage()"><mat-icon>settings</mat-icon>Settings</a>
       <a
         routerLink="/dashboard/help-support"
         [class.active]="isHelpSupportPage()">

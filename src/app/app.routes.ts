@@ -253,6 +253,19 @@ export const routes: Routes = [
             .then(c => c.HelpSupportComponent)
       },
       {
+        path: 'settings',
+        data: {
+          seo: {
+            title: 'Settings | Find My Vehicle',
+            description: 'Manage your Find My Vehicle appearance preferences.',
+            robots: 'noindex, nofollow'
+          }
+        },
+        loadComponent: () =>
+          import('./features/dashboard/pages/settings/settings')
+            .then(c => c.SettingsComponent)
+      },
+      {
         path: 'report-missing',
         loadComponent: () => import('./features/vehicle-reports/pages/report-missing/report-missing')
           .then(c => c.ReportMissingComponent)
