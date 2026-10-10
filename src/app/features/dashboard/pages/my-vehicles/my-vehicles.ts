@@ -7,6 +7,8 @@ import { Router, RouterLink } from '@angular/router';
 import { finalize, Subscription } from 'rxjs';
 
 import { ApiService } from '../../../../core/services/api.service';
+import { LanguageService } from '../../../../core/services/language.service';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 type VehicleMissingReport = {
   missingDate: string | null;
@@ -53,7 +55,7 @@ type UserVehiclesResponse = {
 @Component({
   selector: 'app-my-vehicles',
   standalone: true,
-  imports: [DatePipe, MatIconModule, RouterLink],
+  imports: [DatePipe, MatIconModule, RouterLink, TranslatePipe],
   templateUrl: './my-vehicles.html',
   styleUrl: './my-vehicles.scss'
 })
@@ -62,6 +64,7 @@ export class MyVehiclesComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly router = inject(Router);
+  private readonly languageService = inject(LanguageService);
   private requestSubscription?: Subscription;
 
   readonly regNumber = signal('');
@@ -129,7 +132,7 @@ export class MyVehiclesComponent implements OnInit {
           this.error.set(
             error?.error?.status?.message ||
             error?.error?.message ||
-            'Unable to load your vehicles. Please try again.'
+            this.languageService.text('Unable to load your vehicles. Please try again.', 'आपके वाहन लोड नहीं हो सके। कृपया फिर से प्रयास करें।')
           );
         }
       });
@@ -145,7 +148,7 @@ export class MyVehiclesComponent implements OnInit {
   latestReportLocation(report: VehicleMissingReport): string {
     return [report.missingAddress, report.city, report.district, report.state]
       .filter((value): value is string => !!value?.trim())
-      .join(', ') || 'Location unavailable';
+      .join(', ') || this.languageService.text('Location unavailable', 'स्थान उपलब्ध नहीं');
   }
 
   reportMissingVehicle(vehicle: UserVehicle): void {

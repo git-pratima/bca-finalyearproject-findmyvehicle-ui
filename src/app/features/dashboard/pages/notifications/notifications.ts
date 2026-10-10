@@ -8,6 +8,8 @@ import { finalize } from 'rxjs';
 
 import { ApiService } from '../../../../core/services/api.service';
 import { DashboardRefreshService } from '../../../../core/services/dashboard-refresh.service';
+import { LanguageService } from '../../../../core/services/language.service';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 type Notification = {
   id: number;
@@ -40,7 +42,7 @@ type NotificationsResponse = {
 
 @Component({
   selector: 'app-notifications',
-  imports: [DatePipe, MatIconModule, MatSnackBarModule],
+  imports: [DatePipe, MatIconModule, MatSnackBarModule, TranslatePipe],
   templateUrl: './notifications.html',
   styleUrl: './notifications.scss'
 })
@@ -52,6 +54,7 @@ export class NotificationsComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly languageService = inject(LanguageService);
 
   readonly notifications = signal<Notification[]>([]);
   readonly page = signal(0);
@@ -95,7 +98,7 @@ export class NotificationsComponent implements OnInit {
           this.error.set(
             error?.error?.status?.message ??
               error?.error?.message ??
-              'Unable to load notifications. Please try again.'
+              this.languageService.text('Unable to load notifications. Please try again.', 'सूचनाएँ लोड नहीं हो सकीं। कृपया फिर से प्रयास करें।')
           );
         }
       });
@@ -143,9 +146,10 @@ export class NotificationsComponent implements OnInit {
       this.markingSeenId() !== null
     ) return;
 
-    const confirmed = window.confirm(
-      `Mark the sighting notification for ${notification.regNo} as seen?`
-    );
+    const confirmed = window.confirm(this.languageService.text(
+      `Mark the sighting notification for ${notification.regNo} as seen?`,
+      `${notification.regNo} के देखे जाने की सूचना को देखा हुआ चिह्नित करें?`
+    ));
     if (!confirmed) return;
 
     this.markingSeenId.set(notification.id);
@@ -165,7 +169,7 @@ export class NotificationsComponent implements OnInit {
                 : item
             )
           );
-          this.snackBar.open('Notification marked as seen.', 'Close', {
+          this.snackBar.open(this.languageService.text('Notification marked as seen.', 'सूचना को देखा हुआ चिह्नित किया गया।'), this.languageService.text('Close', 'बंद करें'), {
             duration: 5000
           });
         },
@@ -174,8 +178,8 @@ export class NotificationsComponent implements OnInit {
           this.snackBar.open(
             error?.error?.status?.message ??
               error?.error?.message ??
-              'Unable to mark the notification as seen. Please try again.',
-            'Close',
+              this.languageService.text('Unable to mark the notification as seen. Please try again.', 'सूचना को देखा हुआ चिह्नित नहीं किया जा सका। कृपया फिर से प्रयास करें।'),
+            this.languageService.text('Close', 'बंद करें'),
             { duration: 6000 }
           );
         }

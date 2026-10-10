@@ -1,23 +1,23 @@
 <main class="vehicle-page">
   <div class="vehicle-container">
     @if (backLink !== '/dashboard') {
-      <a class="back-link" [routerLink]="backLink"><mat-icon>arrow_back</mat-icon>Back to home</a>
+      <a class="back-link" [routerLink]="backLink"><mat-icon>arrow_back</mat-icon>{{ 'Back to home' | translate:'मुखपृष्ठ पर वापस जाएँ' }}</a>
     }
 
     @if (loading()) {
-      <p class="page-message" role="status">Loading vehicle details…</p>
+      <p class="page-message" role="status">{{ 'Loading vehicle details…' | translate:'वाहन का विवरण लोड हो रहा है…' }}</p>
     } @else if (error()) {
       <section class="message-card" role="alert">
         <mat-icon>error_outline</mat-icon>
-        <h1>Vehicle details unavailable</h1>
+        <h1>{{ 'Vehicle details unavailable' | translate:'वाहन का विवरण उपलब्ध नहीं है' }}</h1>
         <p>{{ error() }}</p>
-        <a routerLink="/search">Search vehicles</a>
+        <a routerLink="/search">{{ 'Search vehicles' | translate:'वाहन खोजें' }}</a>
       </section>
     } @else if (vehicle(); as item) {
       <header class="page-heading">
         <div>
-          <span class="eyebrow">Missing vehicle report</span>
-          <h1>{{ item.vehicleModel || item.vehicleCompany || 'Vehicle details' }}</h1>
+          <span class="eyebrow">{{ 'Missing vehicle report' | translate:'लापता वाहन की रिपोर्ट' }}</span>
+          <h1>{{ item.vehicleModel || item.vehicleCompany || ('Vehicle details' | translate:'वाहन का विवरण') }}</h1>
           <p>{{ item.regNumber }}</p>
         </div>
         <span class="status-pill" [class.found]="isReportFound(selectedReport()) || (!selectedReport() && item.vehicleStatus === 'FOUND')">{{ displayedStatus() }}</span>
@@ -30,19 +30,19 @@
               @if (currentImage(); as image) {
                 <img [src]="image" [alt]="item.vehicleModel || item.regNumber">
               } @else {
-                <div class="photo-placeholder"><mat-icon>directions_car</mat-icon><span>No vehicle photos available</span></div>
+                <div class="photo-placeholder"><mat-icon>directions_car</mat-icon><span>{{ 'No vehicle photos available' | translate:'वाहन की कोई तस्वीर उपलब्ध नहीं है' }}</span></div>
               }
               <span class="photo-count">{{ images().length ? imageIndex() + 1 : 0 }} / {{ images().length }}</span>
               @if (images().length > 1) {
-                <button class="photo-control previous" type="button" (click)="previousImage()" aria-label="Previous vehicle photo"><mat-icon>chevron_left</mat-icon></button>
-                <button class="photo-control next" type="button" (click)="nextImage()" aria-label="Next vehicle photo"><mat-icon>chevron_right</mat-icon></button>
+                <button class="photo-control previous" type="button" (click)="previousImage()" [attr.aria-label]="'Previous vehicle photo' | translate:'पिछली वाहन फ़ोटो'"><mat-icon>chevron_left</mat-icon></button>
+                <button class="photo-control next" type="button" (click)="nextImage()" [attr.aria-label]="'Next vehicle photo' | translate:'अगली वाहन फ़ोटो'"><mat-icon>chevron_right</mat-icon></button>
               }
             </div>
             @if (images().length > 1) {
-              <div class="photo-thumbnails" aria-label="Vehicle photos">
+              <div class="photo-thumbnails" [attr.aria-label]="'Vehicle photos' | translate:'वाहन की तस्वीरें'">
                 @for (image of images(); track image; let i = $index) {
-                  <button type="button" [class.active]="imageIndex() === i" (click)="selectImage(i)" [attr.aria-label]="'Show vehicle photo ' + (i + 1)" [attr.aria-pressed]="imageIndex() === i">
-                    <img [src]="image" [alt]="'Vehicle photo ' + (i + 1)">
+                  <button type="button" [class.active]="imageIndex() === i" (click)="selectImage(i)" [attr.aria-label]="('Show vehicle photo ' + (i + 1)) | translate:('वाहन की तस्वीर दिखाएँ ' + (i + 1))" [attr.aria-pressed]="imageIndex() === i">
+                    <img [src]="image" [alt]="('Vehicle photo ' + (i + 1)) | translate:('वाहन की तस्वीर ' + (i + 1))">
                   </button>
                 }
               </div>
@@ -50,18 +50,18 @@
           </article>
 
           <article class="information-card">
-            <div class="card-heading"><span class="heading-icon"><mat-icon>directions_car</mat-icon></span><div><h2>Vehicle information</h2><p>Identification, specifications and owner details</p></div></div>
+            <div class="card-heading"><span class="heading-icon"><mat-icon>directions_car</mat-icon></span><div><h2>{{ 'Vehicle information' | translate:'वाहन की जानकारी' }}</h2><p>{{ 'Identification, specifications and owner details' | translate:'पहचान, विशेषताएँ और मालिक का विवरण' }}</p></div></div>
             <dl class="detail-grid">
-              <div><dt>Registration number</dt><dd>{{ item.regNumber }}</dd></div>
-              <div><dt>Vehicle</dt><dd>{{ item.vehicleCompany || 'Not provided' }} {{ item.vehicleModel || '' }}</dd></div>
-              <div><dt>Type</dt><dd>{{ item.type || 'Not provided' }}</dd></div>
-              <div><dt>Color</dt><dd>{{ item.color || 'Not provided' }}</dd></div>
-              <div><dt>Vehicle status</dt><dd><span class="detail-status" [class.found]="item.vehicleStatus === 'FOUND'">{{ item.vehicleStatus || 'Not provided' }}</span></dd></div>
-              <div><dt>Chassis number</dt><dd>{{ item.chassisNumber || 'Not provided' }}</dd></div>
-              <div><dt>Engine number</dt><dd>{{ item.engineNumber || 'Not provided' }}</dd></div>
-              <div><dt>Owner</dt><dd>{{ item.owner || 'Not provided' }}</dd></div>
-              <div><dt>Owner mobile</dt><dd>{{ item.ownerMobile || 'Not provided' }}</dd></div>
-              <div><dt>Owner email</dt><dd>{{ item.ownerEmail || 'Not provided' }}</dd></div>
+              <div><dt>{{ 'Registration number' | translate:'पंजीकरण संख्या' }}</dt><dd>{{ item.regNumber }}</dd></div>
+              <div><dt>{{ 'Vehicle' | translate:'वाहन' }}</dt><dd>{{ item.vehicleCompany || ('Not provided' | translate:'उपलब्ध नहीं') }} {{ item.vehicleModel || '' }}</dd></div>
+              <div><dt>{{ 'Type' | translate:'प्रकार' }}</dt><dd>{{ item.type || ('Not provided' | translate:'उपलब्ध नहीं') }}</dd></div>
+              <div><dt>{{ 'Color' | translate:'रंग' }}</dt><dd>{{ item.color || ('Not provided' | translate:'उपलब्ध नहीं') }}</dd></div>
+              <div><dt>{{ 'Vehicle status' | translate:'वाहन की स्थिति' }}</dt><dd><span class="detail-status" [class.found]="item.vehicleStatus === 'FOUND'">{{ item.vehicleStatus === 'FOUND' ? ('FOUND' | translate:'मिल गया') : item.vehicleStatus === 'MISSING' ? ('MISSING' | translate:'लापता') : item.vehicleStatus || ('Not provided' | translate:'उपलब्ध नहीं') }}</span></dd></div>
+              <div><dt>{{ 'Chassis number' | translate:'चेसिस नंबर' }}</dt><dd>{{ item.chassisNumber || ('Not provided' | translate:'उपलब्ध नहीं') }}</dd></div>
+              <div><dt>{{ 'Engine number' | translate:'इंजन नंबर' }}</dt><dd>{{ item.engineNumber || ('Not provided' | translate:'उपलब्ध नहीं') }}</dd></div>
+              <div><dt>{{ 'Owner' | translate:'मालिक' }}</dt><dd>{{ item.owner || ('Not provided' | translate:'उपलब्ध नहीं') }}</dd></div>
+              <div><dt>{{ 'Owner mobile' | translate:'मालिक का मोबाइल' }}</dt><dd>{{ item.ownerMobile || ('Not provided' | translate:'उपलब्ध नहीं') }}</dd></div>
+              <div><dt>{{ 'Owner email' | translate:'मालिक का ईमेल' }}</dt><dd>{{ item.ownerEmail || ('Not provided' | translate:'उपलब्ध नहीं') }}</dd></div>
             </dl>
           </article>
 
@@ -70,27 +70,27 @@
               <div class="card-heading">
                 <span class="heading-icon alert"><mat-icon>location_on</mat-icon></span>
                 <div class="report-title">
-                  <h2>Missing report</h2>
-                  <p>{{ report.missingDate ? (report.missingDate | date:'dd MMM yyyy') : 'Date not provided' }}{{ report.missingTime ? ' at ' + report.missingTime : '' }}</p>
+                  <h2>{{ 'Missing report' | translate:'लापता वाहन की रिपोर्ट' }}</h2>
+                  <p>{{ report.missingDate ? (report.missingDate | date:'dd MMM yyyy') : ('Date not provided' | translate:'तारीख उपलब्ध नहीं') }}{{ report.missingTime ? (' at ' | translate:' को ') + report.missingTime : '' }}</p>
                 </div>
                 <span class="report-status" [class.found]="isReportFound(report)">
                   <mat-icon>{{ isReportFound(report) ? 'check_circle' : 'search' }}</mat-icon>
-                  {{ isReportFound(report) ? 'Found' : 'Missing' }}
+                  {{ isReportFound(report) ? ('Found' | translate:'मिल गया') : ('Missing' | translate:'लापता') }}
                 </span>
               </div>
               <dl class="detail-grid">
-                <div><dt>Report reference</dt><dd>#{{ report.id }}</dd></div>
-                <div><dt>Report status</dt><dd><span class="detail-status" [class.found]="isReportFound(report)">{{ isReportFound(report) ? 'FOUND' : (report.vehicleStatus || report.status || 'MISSING') }}</span></dd></div>
-                <div><dt>Last seen near</dt><dd>{{ report.missingAddress || 'Not provided' }}</dd></div>
-                <div><dt>City / district</dt><dd>{{ joinValues(report.city, report.district) }}</dd></div>
-                <div><dt>State / country</dt><dd>{{ joinValues(report.state, report.country) }}</dd></div>
-                <div><dt>PIN code</dt><dd>{{ report.pinCode || 'Not provided' }}</dd></div>
-                @if (report.foundDate) {<div><dt>Found date</dt><dd>{{ report.foundDate | date:'dd MMM yyyy' }}</dd></div>}
-                @if (report.reward) {<div class="reward-detail"><dt>Reward offered</dt><dd><mat-icon>workspace_premium</mat-icon>{{ report.reward }}</dd></div>}
+                <div><dt>{{ 'Report reference' | translate:'रिपोर्ट संदर्भ' }}</dt><dd>#{{ report.id }}</dd></div>
+                <div><dt>{{ 'Report status' | translate:'रिपोर्ट की स्थिति' }}</dt><dd><span class="detail-status" [class.found]="isReportFound(report)">{{ isReportFound(report) ? ('FOUND' | translate:'मिल गया') : ((report.vehicleStatus || report.status) === 'MISSING' || !report.vehicleStatus && !report.status ? ('MISSING' | translate:'लापता') : report.vehicleStatus || report.status) }}</span></dd></div>
+                <div><dt>{{ 'Last seen near' | translate:'आखिरी बार यहाँ देखा गया' }}</dt><dd>{{ report.missingAddress || ('Not provided' | translate:'उपलब्ध नहीं') }}</dd></div>
+                <div><dt>{{ 'City / district' | translate:'शहर / ज़िला' }}</dt><dd>{{ joinValues(report.city, report.district) }}</dd></div>
+                <div><dt>{{ 'State / country' | translate:'राज्य / देश' }}</dt><dd>{{ joinValues(report.state, report.country) }}</dd></div>
+                <div><dt>{{ 'PIN code' | translate:'पिन कोड' }}</dt><dd>{{ report.pinCode || ('Not provided' | translate:'उपलब्ध नहीं') }}</dd></div>
+                @if (report.foundDate) {<div><dt>{{ 'Found date' | translate:'मिलने की तारीख' }}</dt><dd>{{ report.foundDate | date:'dd MMM yyyy' }}</dd></div>}
+                @if (report.reward) {<div class="reward-detail"><dt>{{ 'Reward offered' | translate:'प्रस्तावित इनाम' }}</dt><dd><mat-icon>workspace_premium</mat-icon>{{ report.reward }}</dd></div>}
               </dl>
               @if (report.description) {
                 <section class="report-description">
-                  <h3><mat-icon>notes</mat-icon>Report description</h3>
+                  <h3><mat-icon>notes</mat-icon>{{ 'Report description' | translate:'रिपोर्ट का विवरण' }}</h3>
                   <p>{{ report.description }}</p>
                 </section>
               }
@@ -98,9 +98,9 @@
           } @empty {
             <p class="page-message" role="status">
               @if (selectedReportId() === null) {
-                Open a specific report from My Reports or All Reports to view its details.
+                {{ 'Open a specific report from My Reports or All Reports to view its details.' | translate:'विवरण देखने के लिए मेरी रिपोर्ट या सभी रिपोर्ट में से कोई एक रिपोर्ट खोलें।' }}
               } @else {
-                The selected report is unavailable. Return to the report list and open its details again.
+                {{ 'The selected report is unavailable. Return to the report list and open its details again.' | translate:'चयनित रिपोर्ट उपलब्ध नहीं है। रिपोर्ट सूची पर लौटें और उसका विवरण फिर से खोलें।' }}
               }
             </p>
           }
@@ -108,77 +108,77 @@
 
         <aside class="action-card">
           @if (isOwnReport()) {
-            <span class="action-kicker">Your report</span>
+            <span class="action-kicker">{{ 'Your report' | translate:'आपकी रिपोर्ट' }}</span>
             @if (activeOwnReport(); as report) {
               <button
                 class="primary-action found-action"
                 type="button"
                 [disabled]="feedbackAvailable() || updatingReportId() !== null"
-                [attr.aria-label]="'Mark report from ' + (report.missingDate || 'unknown date') + ' as found'"
+                [attr.aria-label]="('Mark report from ' + (report.missingDate || 'unknown date') + ' as found') | translate:('रिपोर्ट को ' + (report.missingDate || 'अज्ञात तिथि') + ' पर मिला हुआ चिह्नित करें')"
                 (click)="markReportFound(report)">
                 <mat-icon>{{ updatingReportId() === report.id ? 'hourglass_top' : 'check_circle' }}</mat-icon>
-                {{ updatingReportId() === report.id ? 'Updating…' : 'Found' }}
+                {{ updatingReportId() === report.id ? ('Updating…' | translate:'अपडेट हो रहा है…') : ('Found' | translate:'मिल गया') }}
               </button>
               @if (feedbackAvailable()) {
                 <p class="found-status">
                   <mat-icon>check_circle</mat-icon>
-                  Congratulations, you already recovered your vehicle on
-                  {{ report.foundDate ? (report.foundDate | date:'dd MMM yyyy') : 'the recorded date' }}.
+                  {{ 'Congratulations, you already recovered your vehicle on' | translate:'बधाई हो, आपने अपना वाहन पहले ही वापस पा लिया है' }}
+                  {{ report.foundDate ? (report.foundDate | date:'dd MMM yyyy') : ('the recorded date' | translate:'दर्ज तारीख') }}.
                 </p>
               } @else {
-                <p>This is your vehicle and report. Confirm once it has been found to update its status.</p>
+                <p>{{ 'This is your vehicle and report. Confirm once it has been found to update its status.' | translate:'यह आपका वाहन और रिपोर्ट है। वाहन मिल जाने पर उसकी स्थिति अपडेट करने के लिए पुष्टि करें।' }}</p>
               }
             } @else {
-              <p class="contact-unavailable"><mat-icon>info_outline</mat-icon>The selected report is unavailable. Return to My Reports and open its details again.</p>
+              <p class="contact-unavailable"><mat-icon>info_outline</mat-icon>{{ 'The selected report is unavailable. Return to My Reports and open its details again.' | translate:'चयनित रिपोर्ट उपलब्ध नहीं है। मेरी रिपोर्ट पर लौटें और उसका विवरण फिर से खोलें।' }}</p>
             }
             @if (activeOwnReport()) {
               <form class="feedback-form" (ngSubmit)="submitFeedback()">
-                <h3>Feedback</h3>
-                <span class="rating-label" id="feedback-rating-label">Your rating</span>
+                <h3>{{ 'Feedback' | translate:'प्रतिक्रिया' }}</h3>
+                <span class="rating-label" id="feedback-rating-label">{{ 'Your rating' | translate:'आपकी रेटिंग' }}</span>
                 <div class="rating-stars" role="group" aria-labelledby="feedback-rating-label">
                   @for (star of ratingOptions; track star) {
                     <button
                       class="rating-star"
                       [class.selected]="feedbackRating() >= star"
                       type="button"
-                      [attr.aria-label]="star + ' out of 5 stars'"
+                      [attr.aria-label]="(star + ' out of 5 stars') | translate:(star + ' में से 5 स्टार')"
                       [attr.aria-pressed]="feedbackRating() === star"
                       (click)="selectFeedbackRating(star)">
                       <mat-icon>{{ feedbackRating() >= star ? 'star' : 'star_border' }}</mat-icon>
                     </button>
                   }
                 </div>
-                <label for="feedback-comment">Comment <span>Optional</span></label>
+                <label for="feedback-comment">{{ 'Comment' | translate:'टिप्पणी' }} <span>{{ 'Optional' | translate:'वैकल्पिक' }}</span></label>
                 <textarea
                   id="feedback-comment"
                   name="feedbackComment"
                   [ngModel]="feedbackComment()"
                   (ngModelChange)="feedbackComment.set($event)"
                   rows="4"
-                  placeholder="Tell us about your experience"></textarea>
+                  [placeholder]="'Tell us about your experience' | translate:'अपने अनुभव के बारे में बताएँ'"></textarea>
                 <button
                   class="secondary-action"
                   type="submit"
                   [disabled]="submittingFeedback() || feedbackRating() === 0">
                   <mat-icon>{{ submittingFeedback() ? 'hourglass_top' : 'send' }}</mat-icon>
-                  {{ submittingFeedback() ? 'Submitting feedback…' : 'Submit feedback' }}
+                  {{ submittingFeedback() ? ('Submitting feedback…' | translate:'प्रतिक्रिया सबमिट हो रही है…') : ('Submit feedback' | translate:'प्रतिक्रिया सबमिट करें') }}
                 </button>
                 <small role="status">
-                  {{ submittingFeedback() ? 'Submitting feedback…' : feedbackRating() === 0 ? 'Choose a rating to submit feedback.' : 'Your rating is ready to submit.' }}
+                  {{ submittingFeedback() ? ('Submitting feedback…' | translate:'प्रतिक्रिया सबमिट हो रही है…') : feedbackRating() === 0 ? ('Choose a rating to submit feedback.' | translate:'प्रतिक्रिया सबमिट करने के लिए रेटिंग चुनें।') : ('Your rating is ready to submit.' | translate:'आपकी रेटिंग सबमिट करने के लिए तैयार है।') }}
                 </small>
               </form>
             }
           } @else {
-            <span class="action-kicker">Help bring this vehicle home</span>
-            <h2>Have information?</h2>
-            <p>Contact the owner or share where you saw this vehicle.</p>
+            <span class="action-kicker">{{ 'Help bring this vehicle home' | translate:'इस वाहन को घर वापस लाने में मदद करें' }}</span>
+            <h2>{{ 'Have information?' | translate:'क्या आपके पास जानकारी है?' }}</h2>
+            <p>{{ 'Contact the owner or share where you saw this vehicle.' | translate:'मालिक से संपर्क करें या बताएँ कि आपने यह वाहन कहाँ देखा।' }}</p>
             @if (item.ownerEmail) {
-              <a class="primary-action" [href]="notifyOwnerHref()" target="_blank" rel="noopener noreferrer"><mat-icon>mail_outline</mat-icon>Notify Owner</a>
-              <div class="action-divider"><span>OR</span></div>
+              <a class="primary-action" [href]="notifyOwnerHref()" target="_blank" rel="noopener noreferrer"><mat-icon>mail_outline</mat-icon>{{ 'Notify Owner' | translate:'मालिक को सूचित करें' }}</a>
+              <div class="action-divider"><span>{{ 'OR' | translate:'या' }}</span></div>
             }
             <form (ngSubmit)="sendSighting()">
-              <h3>Seen At</h3>
-              <label for="sighting-datetime">Date and time seen</label>
+              <h3>{{ 'Seen At' | translate:'देखे जाने का विवरण' }}</h3>
+              <label for="sighting-datetime">{{ 'Date and time seen' | translate:'देखने की तारीख और समय' }}</label>
               <input
                 id="sighting-datetime"
                 name="sightingDateTime"
@@ -186,22 +186,22 @@
                 [ngModel]="sightingDateTime()"
                 (ngModelChange)="sightingDateTime.set($event)"
                 required>
-              <label for="sighting-location">Where did you see it?</label>
-              <input id="sighting-location" name="sightingLocation" [ngModel]="sightingLocation()" (ngModelChange)="sightingLocation.set($event)" required placeholder="Area, street or landmark">
-              <label for="sighting-map-location">Vehicle live Google Maps location <span>Optional</span></label>
+              <label for="sighting-location">{{ 'Where did you see it?' | translate:'आपने इसे कहाँ देखा?' }}</label>
+              <input id="sighting-location" name="sightingLocation" [ngModel]="sightingLocation()" (ngModelChange)="sightingLocation.set($event)" required [placeholder]="'Area, street or landmark' | translate:'इलाका, सड़क या कोई प्रमुख स्थान'">
+              <label for="sighting-map-location">{{ 'Vehicle live Google Maps location' | translate:'वाहन का लाइव Google Maps स्थान' }} <span>{{ 'Optional' | translate:'वैकल्पिक' }}</span></label>
               <input
                 id="sighting-map-location"
                 name="sightingMapLocation"
                 type="text"
                 [ngModel]="sightingMapLocation()"
                 (ngModelChange)="sightingMapLocation.set($event)"
-                placeholder="Paste a Google Maps link or coordinates"
-                title="Open Google Maps, copy the vehicle's live location link, and paste it here."
+                [placeholder]="'Paste a Google Maps link or coordinates' | translate:'Google Maps लिंक या निर्देशांक यहाँ चिपकाएँ'"
+                [title]="'Open Google Maps, copy the live location link for the vehicle, and paste it here.' | translate:'Google Maps खोलें, वाहन का लाइव स्थान लिंक कॉपी करें और यहाँ चिपकाएँ।'"
                 aria-describedby="sighting-map-location-help">
-              <small id="sighting-map-location-help" class="field-help">Open Google Maps, copy the vehicle's live location link, and paste it here.</small>
-              <label for="sighting-notes">Additional details <span>Optional</span></label>
-              <textarea id="sighting-notes" name="sightingNotes" [ngModel]="sightingNotes()" (ngModelChange)="sightingNotes.set($event)" rows="3" placeholder="Time, direction of travel, or other helpful details"></textarea>
-              <label for="sighting-image">Sighting photo <span>Optional</span></label>
+              <small id="sighting-map-location-help" class="field-help">{{ 'Open Google Maps, copy the live location link for the vehicle, and paste it here.' | translate:'Google Maps खोलें, वाहन का लाइव स्थान लिंक कॉपी करें और यहाँ चिपकाएँ।' }}</small>
+              <label for="sighting-notes">{{ 'Additional details' | translate:'अतिरिक्त विवरण' }} <span>{{ 'Optional' | translate:'वैकल्पिक' }}</span></label>
+              <textarea id="sighting-notes" name="sightingNotes" [ngModel]="sightingNotes()" (ngModelChange)="sightingNotes.set($event)" rows="3" [placeholder]="'Time, direction of travel, or other helpful details' | translate:'समय, यात्रा की दिशा या अन्य उपयोगी विवरण'"></textarea>
+              <label for="sighting-image">{{ 'Sighting photo' | translate:'देखे जाने की तस्वीर' }} <span>{{ 'Optional' | translate:'वैकल्पिक' }}</span></label>
               <input
                 id="sighting-image"
                 name="sightingImage"
@@ -210,24 +210,24 @@
                 [disabled]="submittingSighting()"
                 (change)="onSightingImageSelected($event)"
                 aria-describedby="sighting-image-help">
-              <small id="sighting-image-help" class="field-help">Choose a current photo to help the owner verify the sighting.</small>
+              <small id="sighting-image-help" class="field-help">{{ 'Choose a current photo to help the owner verify the sighting.' | translate:'मालिक को देखे जाने की पुष्टि करने में मदद के लिए हाल की तस्वीर चुनें।' }}</small>
               @if (sightingImagePreview(); as preview) {
                 <div class="sighting-image-preview">
-                  <img [src]="preview" [alt]="'Selected sighting photo: ' + sightingImage()?.name">
+                  <img [src]="preview" [alt]="('Selected sighting photo: ' + sightingImage()?.name) | translate:('देखे जाने की चयनित तस्वीर: ' + sightingImage()?.name)">
                   <div>
                     <span>{{ sightingImage()?.name }}</span>
-                    <button type="button" (click)="removeSightingImage()" [disabled]="submittingSighting()">Remove photo</button>
+                    <button type="button" (click)="removeSightingImage()" [disabled]="submittingSighting()">{{ 'Remove photo' | translate:'तस्वीर हटाएँ' }}</button>
                   </div>
                 </div>
               }
               <button class="secondary-action" type="submit" [disabled]="submittingSighting()">
                 <mat-icon>{{ submittingSighting() ? 'hourglass_top' : 'location_on' }}</mat-icon>
-                {{ submittingSighting() ? 'Sending sighting…' : 'Send sighting' }}
+                {{ submittingSighting() ? ('Sending sighting…' | translate:'देखे जाने की सूचना भेजी जा रही है…') : ('Send sighting' | translate:'देखे जाने की सूचना भेजें') }}
               </button>
-              <small>Your sighting will be sent to the vehicle owner.</small>
+              <small>{{ 'Your sighting will be sent to the vehicle owner.' | translate:'आपकी सूचना वाहन के मालिक को भेजी जाएगी।' }}</small>
             </form>
             @if (item.ownerMobile) {
-              <a class="phone-link" [href]="'tel:' + item.ownerMobile"><mat-icon>call</mat-icon>Call {{ item.ownerMobile }}</a>
+              <a class="phone-link" [href]="'tel:' + item.ownerMobile"><mat-icon>call</mat-icon>{{ 'Call' | translate:'कॉल करें' }} {{ item.ownerMobile }}</a>
             }
           }
         </aside>

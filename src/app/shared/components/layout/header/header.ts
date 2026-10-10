@@ -19,6 +19,7 @@ import { PUBLIC_NAVIGATION } from '../../../../core/config/navigation.config';
 import { ThemeService } from '../../../../core/services/theme.service';
 import { TokenService } from '../../../../core/services/token.service';
 import { AuthService } from '../../../../core/services/auth.service';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-header',
@@ -27,7 +28,8 @@ import { AuthService } from '../../../../core/services/auth.service';
     RouterLink,
     RouterLinkActive,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    TranslatePipe
   ],
   templateUrl: './header.html',
   styleUrl: './header.scss'

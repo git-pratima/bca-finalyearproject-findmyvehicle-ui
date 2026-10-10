@@ -7,8 +7,10 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { catchError, combineLatest, finalize, map, of, switchMap } from 'rxjs';
 
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { ApiEndpoints } from '../../../../core/constants/api-endpoints';
 import { ApiService } from '../../../../core/services/api.service';
+import { LanguageService } from '../../../../core/services/language.service';
 
 type MissingReport = {
   id: number;
@@ -87,7 +89,7 @@ type FeedbackResponse = {
 @Component({
   selector: 'app-vehicle-details',
   standalone: true,
-  imports: [DatePipe, FormsModule, MatIconModule, MatSnackBarModule, RouterLink],
+  imports: [DatePipe, FormsModule, MatIconModule, MatSnackBarModule, RouterLink, TranslatePipe],
   templateUrl: './vehicle-details.html',
   styleUrl: './vehicle-details.scss'
 })
@@ -97,6 +99,7 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
   private readonly destroyRef = inject(DestroyRef);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly languageService = inject(LanguageService);
   private slideshowTimer: number | undefined;
   readonly backLink = this.route.parent?.routeConfig?.path === 'dashboard' ? '/dashboard' : '/';
   readonly vehicle = signal<VehicleDetails | null>(null);
@@ -143,7 +146,7 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
   );
   readonly feedbackAvailable = computed(() => this.isReportFound(this.activeOwnReport()));
   readonly displayedStatus = computed(() =>
-    this.selectedReport()?.vehicleStatus ?? this.vehicle()?.vehicleStatus ?? 'STATUS UNAVAILABLE'
+    this.selectedReport()?.vehicleStatus ?? this.vehicle()?.vehicleStatus ?? this.languageService.text('STATUS UNAVAILABLE', 'स्थिति उपलब्ध नहीं')
   );
 
   ngOnInit(): void {
@@ -168,7 +171,7 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
           return of({
             response: null,
             reportId,
-            error: 'A vehicle registration number is required.'
+            error: this.languageService.text('A vehicle registration number is required.', 'वाहन की पंजीकरण संख्या आवश्यक है।')
           });
         }
 
@@ -181,7 +184,7 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
           catchError(error => of({
             response: null,
             reportId,
-            error: error?.error?.status?.message || error?.error?.message || 'Unable to load vehicle details. Please try again.'
+            error: error?.error?.status?.message || error?.error?.message || this.languageService.text('Unable to load vehicle details. Please try again.', 'वाहन का विवरण लोड नहीं हो सका। कृपया फिर से प्रयास करें।')
           })),
           finalize(() => this.loading.set(false))
         );
@@ -205,7 +208,7 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
           selectedReports === null
         ) {
           this.error.set(
-            'The selected vehicle report could not be verified. Return to the dashboard and try again.'
+            this.languageService.text('The selected vehicle report could not be verified. Return to the dashboard and try again.', 'चयनित वाहन रिपोर्ट की पुष्टि नहीं हो सकी। डैशबोर्ड पर लौटें और फिर से प्रयास करें।')
           );
           return;
         }
@@ -216,7 +219,7 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
         });
         this.startSlideshow();
       } else {
-        this.error.set(result.error || 'Vehicle details are unavailable.');
+        this.error.set(result.error || this.languageService.text('Vehicle details are unavailable.', 'वाहन का विवरण उपलब्ध नहीं है।'));
       }
     });
   }
@@ -249,13 +252,13 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
     const rating = this.feedbackRating();
     if (this.submittingFeedback()) return;
     if (!report) {
-      this.snackBar.open('Select a missing report before submitting feedback.', 'Close', {
+      this.snackBar.open(this.languageService.text('Select a missing report before submitting feedback.', 'प्रतिक्रिया सबमिट करने से पहले लापता वाहन की रिपोर्ट चुनें।'), this.languageService.text('Close', 'बंद करें'), {
         duration: 5000
       });
       return;
     }
     if (!this.ratingOptions.includes(rating)) {
-      this.snackBar.open('Choose a rating from 1 to 5 before submitting feedback.', 'Close', {
+      this.snackBar.open(this.languageService.text('Choose a rating from 1 to 5 before submitting feedback.', 'प्रतिक्रिया सबमिट करने से पहले 1 से 5 तक की रेटिंग चुनें।'), this.languageService.text('Close', 'बंद करें'), {
         duration: 5000
       });
       return;
@@ -279,8 +282,8 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
           this.feedbackRating.set(0);
           this.feedbackComment.set('');
           this.snackBar.open(
-            response.status?.message || 'Feedback submitted successfully.',
-            'Close',
+            response.status?.message || this.languageService.text('Feedback submitted successfully.', 'प्रतिक्रिया सफलतापूर्वक सबमिट की गई।'),
+            this.languageService.text('Close', 'बंद करें'),
             { duration: 5000 }
           );
         },
@@ -289,8 +292,8 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
           this.snackBar.open(
             error?.error?.status?.message ??
               error?.error?.message ??
-              'Unable to submit feedback. Please try again.',
-            'Close',
+              this.languageService.text('Unable to submit feedback. Please try again.', 'प्रतिक्रिया सबमिट नहीं हो सकी। कृपया फिर से प्रयास करें।'),
+            this.languageService.text('Close', 'बंद करें'),
             { duration: 6000 }
           );
         }
@@ -314,7 +317,7 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
     }
 
     const confirmed = window.confirm(
-      'Have you found this vehicle? Confirm to change its status to Found.'
+      this.languageService.text('Have you found this vehicle? Confirm to change its status to Found.', 'क्या आपको यह वाहन मिल गया है? इसकी स्थिति "मिल गया" करने के लिए पुष्टि करें।')
     );
     if (!confirmed) return;
 
@@ -342,7 +345,7 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
               missingDetails
             };
           });
-          this.snackBar.open('Vehicle status updated to Found.', 'Close', {
+          this.snackBar.open(this.languageService.text('Vehicle status updated to Found.', 'वाहन की स्थिति "मिल गया" में अपडेट की गई।'), this.languageService.text('Close', 'बंद करें'), {
             duration: 5000
           });
         },
@@ -351,8 +354,8 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
           this.snackBar.open(
             error?.error?.status?.message ??
               error?.error?.message ??
-              'Unable to update the vehicle status. Please try again.',
-            'Close',
+              this.languageService.text('Unable to update the vehicle status. Please try again.', 'वाहन की स्थिति अपडेट नहीं हो सकी। कृपया फिर से प्रयास करें।'),
+            this.languageService.text('Close', 'बंद करें'),
             { duration: 5000 }
           );
         }
@@ -360,7 +363,7 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
   }
 
   joinValues(...values: (string | null)[]): string {
-    return values.filter((value): value is string => !!value?.trim()).join(', ') || 'Not provided';
+    return values.filter((value): value is string => !!value?.trim()).join(', ') || this.languageService.text('Not provided', 'उपलब्ध नहीं');
   }
 
   notifyOwnerHref(): string {
@@ -394,7 +397,7 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      this.snackBar.open('Choose an image file for the sighting photo.', 'Close', {
+      this.snackBar.open(this.languageService.text('Choose an image file for the sighting photo.', 'देखे जाने की तस्वीर के लिए छवि फ़ाइल चुनें।'), this.languageService.text('Close', 'बंद करें'), {
         duration: 5000
       });
       return;
@@ -419,8 +422,8 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
     if (this.submittingSighting()) return;
     if (!vehicle || !report || !location || !dateTime) {
       this.snackBar.open(
-        'Select a specific missing report and enter the sighting date, time, and location.',
-        'Close',
+        this.languageService.text('Select a specific missing report and enter the sighting date, time, and location.', 'कोई विशिष्ट लापता वाहन रिपोर्ट चुनें और देखे जाने की तारीख, समय और स्थान दर्ज करें।'),
+        this.languageService.text('Close', 'बंद करें'),
         { duration: 5000 }
       );
       return;
@@ -428,7 +431,7 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
 
     const seenAt = new Date(dateTime);
     if (Number.isNaN(seenAt.getTime())) {
-      this.snackBar.open('Enter a valid date and time for the sighting.', 'Close', { duration: 5000 });
+      this.snackBar.open(this.languageService.text('Enter a valid date and time for the sighting.', 'देखे जाने की मान्य तारीख और समय दर्ज करें।'), this.languageService.text('Close', 'बंद करें'), { duration: 5000 });
       return;
     }
 
@@ -465,8 +468,8 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
           this.sightingNotes.set('');
           this.removeSightingImage();
           this.snackBar.open(
-            response.status?.message || 'Sighting submitted successfully.',
-            'Close',
+            response.status?.message || this.languageService.text('Sighting submitted successfully.', 'देखे जाने की सूचना सफलतापूर्वक सबमिट की गई।'),
+            this.languageService.text('Close', 'बंद करें'),
             { duration: 5000 }
           );
         },
@@ -475,8 +478,8 @@ export class VehicleDetailsComponent implements OnInit, OnDestroy {
           this.snackBar.open(
             error?.error?.status?.message ??
               error?.error?.message ??
-              'Unable to submit the sighting. Please try again.',
-            'Close',
+              this.languageService.text('Unable to submit the sighting. Please try again.', 'देखे जाने की सूचना सबमिट नहीं हो सकी। कृपया फिर से प्रयास करें।'),
+            this.languageService.text('Close', 'बंद करें'),
             { duration: 6000 }
           );
         }

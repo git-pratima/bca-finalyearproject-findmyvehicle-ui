@@ -1,9 +1,9 @@
 <main class="settings-page" aria-labelledby="settings-title">
   <header class="page-heading">
     <div>
-      <span class="eyebrow">Your preferences</span>
-      <h1 id="settings-title">Settings</h1>
-      <p>Personalize how Find My Vehicle looks and get to common account pages.</p>
+      <span class="eyebrow">{{ 'Your preferences' | translate:'आपकी प्राथमिकताएँ' }}</span>
+      <h1 id="settings-title">{{ 'Settings' | translate:'सेटिंग्स' }}</h1>
+      <p>{{ 'Personalize how Find My Vehicle looks and get to common account pages.' | translate:'Find My Vehicle का रूप अपनी पसंद के अनुसार बदलें और ज़रूरी खाता पृष्ठों पर जाएँ।' }}</p>
     </div>
     <span class="heading-icon"><mat-icon>settings</mat-icon></span>
   </header>
@@ -12,8 +12,8 @@
     <header class="section-heading">
       <span class="section-icon"><mat-icon>palette</mat-icon></span>
       <div>
-        <h2 id="appearance-heading">Appearance</h2>
-        <p>Choose the theme used across the app. Your choice is saved on this device.</p>
+        <h2 id="appearance-heading">{{ 'Appearance' | translate:'दिखावट' }}</h2>
+        <p>{{ 'Choose the theme used across the app. Your choice is saved on this device.' | translate:'ऐप के लिए थीम चुनें। आपकी पसंद इस डिवाइस पर सहेजी जाएगी।' }}</p>
       </div>
     </header>
 
@@ -25,7 +25,7 @@
         [attr.aria-pressed]="theme() === 'light'"
         (click)="setTheme('light')">
         <span class="theme-preview light-preview"><mat-icon>light_mode</mat-icon></span>
-        <span class="option-copy"><strong>Light</strong><small>Bright surfaces and dark text</small></span>
+        <span class="option-copy"><strong>{{ 'Light' | translate:'लाइट' }}</strong><small>{{ 'Bright surfaces and dark text' | translate:'हल्की पृष्ठभूमि और गहरा टेक्स्ट' }}</small></span>
         @if (theme() === 'light') {<mat-icon class="selected-icon">check_circle</mat-icon>}
       </button>
       <button
@@ -35,8 +35,41 @@
         [attr.aria-pressed]="theme() === 'dark'"
         (click)="setTheme('dark')">
         <span class="theme-preview dark-preview"><mat-icon>dark_mode</mat-icon></span>
-        <span class="option-copy"><strong>Dark</strong><small>Dim surfaces for low-light use</small></span>
+        <span class="option-copy"><strong>{{ 'Dark' | translate:'डार्क' }}</strong><small>{{ 'Dim surfaces for low-light use' | translate:'कम रोशनी में उपयोग के लिए गहरी पृष्ठभूमि' }}</small></span>
         @if (theme() === 'dark') {<mat-icon class="selected-icon">check_circle</mat-icon>}
+      </button>
+    </div>
+  </section>
+
+  <section class="settings-section" aria-labelledby="language-heading">
+    <header class="section-heading">
+      <span class="section-icon language-icon"><mat-icon>language</mat-icon></span>
+      <div>
+        <h2 id="language-heading">Language / भाषा</h2>
+        <p>{{ 'Choose the language used across the app. Your choice is saved on this device.' | translate:'ऐप के लिए भाषा चुनें। आपकी पसंद इस डिवाइस पर सहेजी जाएगी।' }}</p>
+      </div>
+    </header>
+
+    <div class="language-options" role="group" aria-labelledby="language-heading">
+      <button
+        class="language-option"
+        type="button"
+        [class.selected]="language() === 'en'"
+        [attr.aria-pressed]="language() === 'en'"
+        (click)="setLanguage('en')">
+        <span class="language-symbol">A</span>
+        <span class="option-copy"><strong>English</strong><small>{{ 'Use the app in English' | translate:'ऐप को अंग्रेज़ी में उपयोग करें' }}</small></span>
+        @if (language() === 'en') {<mat-icon class="selected-icon">check_circle</mat-icon>}
+      </button>
+      <button
+        class="language-option"
+        type="button"
+        [class.selected]="language() === 'hi'"
+        [attr.aria-pressed]="language() === 'hi'"
+        (click)="setLanguage('hi')">
+        <span class="language-symbol hindi-symbol">अ</span>
+        <span class="option-copy"><strong>हिन्दी</strong><small>{{ 'Use the app in Hindi' | translate:'ऐप को हिन्दी में उपयोग करें' }}</small></span>
+        @if (language() === 'hi') {<mat-icon class="selected-icon">check_circle</mat-icon>}
       </button>
     </div>
   </section>
@@ -45,21 +78,21 @@
     <header class="section-heading">
       <span class="section-icon account-icon"><mat-icon>manage_accounts</mat-icon></span>
       <div>
-        <h2 id="account-heading">Account shortcuts</h2>
-        <p>Quickly open the dashboard areas used to manage your account and reports.</p>
+        <h2 id="account-heading">{{ 'Account shortcuts' | translate:'खाते के शॉर्टकट' }}</h2>
+        <p>{{ 'Quickly open the dashboard areas used to manage your account and reports.' | translate:'अपने खाते और रिपोर्ट प्रबंधित करने के लिए डैशबोर्ड के पृष्ठ जल्दी खोलें।' }}</p>
       </div>
     </header>
     <div class="shortcut-list">
       <a routerLink="/dashboard/my-reports">
-        <span><mat-icon>description</mat-icon><span><strong>My Reports</strong><small>Review and manage your missing vehicle reports.</small></span></span>
+        <span><mat-icon>description</mat-icon><span><strong>{{ 'My Reports' | translate:'मेरी रिपोर्ट' }}</strong><small>{{ 'Review and manage your missing vehicle reports.' | translate:'अपनी लापता वाहन रिपोर्ट देखें और प्रबंधित करें।' }}</small></span></span>
         <mat-icon>arrow_forward</mat-icon>
       </a>
       <a routerLink="/dashboard/my-vehicles">
-        <span><mat-icon>directions_car</mat-icon><span><strong>My Vehicles</strong><small>View vehicles registered to your account.</small></span></span>
+        <span><mat-icon>directions_car</mat-icon><span><strong>{{ 'My Vehicles' | translate:'मेरे वाहन' }}</strong><small>{{ 'View vehicles registered to your account.' | translate:'अपने खाते में पंजीकृत वाहन देखें।' }}</small></span></span>
         <mat-icon>arrow_forward</mat-icon>
       </a>
       <a routerLink="/dashboard/help-support">
-        <span><mat-icon>help_outline</mat-icon><span><strong>Help &amp; Support</strong><small>Find emergency and Find My Vehicle support contacts.</small></span></span>
+        <span><mat-icon>help_outline</mat-icon><span><strong>{{ 'Help & Support' | translate:'सहायता और समर्थन' }}</strong><small>{{ 'Find emergency and Find My Vehicle support contacts.' | translate:'आपातकालीन और Find My Vehicle सहायता संपर्क देखें।' }}</small></span></span>
         <mat-icon>arrow_forward</mat-icon>
       </a>
     </div>

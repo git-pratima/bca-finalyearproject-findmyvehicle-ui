@@ -6,12 +6,13 @@
 
         <div class="logo">
 
-            🚗 Find My Vehicle
+            🚗 {{ 'Find My Vehicle' | translate:'मेरा वाहन खोजें' }}
 
         </div>
 
         <button
             class="close-btn"
+            [attr.aria-label]="'Close navigation' | translate:'नेविगेशन बंद करें'"
             (click)="closeMenu.emit()">
 
             ✕
@@ -44,7 +45,7 @@
                 routerLink="/profile"
                 (click)="closeMenu.emit()">
 
-                View Profile
+                {{ 'View Profile' | translate:'प्रोफ़ाइल देखें' }}
 
             </a>
 
@@ -78,7 +79,7 @@
 
             <span>
 
-                {{ item.label }}
+                {{ item.label | translate:(item.labelHindi || item.label) }}
 
             </span>
 
@@ -99,7 +100,7 @@
             (click)="themeService.toggleTheme()">
 
             <mat-icon>{{ themeService.theme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
-            <span>{{ themeService.theme() === 'dark' ? 'Light Mode' : 'Dark Mode' }}</span>
+            <span>{{ themeService.theme() === 'dark' ? ('Light Mode' | translate:'लाइट मोड') : ('Dark Mode' | translate:'डार्क मोड') }}</span>
 
         </button>
 
@@ -113,7 +114,7 @@
 
             (click)="closeMenu.emit()">
 
-            Login
+            {{ 'Login' | translate:'लॉग इन करें' }}
 
         </button>
 
@@ -125,7 +126,7 @@
 
             (click)="closeMenu.emit()">
 
-            Register
+            {{ 'Register' | translate:'पंजीकरण करें' }}
 
         </button>
 
@@ -141,7 +142,7 @@
 
             (click)="logout()">
 
-            Logout
+            {{ 'Logout' | translate:'लॉग आउट करें' }}
 
         </button>
 

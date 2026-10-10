@@ -7,6 +7,8 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { EMPTY, expand, finalize, map, Subscription, toArray } from 'rxjs';
 
 import { ApiService } from '../../../../core/services/api.service';
+import { LanguageService } from '../../../../core/services/language.service';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 type MissingReport = {
   id: number;
@@ -64,7 +66,7 @@ type MissingReportEntry = {
 @Component({
   selector: 'app-my-reports',
   standalone: true,
-  imports: [DatePipe, MatIconModule, RouterLink],
+  imports: [DatePipe, MatIconModule, RouterLink, TranslatePipe],
   templateUrl: './my-reports.html',
   styleUrl: './my-reports.scss'
 })
@@ -73,6 +75,7 @@ export class MyReportsComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly route = inject(ActivatedRoute);
+  private readonly languageService = inject(LanguageService);
   private requestSubscription?: Subscription;
 
   readonly regNumber = signal('');
@@ -166,7 +169,7 @@ export class MyReportsComponent implements OnInit {
           this.error.set(
             error?.error?.status?.message ||
             error?.error?.message ||
-            'Unable to load your reports. Please try again.'
+            this.languageService.text('Unable to load your reports. Please try again.', 'आपकी रिपोर्टें लोड नहीं हो सकीं। कृपया फिर से प्रयास करें।')
           );
         }
       });
@@ -188,6 +191,6 @@ export class MyReportsComponent implements OnInit {
   }
 
   joinValues(...values: (string | null)[]): string {
-    return values.filter((value): value is string => !!value?.trim()).join(', ') || 'Not provided';
+    return values.filter((value): value is string => !!value?.trim()).join(', ') || this.languageService.text('Not provided', 'उपलब्ध नहीं');
   }
 }

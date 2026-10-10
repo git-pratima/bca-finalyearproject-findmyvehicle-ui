@@ -19,6 +19,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '../../../../core/services/auth.service';
 import { LoginRequest } from '../../../../core/models/auth/login-request';
 import { ConfigService } from '../../../../core/services/config.service';
+import { LanguageService } from '../../../../core/services/language.service';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-login',
@@ -34,7 +36,8 @@ import { ConfigService } from '../../../../core/services/config.service';
     MatButtonModule,
     MatCheckboxModule,
     MatIconModule,
-    MatDividerModule
+    MatDividerModule,
+    TranslatePipe
   ],
 
   templateUrl: './login.html',
@@ -54,6 +57,8 @@ private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
 
   private readonly snackBar = inject(MatSnackBar);
+
+  private readonly languageService = inject(LanguageService);
 
   readonly hidePassword = signal(true);
 
@@ -111,7 +116,10 @@ login(): void {
         console.log(response);
 
         if (response.status?.status < 200 || response.status?.status >= 300) {
-          this.showError(response.status?.message ?? 'Invalid email or password.');
+          this.showError(response.status?.message ?? this.languageService.text(
+            'Invalid email or password.',
+            'ईमेल या पासवर्ड अमान्य है।'
+          ));
           return;
         }
 
@@ -128,7 +136,10 @@ login(): void {
         this.showError(
           error?.error?.status?.message ??
           error?.error?.message ??
-          'Invalid email or password.'
+          this.languageService.text(
+            'Invalid email or password.',
+            'ईमेल या पासवर्ड अमान्य है।'
+          )
         );
 
       }
@@ -140,7 +151,7 @@ login(): void {
 private showError(message: string): void {
   this.snackBar.open(
     message,
-          'Close',
+          this.languageService.text('Close', 'बंद करें'),
           {
             duration: 5000,
             horizontalPosition: 'center',

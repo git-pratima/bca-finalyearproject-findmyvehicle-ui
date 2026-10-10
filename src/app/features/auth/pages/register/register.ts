@@ -51,6 +51,8 @@ import {
   MatIconModule
 } from '@angular/material/icon';
 import { AuthService } from '../../../../core/services/auth.service';
+import { LanguageService } from '../../../../core/services/language.service';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-register',
@@ -67,7 +69,8 @@ import { AuthService } from '../../../../core/services/auth.service';
     MatInputModule,
     MatButtonModule,
     MatCheckboxModule,
-    MatIconModule
+    MatIconModule,
+    TranslatePipe
 
   ],
 
@@ -83,6 +86,8 @@ export class Register {
   private readonly snackBar = inject(MatSnackBar);
 
   private readonly fb = inject(FormBuilder);
+
+  private readonly languageService = inject(LanguageService);
 
   readonly loading = signal(false);
 
@@ -301,9 +306,12 @@ register(): void {
 
       this.snackBar.open(
 
-        error?.error?.status?.message ?? 'Registration Failed',
+        error?.error?.status?.message ?? this.languageService.text(
+          'Registration Failed',
+          'पंजीकरण विफल रहा'
+        ),
 
-        'Close',
+        this.languageService.text('Close', 'बंद करें'),
 
         {
 

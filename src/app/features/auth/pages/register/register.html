@@ -8,20 +8,19 @@
 
         <span class="welcome-badge">
 
-            Create Account
+            {{ 'Create Account' | translate:'खाता बनाएँ' }}
 
         </span>
 
         <h1>
 
-            Join Find My Vehicle
+            {{ 'Join Find My Vehicle' | translate:'मेरा वाहन खोजें से जुड़ें' }}
 
         </h1>
 
         <p>
 
-            Create your account to report, search and recover
-            missing or stolen vehicles securely.
+            {{ 'Create your account to report, search and recover missing or stolen vehicles securely.' | translate:'गुम या चोरी हुए वाहनों की सुरक्षित रिपोर्ट करने, खोजने और बरामद करने के लिए अपना खाता बनाएँ।' }}
 
         </p>
 
@@ -42,12 +41,12 @@
             appearance="outline"
             class="full-width">
 
-            <mat-label>Full Name</mat-label>
+            <mat-label>{{ 'Full Name' | translate:'पूरा नाम' }}</mat-label>
 
             <input
                 matInput
                 formControlName="name"
-                placeholder="Enter your full name">
+                [placeholder]="'Enter your full name' | translate:'अपना पूरा नाम दर्ज करें'">
 
             <mat-icon matSuffix>
 
@@ -59,7 +58,7 @@
 
             <mat-error>
 
-                Full Name is required
+                {{ 'Full Name is required' | translate:'पूरा नाम आवश्यक है' }}
 
             </mat-error>
 
@@ -69,7 +68,7 @@
 
             <mat-error>
 
-                Minimum 3 characters required
+                {{ 'Minimum 3 characters required' | translate:'कम से कम 3 अक्षर आवश्यक हैं' }}
 
             </mat-error>
 
@@ -83,13 +82,13 @@
             appearance="outline"
             class="full-width">
 
-            <mat-label>Email Address</mat-label>
+            <mat-label>{{ 'Email Address' | translate:'ईमेल पता' }}</mat-label>
 
             <input
                 matInput
                 type="email"
                 formControlName="email"
-                placeholder="Enter your email">
+                [placeholder]="'Enter your email' | translate:'अपना ईमेल दर्ज करें'">
 
             <mat-icon matSuffix>
 
@@ -101,7 +100,7 @@
 
             <mat-error>
 
-                Email is required
+                {{ 'Email is required' | translate:'ईमेल आवश्यक है' }}
 
             </mat-error>
 
@@ -111,7 +110,7 @@
 
             <mat-error>
 
-                Enter a valid email
+                {{ 'Enter a valid email' | translate:'मान्य ईमेल दर्ज करें' }}
 
             </mat-error>
 
@@ -125,7 +124,7 @@
             appearance="outline"
             class="full-width">
 
-            <mat-label>Mobile Number</mat-label>
+            <mat-label>{{ 'Mobile Number' | translate:'मोबाइल नंबर' }}</mat-label>
 
             <input
                 matInput
@@ -143,7 +142,7 @@
 
             <mat-error>
 
-                Mobile Number is required
+                {{ 'Mobile Number is required' | translate:'मोबाइल नंबर आवश्यक है' }}
 
             </mat-error>
 
@@ -153,7 +152,7 @@
 
             <mat-error>
 
-                Enter a valid 10 digit mobile number
+                {{ 'Enter a valid 10 digit mobile number' | translate:'10 अंकों का मान्य मोबाइल नंबर दर्ज करें' }}
 
             </mat-error>
 
@@ -167,18 +166,19 @@
             appearance="outline"
             class="full-width">
 
-            <mat-label>Password</mat-label>
+            <mat-label>{{ 'Password' | translate:'पासवर्ड' }}</mat-label>
 
             <input
                 matInput
                 [type]="hidePassword() ? 'password':'text'"
                 formControlName="password"
-                placeholder="Create password">
+                [placeholder]="'Create password' | translate:'पासवर्ड बनाएँ'">
 
             <button
                 mat-icon-button
                 matSuffix
                 type="button"
+                [attr.aria-label]="hidePassword() ? ('Show password' | translate:'पासवर्ड दिखाएँ') : ('Hide password' | translate:'पासवर्ड छिपाएँ')"
                 (click)="togglePassword()">
 
                 <mat-icon>
@@ -209,17 +209,17 @@
 
                 @switch(passwordStrength()){
 
-                @case(0){Weak}
+                @case (0) { {{ 'Weak' | translate:'कमज़ोर' }} }
 
-                @case(1){Weak}
+                @case (1) { {{ 'Weak' | translate:'कमज़ोर' }} }
 
-                @case(2){Fair}
+                @case (2) { {{ 'Fair' | translate:'ठीक-ठाक' }} }
 
-                @case(3){Good}
+                @case (3) { {{ 'Good' | translate:'अच्छा' }} }
 
-                @case(4){Strong}
+                @case (4) { {{ 'Strong' | translate:'मज़बूत' }} }
 
-                @case(5){Excellent}
+                @case (5) { {{ 'Excellent' | translate:'बेहतरीन' }} }
 
                 }
 
@@ -233,18 +233,19 @@
             appearance="outline"
             class="full-width">
 
-            <mat-label>Confirm Password</mat-label>
+            <mat-label>{{ 'Confirm Password' | translate:'पासवर्ड की पुष्टि करें' }}</mat-label>
 
             <input
                 matInput
                 [type]="hideConfirmPassword() ? 'password':'text'"
                 formControlName="confirmPassword"
-                placeholder="Confirm password">
+                [placeholder]="'Confirm password' | translate:'पासवर्ड की पुष्टि करें'">
 
             <button
                 mat-icon-button
                 matSuffix
                 type="button"
+                [attr.aria-label]="hideConfirmPassword() ? ('Show password' | translate:'पासवर्ड दिखाएँ') : ('Hide password' | translate:'पासवर्ड छिपाएँ')"
                 (click)="toggleConfirmPassword()">
 
                 <mat-icon>
@@ -262,7 +263,7 @@
 
         <div class="password-error">
 
-            Passwords do not match
+            {{ 'Passwords do not match' | translate:'पासवर्ड मेल नहीं खाते' }}
 
         </div>
 
@@ -274,13 +275,13 @@
 
             <mat-checkbox formControlName="terms">
 
-                I agree to the
+                {{ 'I agree to the' | translate:'मैं सहमत हूँ' }}
 
-                <a href="#">Terms of Service</a>
+                <a href="#">{{ 'Terms of Service' | translate:'सेवा की शर्तें' }}</a>
 
-                and
+                {{ 'and' | translate:'और' }}
 
-                <a href="#">Privacy Policy</a>
+                <a href="#">{{ 'Privacy Policy' | translate:'गोपनीयता नीति' }}</a>
 
             </mat-checkbox>
 
@@ -297,11 +298,11 @@
 
             @if(!loading()){
 
-            Create Account
+            {{ 'Create Account' | translate:'खाता बनाएँ' }}
 
             }@else{
 
-            Creating Account...
+            {{ 'Creating Account...' | translate:'खाता बनाया जा रहा है...' }}
 
             }
 
@@ -315,7 +316,7 @@
 
         <div class="line"></div>
 
-        <span>OR</span>
+        <span>{{ 'OR' | translate:'या' }}</span>
 
         <div class="line"></div>
 
@@ -330,9 +331,9 @@
         <img
             src="assets/images/google.png"
             class="google-logo"
-            alt="Google">
+            [alt]="'Google' | translate:'गूगल'">
 
-        Continue with Google
+        {{ 'Continue with Google' | translate:'Google से जारी रखें' }}
 
     </button>
 
@@ -340,11 +341,11 @@
 
     <div class="login-link">
 
-        Already have an account?
+        {{ 'Already have an account?' | translate:'पहले से खाता है?' }}
 
         <a routerLink="/login">
 
-            Login
+            {{ 'Login' | translate:'लॉग इन करें' }}
 
         </a>
 

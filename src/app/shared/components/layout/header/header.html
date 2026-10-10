@@ -1,19 +1,19 @@
 <header class="app-header">
   <div class="header-left">
-    <button mat-icon-button class="menu-button" aria-label="Open navigation" (click)="openMenu()"><mat-icon>menu</mat-icon></button>
-    <a routerLink="/" class="logo"><span class="brand-mark"><mat-icon>directions_car</mat-icon></span><span>FIND MY <strong>VEHICLE</strong></span></a>
+    <button mat-icon-button class="menu-button" [attr.aria-label]="'Open navigation' | translate:'नेविगेशन खोलें'" (click)="openMenu()"><mat-icon>menu</mat-icon></button>
+    <a routerLink="/" class="logo"><span class="brand-mark"><mat-icon>directions_car</mat-icon></span><span>{{ 'FIND MY' | translate:'मेरा वाहन' }} <strong>{{ 'VEHICLE' | translate:'खोजें' }}</strong></span></a>
   </div>
   <nav class="header-center">
     @for (item of navigation; track item.route) {
-      <a [routerLink]="item.route" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: item.route === '/' }">{{ item.label }}</a>
+      <a [routerLink]="item.route" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: item.route === '/' }">{{ item.label | translate:(item.labelHindi || item.label) }}</a>
     }
   </nav>
   <div class="header-right">
-    <div class="theme-toggle"><button type="button" class="theme-switch" [class.is-dark]="themeService.theme() === 'dark'" role="switch" [attr.aria-checked]="themeService.theme() === 'dark'" [attr.aria-label]="themeService.theme() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'" (click)="themeService.toggleTheme()"><span class="switch-icon sun"><mat-icon>light_mode</mat-icon></span><span class="switch-icon moon"><mat-icon>dark_mode</mat-icon></span><span class="switch-thumb"><mat-icon>{{ themeService.theme() === 'dark' ? 'dark_mode' : 'light_mode' }}</mat-icon></span></button></div>
+    <div class="theme-toggle"><button type="button" class="theme-switch" [class.is-dark]="themeService.theme() === 'dark'" role="switch" [attr.aria-checked]="themeService.theme() === 'dark'" [attr.aria-label]="themeService.theme() === 'dark' ? ('Switch to light theme' | translate:'लाइट थीम पर स्विच करें') : ('Switch to dark theme' | translate:'डार्क थीम पर स्विच करें')" (click)="themeService.toggleTheme()"><span class="switch-icon sun"><mat-icon>light_mode</mat-icon></span><span class="switch-icon moon"><mat-icon>dark_mode</mat-icon></span><span class="switch-thumb"><mat-icon>{{ themeService.theme() === 'dark' ? 'dark_mode' : 'light_mode' }}</mat-icon></span></button></div>
     @if (!loggedIn()) {
-      <div class="desktop-auth"><button mat-button routerLink="/login">Login</button><button mat-flat-button color="primary" routerLink="/register">Register</button></div>
+      <div class="desktop-auth"><button mat-button routerLink="/login">{{ 'Login' | translate:'लॉग इन करें' }}</button><button mat-flat-button color="primary" routerLink="/register">{{ 'Register' | translate:'पंजीकरण करें' }}</button></div>
     } @else {
-      <a mat-button routerLink="/profile">{{ userName() }}</a><button mat-button (click)="logout()">Logout</button>
+      <a mat-button routerLink="/profile">{{ userName() }}</a><button mat-button (click)="logout()">{{ 'Logout' | translate:'लॉग आउट करें' }}</button>
     }
   </div>
 </header>

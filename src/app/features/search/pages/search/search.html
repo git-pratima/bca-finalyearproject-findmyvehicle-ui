@@ -1,12 +1,12 @@
 <section class="search-page">
   <div>
-    <span>VEHICLE SEARCH</span>
-    <h1>Search Missing Vehicles</h1>
+    <span>{{ 'VEHICLE SEARCH' | translate:'वाहन खोज' }}</span>
+    <h1>{{ 'Search Missing Vehicles' | translate:'लापता वाहन खोजें' }}</h1>
     @if (query()) {
-      <p>Showing search results for <strong>“{{ query() }}”</strong>.</p>
+      <p>{{ 'Showing search results for' | translate:'के लिए खोज परिणाम दिखाए जा रहे हैं' }} <strong>“{{ query() }}”</strong>.</p>
     } @else {
-      <p>Enter a registration number, model, or location to begin your search.</p>
+      <p>{{ 'Enter a registration number, model, or location to begin your search.' | translate:'खोज शुरू करने के लिए पंजीकरण संख्या, मॉडल या स्थान दर्ज करें।' }}</p>
     }
-    <a routerLink="/">Back to home</a>
+    <a routerLink="/">{{ 'Back to home' | translate:'मुखपृष्ठ पर वापस जाएँ' }}</a>
   </div>
 </section>

@@ -1,25 +1,25 @@
 <section class="notifications-page" aria-labelledby="notifications-title">
   <header class="page-heading">
     <div>
-      <span class="eyebrow">Vehicle updates</span>
-      <h1 id="notifications-title">Notifications</h1>
-      <p>Review reported sightings and location information shared by the community.</p>
+      <span class="eyebrow">{{ 'Vehicle updates' | translate:'वाहन अपडेट' }}</span>
+      <h1 id="notifications-title">{{ 'Notifications' | translate:'सूचनाएँ' }}</h1>
+      <p>{{ 'Review reported sightings and location information shared by the community.' | translate:'समुदाय द्वारा साझा की गई देखे जाने की रिपोर्टें और स्थान की जानकारी देखें।' }}</p>
     </div>
     <div class="page-count">
       <mat-icon>notifications</mat-icon>
-      {{ totalElements() }} total
+      {{ totalElements() }} {{ 'total' | translate:'कुल' }}
     </div>
   </header>
 
-  <section class="notification-panel" aria-label="Vehicle sighting notifications">
+  <section class="notification-panel" aria-label="{{ 'Vehicle sighting notifications' | translate:'वाहन देखे जाने की सूचनाएँ' }}">
     <header class="list-heading">
       <div>
-        <h2>Sighting alerts</h2>
-        <p>{{ notifications().length }} notification{{ notifications().length === 1 ? '' : 's' }} on this page</p>
+        <h2>{{ 'Sighting alerts' | translate:'देखे जाने के अलर्ट' }}</h2>
+        <p>{{ notifications().length }} {{ notifications().length === 1 ? ('notification' | translate:'सूचना') : ('notifications' | translate:'सूचनाएँ') }} {{ 'on this page' | translate:'इस पृष्ठ पर' }}</p>
       </div>
       <label class="page-size">
-        Per page
-        <select [value]="pageSize()" (change)="updatePageSize($any($event.target).value)" [disabled]="loading()" aria-label="Notifications per page">
+        {{ 'Per page' | translate:'प्रति पृष्ठ' }}
+        <select [value]="pageSize()" (change)="updatePageSize($any($event.target).value)" [disabled]="loading()" aria-label="{{ 'Notifications per page' | translate:'प्रति पृष्ठ सूचनाएँ' }}">
           <option value="4">4</option>
           <option value="6">6</option>
           <option value="8">8</option>
@@ -29,12 +29,12 @@
     </header>
 
     @if (loading()) {
-      <p class="state-message" role="status">Loading notifications…</p>
+      <p class="state-message" role="status">{{ 'Loading notifications…' | translate:'सूचनाएँ लोड हो रही हैं…' }}</p>
     } @else if (error()) {
       <div class="state-message error-state" role="alert">
         <mat-icon>error_outline</mat-icon>
         <p>{{ error() }}</p>
-        <button type="button" (click)="loadNotifications()">Try again</button>
+        <button type="button" (click)="loadNotifications()">{{ 'Try again' | translate:'फिर से प्रयास करें' }}</button>
       </div>
     } @else if (notifications().length) {
       <div class="notification-list">
@@ -49,8 +49,8 @@
                     class="notification-image-button"
                     type="button"
                     (click)="openImage(notification.imageUrl)"
-                    [attr.aria-label]="'View sighting photo for ' + notification.regNo">
-                    <img [src]="notification.imageUrl" [alt]="'Sighting photo for ' + notification.regNo">
+                    [attr.aria-label]="('View sighting photo for ' | translate:'देखे जाने की तस्वीर देखें: ') + notification.regNo">
+                    <img [src]="notification.imageUrl" [alt]="('Sighting photo for ' | translate:'देखे जाने की तस्वीर: ') + notification.regNo">
                   </button>
                 } @else {
                   <span class="notification-icon"><mat-icon>directions_car</mat-icon></span>
@@ -63,16 +63,16 @@
                 [attr.aria-controls]="'notification-details-' + notification.id"
                 (click)="toggleNotification(notification.id)">
                 <span class="summary-content">
-                  <span class="summary-heading">Vehicle sighting · {{ notification.regNo }}</span>
+                  <span class="summary-heading">{{ 'Vehicle sighting' | translate:'वाहन देखा गया' }} · {{ notification.regNo }}</span>
                   <span class="summary-meta">
                     <span>{{ notification.seenAt | date:'dd MMM yyyy, hh:mm a' }}</span>
-                    <span class="summary-location">{{ notification.seenArea || 'Location not provided' }}</span>
-                    <span>Report #{{ notification.missingDetailsId }}</span>
+                    <span class="summary-location">{{ notification.seenArea || ('Location not provided' | translate:'स्थान उपलब्ध नहीं') }}</span>
+                    <span>{{ 'Report #' | translate:'रिपोर्ट #' }}{{ notification.missingDetailsId }}</span>
                   </span>
                 </span>
                 <span class="summary-trailing">
                   <span class="seen-status" [class.seen]="notification.seenByVehicleOwner === 'Y'">
-                    {{ notification.seenByVehicleOwner === 'Y' ? 'Seen' : 'New' }}
+                    {{ notification.seenByVehicleOwner === 'Y' ? ('Seen' | translate:'देखा गया') : ('New' | translate:'नया') }}
                   </span>
                   <mat-icon class="expand-icon">
                     {{ expandedNotificationIds().has(notification.id) ? 'expand_less' : 'expand_more' }}
@@ -84,8 +84,8 @@
             @if (expandedNotificationIds().has(notification.id)) {
               <div class="notification-content" [id]="'notification-details-' + notification.id">
                 <dl class="notification-details">
-                  <div><dt>Reported location</dt><dd>{{ notification.seenArea || 'Not provided' }}</dd></div>
-                  <div><dt>Report reference</dt><dd>#{{ notification.missingDetailsId }}</dd></div>
+                  <div><dt>{{ 'Reported location' | translate:'रिपोर्ट किया गया स्थान' }}</dt><dd>{{ notification.seenArea || ('Not provided' | translate:'उपलब्ध नहीं') }}</dd></div>
+                  <div><dt>{{ 'Report reference' | translate:'रिपोर्ट संदर्भ' }}</dt><dd>#{{ notification.missingDetailsId }}</dd></div>
                 </dl>
 
                 @if (notification.message) {
@@ -95,10 +95,10 @@
                 <footer class="notification-actions">
                   @if (isGoogleMapsLink(notification.liveMapLink)) {
                     <a class="map-link" [href]="notification.liveMapLink" target="_blank" rel="noopener noreferrer">
-                      <mat-icon>map</mat-icon>Open location in Google Maps
+                      <mat-icon>map</mat-icon>{{ 'Open location in Google Maps' | translate:'Google Maps में स्थान खोलें' }}
                     </a>
                   } @else if (notification.liveMapLink) {
-                    <p class="invalid-map-link"><mat-icon>info_outline</mat-icon>Map link is unavailable or invalid.</p>
+                    <p class="invalid-map-link"><mat-icon>info_outline</mat-icon>{{ 'Map link is unavailable or invalid.' | translate:'मानचित्र लिंक उपलब्ध नहीं है या अमान्य है।' }}</p>
                   }
                   <button
                     class="mark-seen-button"
@@ -108,7 +108,7 @@
                     <mat-icon>
                       {{ markingSeenId() === notification.id ? 'hourglass_top' : notification.seenByVehicleOwner === 'Y' ? 'check_circle' : 'done' }}
                     </mat-icon>
-                    {{ markingSeenId() === notification.id ? 'Updating…' : notification.seenByVehicleOwner === 'Y' ? 'Already seen' : 'Mark Seen' }}
+                    {{ markingSeenId() === notification.id ? ('Updating…' | translate:'अपडेट हो रहा है…') : notification.seenByVehicleOwner === 'Y' ? ('Already seen' | translate:'पहले से देखा गया') : ('Mark Seen' | translate:'देखा हुआ चिह्नित करें') }}
                   </button>
                 </footer>
               </div>
@@ -118,21 +118,21 @@
       </div>
 
       <footer class="pagination">
-        <span>Page {{ totalPages() ? page() + 1 : 0 }} of {{ totalPages() }}</span>
+        <span>{{ 'Page' | translate:'पृष्ठ' }} {{ totalPages() ? page() + 1 : 0 }} {{ 'of' | translate:'में से' }} {{ totalPages() }}</span>
         <div>
-          <button type="button" aria-label="Previous page" (click)="changePage(page() - 1)" [disabled]="page() === 0 || loading()">
-            <mat-icon>chevron_left</mat-icon>Previous
+          <button type="button" aria-label="{{ 'Previous page' | translate:'पिछला पृष्ठ' }}" (click)="changePage(page() - 1)" [disabled]="page() === 0 || loading()">
+            <mat-icon>chevron_left</mat-icon>{{ 'Previous' | translate:'पिछला' }}
           </button>
-          <button type="button" aria-label="Next page" (click)="changePage(page() + 1)" [disabled]="page() + 1 >= totalPages() || loading()">
-            Next<mat-icon>chevron_right</mat-icon>
+          <button type="button" aria-label="{{ 'Next page' | translate:'अगला पृष्ठ' }}" (click)="changePage(page() + 1)" [disabled]="page() + 1 >= totalPages() || loading()">
+            {{ 'Next' | translate:'अगला' }}<mat-icon>chevron_right</mat-icon>
           </button>
         </div>
       </footer>
     } @else {
       <div class="state-message empty-state">
         <mat-icon>notifications_none</mat-icon>
-        <h3>No notifications yet</h3>
-        <p>Vehicle sighting alerts will appear here.</p>
+        <h3>{{ 'No notifications yet' | translate:'अभी तक कोई सूचना नहीं' }}</h3>
+        <p>{{ 'Vehicle sighting alerts will appear here.' | translate:'वाहन देखे जाने के अलर्ट यहाँ दिखाई देंगे।' }}</p>
       </div>
     }
   </section>
@@ -141,16 +141,16 @@
 <dialog
   #imageDialog
   class="image-viewer"
-  aria-label="Sighting photo"
+  aria-label="{{ 'Sighting photo' | translate:'देखे जाने की तस्वीर' }}"
   (close)="onImageDialogClosed()">
   @if (selectedImageUrl(); as imageUrl) {
     <button
       class="image-viewer-close"
       type="button"
-      aria-label="Close photo"
+      aria-label="{{ 'Close photo' | translate:'तस्वीर बंद करें' }}"
       (click)="closeImage()">
       <mat-icon>close</mat-icon>
     </button>
-    <img class="image-viewer-photo" [src]="imageUrl" alt="Full-size vehicle sighting photo">
+    <img class="image-viewer-photo" [src]="imageUrl" alt="{{ 'Full-size vehicle sighting photo' | translate:'वाहन देखे जाने की पूरी आकार की तस्वीर' }}">
   }
 </dialog>

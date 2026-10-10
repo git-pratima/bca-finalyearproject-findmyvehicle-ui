@@ -8,6 +8,8 @@ import { finalize } from 'rxjs';
 
 import { ApiEndpoints } from '../../../../core/constants/api-endpoints';
 import { ApiService } from '../../../../core/services/api.service';
+import { LanguageService } from '../../../../core/services/language.service';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 type Feedback = {
   id: number;
@@ -50,7 +52,7 @@ type FeedbackResponse = {
 
 @Component({
   selector: 'app-feedback',
-  imports: [DatePipe, MatIconModule, RouterLink],
+  imports: [DatePipe, MatIconModule, RouterLink, TranslatePipe],
   templateUrl: './feedback.html',
   styleUrl: './feedback.scss'
 })
@@ -58,6 +60,7 @@ export class FeedbackComponent implements OnInit {
   private readonly apiService = inject(ApiService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly languageService = inject(LanguageService);
 
   readonly feedback = signal<Feedback[]>([]);
   readonly page = signal(0);
@@ -99,7 +102,7 @@ export class FeedbackComponent implements OnInit {
           this.error.set(
             error?.error?.status?.message ??
               error?.error?.message ??
-              'Unable to load feedback. Please try again.'
+              this.languageService.text('Unable to load feedback. Please try again.', 'प्रतिक्रिया लोड नहीं हो सकी। कृपया फिर से प्रयास करें।')
           );
         }
       });
@@ -124,7 +127,7 @@ export class FeedbackComponent implements OnInit {
       feedback.missingReport.city,
       feedback.missingReport.district,
       feedback.missingReport.state
-    ].filter((value): value is string => !!value?.trim()).join(', ') || 'Location not provided';
+    ].filter((value): value is string => !!value?.trim()).join(', ') || this.languageService.text('Location not provided', 'स्थान उपलब्ध नहीं');
   }
 
   isRecovered(feedback: Feedback): boolean {

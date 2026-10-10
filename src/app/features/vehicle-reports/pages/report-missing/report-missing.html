@@ -1,12 +1,69 @@
 <main class="report-page">
-  <header class="report-header"><a routerLink="/dashboard"><mat-icon>arrow_back</mat-icon>Back to dashboard</a></header>
-  @if (submitted()) {<section class="success-card"><span><mat-icon>check_circle</mat-icon></span><h1>Report submitted successfully</h1><p>Your missing vehicle report has been registered. We will notify you when there is an update.</p><button (click)="returnToDashboard()">Return to dashboard</button></section>} @else {
-  <section class="report-intro"><span>REPORT MISSING VEHICLE</span><h1>Help us locate your vehicle</h1><p>Provide as much detail as possible. Your report will be shared with our recovery network.</p></section>
-  <form [formGroup]="form" novalidate>
-    <section class="form-card"><div class="card-title"><span><mat-icon>directions_car</mat-icon></span><div><h2>Vehicle information</h2><p>Enter the details exactly as they appear on the registration certificate.</p></div></div><div class="form-grid three"><label>Registration number<input formControlName="regNumber" placeholder="e.g. AP09AB1234"></label><label>Vehicle company<select formControlName="vehicleCompany"><option value="">Select company</option><option value="MARUTI_SUZUKI">Maruti Suzuki</option><option value="HYUNDAI">Hyundai</option><option value="HONDA">Honda</option><option value="TATA">Tata</option><option value="MAHINDRA">Mahindra</option><option value="OTHER">Other</option></select></label><label>Vehicle type<select formControlName="type"><option value="">Select type</option><option value="CAR">Car</option><option value="BIKE">Bike</option><option value="SCOOTER">Scooter</option><option value="TRUCK">Truck</option><option value="OTHER">Other</option></select></label><label>Vehicle model<input formControlName="vehicleModel" placeholder="e.g. Swift VXI"></label><label>Colour<input formControlName="color" placeholder="e.g. Blue"></label><label>Chassis number<input formControlName="chassisNumber" placeholder="Chassis number"></label><label>Engine number<input formControlName="engineNumber" placeholder="Engine number"></label></div></section>
-    <section class="form-card"><div class="card-title"><span><mat-icon>person</mat-icon></span><div><h2>Owner information</h2><p>We only use this information to contact you about this report.</p></div></div><div class="form-grid three"><label>Owner name<input formControlName="owner" placeholder="Full name"></label><label>Email address<input type="email" formControlName="ownerEmail" placeholder="you@example.com"></label><label>Mobile number<input type="tel" formControlName="ownerMobile" placeholder="10-digit mobile number"></label></div></section>
-    <section class="form-card"><div class="card-title"><span><mat-icon>location_on</mat-icon></span><div><h2>Missing details</h2><p>Tell us where and when the vehicle was last seen.</p></div></div><div class="form-grid three"><label>Date missing<input type="date" formControlName="missingDate"></label><label>Time missing<input type="time" formControlName="missingTime"></label><label>Reward (optional)<input formControlName="reward" placeholder="e.g. ₹50,000"></label><label class="wide">Last seen address<input formControlName="address" placeholder="Street, locality or landmark"></label><label>City<input formControlName="city" placeholder="City"></label><label>District<input formControlName="district" placeholder="District"></label><label>State<select formControlName="state"><option value="">Select state</option><option value="ANDHRA_PRADESH">Andhra Pradesh</option><option value="KARNATAKA">Karnataka</option><option value="TELANGANA">Telangana</option><option value="TAMIL_NADU">Tamil Nadu</option><option value="MAHARASHTRA">Maharashtra</option><option value="OTHER">Other</option></select></label><label>Country<input formControlName="country"></label><label>PIN code<input formControlName="pinCode" placeholder="6-digit PIN"></label><label class="wide">Description<textarea formControlName="description" rows="4" placeholder="Include distinctive features, where it was parked, and anything else that may help."></textarea></label></div></section>
-    <section class="form-card"><div class="card-title"><span><mat-icon>add_a_photo</mat-icon></span><div><h2>Vehicle photos <small>(optional, up to 4)</small></h2><p>Add clear photos to make the vehicle easier to identify.</p></div></div><div class="photo-slots">@for (slot of photoSlots; track slot) {@if (imagePreviews()[slot]; as preview) {<figure class="photo-preview"><img [src]="preview" [alt]="'Selected vehicle photo ' + (slot + 1)"><button type="button" (click)="removeImage(slot)" [attr.aria-label]="'Remove photo ' + (slot + 1)"><mat-icon>close</mat-icon></button></figure>} @else {<div class="photo-empty"><mat-icon>image</mat-icon><span>Photo {{ slot + 1 }}</span></div>}}<label class="upload-tile" [class.disabled]="selectedImages().length === 4"><input type="file" accept="image/*" multiple [disabled]="selectedImages().length === 4" (change)="onImagesSelected($event)"><mat-icon>cloud_upload</mat-icon><strong>Upload</strong><small>{{ selectedImages().length }}/4 photos</small></label></div></section>
-    @if (error()) {<p class="form-error" role="alert"><mat-icon>error_outline</mat-icon>{{ error() }}</p>}<div class="form-actions"><a routerLink="/dashboard">Cancel</a><button type="button" (click)="submit()" [disabled]="loading()">@if (loading()) {Submitting report…} @else {Submit missing vehicle report <mat-icon>arrow_forward</mat-icon>}</button></div>
-  </form>}
+  <header class="report-header"><a routerLink="/dashboard"><mat-icon>arrow_back</mat-icon>{{ 'Back to dashboard' | translate:'डैशबोर्ड पर वापस जाएँ' }}</a></header>
+  @if (submitted()) {
+    <section class="success-card">
+      <span><mat-icon>check_circle</mat-icon></span>
+      <h1>{{ 'Report submitted successfully' | translate:'रिपोर्ट सफलतापूर्वक सबमिट की गई' }}</h1>
+      <p>{{ 'Your missing vehicle report has been registered. We will notify you when there is an update.' | translate:'आपकी लापता वाहन रिपोर्ट दर्ज कर ली गई है। कोई अपडेट होने पर हम आपको सूचित करेंगे।' }}</p>
+      <button (click)="returnToDashboard()">{{ 'Return to dashboard' | translate:'डैशबोर्ड पर लौटें' }}</button>
+    </section>
+  } @else {
+    <section class="report-intro">
+      <span>{{ 'REPORT MISSING VEHICLE' | translate:'लापता वाहन की रिपोर्ट करें' }}</span>
+      <h1>{{ 'Help us locate your vehicle' | translate:'अपना वाहन ढूँढ़ने में हमारी मदद करें' }}</h1>
+      <p>{{ 'Provide as much detail as possible. Your report will be shared with our recovery network.' | translate:'यथासंभव अधिक जानकारी दें। आपकी रिपोर्ट हमारे वाहन रिकवरी नेटवर्क के साथ साझा की जाएगी।' }}</p>
+    </section>
+    <form [formGroup]="form" novalidate>
+      <section class="form-card">
+        <div class="card-title"><span><mat-icon>directions_car</mat-icon></span><div><h2>{{ 'Vehicle information' | translate:'वाहन की जानकारी' }}</h2><p>{{ 'Enter the details exactly as they appear on the registration certificate.' | translate:'विवरण ठीक वैसे ही दर्ज करें जैसे वे पंजीकरण प्रमाणपत्र पर हैं।' }}</p></div></div>
+        <div class="form-grid three">
+          <label>{{ 'Registration number' | translate:'पंजीकरण संख्या' }}<input formControlName="regNumber" placeholder="{{ 'e.g. AP09AB1234' | translate:'उदा. AP09AB1234' }}"></label>
+          <label>{{ 'Vehicle company' | translate:'वाहन निर्माता कंपनी' }}<select formControlName="vehicleCompany"><option value="">{{ 'Select company' | translate:'कंपनी चुनें' }}</option><option value="MARUTI_SUZUKI">Maruti Suzuki</option><option value="HYUNDAI">Hyundai</option><option value="HONDA">Honda</option><option value="TATA">Tata</option><option value="MAHINDRA">Mahindra</option><option value="OTHER">{{ 'Other' | translate:'अन्य' }}</option></select></label>
+          <label>{{ 'Vehicle type' | translate:'वाहन का प्रकार' }}<select formControlName="type"><option value="">{{ 'Select type' | translate:'प्रकार चुनें' }}</option><option value="CAR">{{ 'Car' | translate:'कार' }}</option><option value="BIKE">{{ 'Bike' | translate:'बाइक' }}</option><option value="SCOOTER">{{ 'Scooter' | translate:'स्कूटर' }}</option><option value="TRUCK">{{ 'Truck' | translate:'ट्रक' }}</option><option value="OTHER">{{ 'Other' | translate:'अन्य' }}</option></select></label>
+          <label>{{ 'Vehicle model' | translate:'वाहन का मॉडल' }}<input formControlName="vehicleModel" placeholder="{{ 'e.g. Swift VXI' | translate:'उदा. Swift VXI' }}"></label>
+          <label>{{ 'Colour' | translate:'रंग' }}<input formControlName="color" placeholder="{{ 'e.g. Blue' | translate:'उदा. नीला' }}"></label>
+          <label>{{ 'Chassis number' | translate:'चेसिस नंबर' }}<input formControlName="chassisNumber" placeholder="{{ 'Chassis number' | translate:'चेसिस नंबर' }}"></label>
+          <label>{{ 'Engine number' | translate:'इंजन नंबर' }}<input formControlName="engineNumber" placeholder="{{ 'Engine number' | translate:'इंजन नंबर' }}"></label>
+        </div>
+      </section>
+      <section class="form-card">
+        <div class="card-title"><span><mat-icon>person</mat-icon></span><div><h2>{{ 'Owner information' | translate:'मालिक की जानकारी' }}</h2><p>{{ 'We only use this information to contact you about this report.' | translate:'हम इस जानकारी का उपयोग केवल इस रिपोर्ट के बारे में आपसे संपर्क करने के लिए करेंगे।' }}</p></div></div>
+        <div class="form-grid three">
+          <label>{{ 'Owner name' | translate:'मालिक का नाम' }}<input formControlName="owner" placeholder="{{ 'Full name' | translate:'पूरा नाम' }}"></label>
+          <label>{{ 'Email address' | translate:'ईमेल पता' }}<input type="email" formControlName="ownerEmail" placeholder="{{ 'you@example.com' | translate:'आप@उदाहरण.com' }}"></label>
+          <label>{{ 'Mobile number' | translate:'मोबाइल नंबर' }}<input type="tel" formControlName="ownerMobile" placeholder="{{ '10-digit mobile number' | translate:'10 अंकों का मोबाइल नंबर' }}"></label>
+        </div>
+      </section>
+      <section class="form-card">
+        <div class="card-title"><span><mat-icon>location_on</mat-icon></span><div><h2>{{ 'Missing details' | translate:'लापता होने का विवरण' }}</h2><p>{{ 'Tell us where and when the vehicle was last seen.' | translate:'हमें बताएँ कि वाहन आखिरी बार कहाँ और कब देखा गया था।' }}</p></div></div>
+        <div class="form-grid three">
+          <label>{{ 'Date missing' | translate:'लापता होने की तारीख' }}<input type="date" formControlName="missingDate"></label>
+          <label>{{ 'Time missing' | translate:'लापता होने का समय' }}<input type="time" formControlName="missingTime"></label>
+          <label>{{ 'Reward (optional)' | translate:'इनाम (वैकल्पिक)' }}<input formControlName="reward" placeholder="{{ 'e.g. ₹50,000' | translate:'उदा. ₹50,000' }}"></label>
+          <label class="wide">{{ 'Last seen address' | translate:'आखिरी बार देखा गया पता' }}<input formControlName="address" placeholder="{{ 'Street, locality or landmark' | translate:'सड़क, इलाका या कोई प्रमुख स्थान' }}"></label>
+          <label>{{ 'City' | translate:'शहर' }}<input formControlName="city" placeholder="{{ 'City' | translate:'शहर' }}"></label>
+          <label>{{ 'District' | translate:'ज़िला' }}<input formControlName="district" placeholder="{{ 'District' | translate:'ज़िला' }}"></label>
+          <label>{{ 'State' | translate:'राज्य' }}<select formControlName="state"><option value="">{{ 'Select state' | translate:'राज्य चुनें' }}</option><option value="ANDHRA_PRADESH">{{ 'Andhra Pradesh' | translate:'आंध्र प्रदेश' }}</option><option value="KARNATAKA">{{ 'Karnataka' | translate:'कर्नाटक' }}</option><option value="TELANGANA">{{ 'Telangana' | translate:'तेलंगाना' }}</option><option value="TAMIL_NADU">{{ 'Tamil Nadu' | translate:'तमिलनाडु' }}</option><option value="MAHARASHTRA">{{ 'Maharashtra' | translate:'महाराष्ट्र' }}</option><option value="OTHER">{{ 'Other' | translate:'अन्य' }}</option></select></label>
+          <label>{{ 'Country' | translate:'देश' }}<input formControlName="country"></label>
+          <label>{{ 'PIN code' | translate:'पिन कोड' }}<input formControlName="pinCode" placeholder="{{ '6-digit PIN' | translate:'6 अंकों का पिन' }}"></label>
+          <label class="wide">{{ 'Description' | translate:'विवरण' }}<textarea formControlName="description" rows="4" placeholder="{{ 'Include distinctive features, where it was parked, and anything else that may help.' | translate:'विशिष्ट पहचान, वाहन कहाँ खड़ा था और मददगार कोई अन्य जानकारी शामिल करें।' }}"></textarea></label>
+        </div>
+      </section>
+      <section class="form-card">
+        <div class="card-title"><span><mat-icon>add_a_photo</mat-icon></span><div><h2>{{ 'Vehicle photos' | translate:'वाहन की तस्वीरें' }} <small>{{ '(optional, up to 4)' | translate:'(वैकल्पिक, अधिकतम 4)' }}</small></h2><p>{{ 'Add clear photos to make the vehicle easier to identify.' | translate:'वाहन की पहचान आसान बनाने के लिए साफ़ तस्वीरें जोड़ें।' }}</p></div></div>
+        <div class="photo-slots">
+          @for (slot of photoSlots; track slot) {
+            @if (imagePreviews()[slot]; as preview) {
+              <figure class="photo-preview"><img [src]="preview" [alt]="'Selected vehicle photo ' | translate:'चयनित वाहन की तस्वीर ' + (slot + 1)"><button type="button" (click)="removeImage(slot)" [attr.aria-label]="'Remove photo ' | translate:'तस्वीर हटाएँ ' + (slot + 1)"><mat-icon>close</mat-icon></button></figure>
+            } @else {
+              <div class="photo-empty"><mat-icon>image</mat-icon><span>{{ 'Photo' | translate:'तस्वीर' }} {{ slot + 1 }}</span></div>
+            }
+          }
+          <label class="upload-tile" [class.disabled]="selectedImages().length === 4"><input type="file" accept="image/*" multiple [disabled]="selectedImages().length === 4" (change)="onImagesSelected($event)"><mat-icon>cloud_upload</mat-icon><strong>{{ 'Upload' | translate:'अपलोड करें' }}</strong><small>{{ selectedImages().length }}/4 {{ 'photos' | translate:'तस्वीरें' }}</small></label>
+        </div>
+      </section>
+      @if (error()) {<p class="form-error" role="alert"><mat-icon>error_outline</mat-icon>{{ error() }}</p>}
+      <div class="form-actions"><a routerLink="/dashboard">{{ 'Cancel' | translate:'रद्द करें' }}</a><button type="button" (click)="submit()" [disabled]="loading()">@if (loading()) { {{ 'Submitting report…' | translate:'रिपोर्ट सबमिट हो रही है…' }} } @else { {{ 'Submit missing vehicle report' | translate:'लापता वाहन की रिपोर्ट सबमिट करें' }} <mat-icon>arrow_forward</mat-icon> }</button></div>
+    </form>
+  }
 </main>

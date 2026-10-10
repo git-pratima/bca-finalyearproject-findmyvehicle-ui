@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 import { RouterOutlet } from '@angular/router';
 
@@ -11,10 +12,9 @@ import { MatIconModule } from '@angular/material/icon';
     standalone: true,
 
     imports: [
-
         RouterOutlet,
-
-        MatIconModule
+        MatIconModule,
+        TranslatePipe
 
     ],
 

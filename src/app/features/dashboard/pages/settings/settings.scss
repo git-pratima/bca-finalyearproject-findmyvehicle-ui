@@ -12,6 +12,7 @@
 .section-icon{flex-basis:38px;height:38px}
 .section-icon mat-icon{font-size:21px}
 .section-icon.account-icon{color:#145ca8;background:#eef5ff}
+.section-icon.language-icon{color:#8824dc;background:#f1e5ff}
 .section-heading h2{margin:0 0 4px;font-size:16px}
 .theme-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .theme-option{display:flex;align-items:center;gap:12px;min-width:0;padding:13px;border:1px solid var(--color-border);border-radius:10px;color:var(--color-text);background:var(--color-surface);font:inherit;text-align:left;cursor:pointer;transition:border-color .15s,background-color .15s}
@@ -26,6 +27,13 @@
 .option-copy strong{font-size:13px}
 .option-copy small{color:var(--color-text-secondary);font-size:11px}
 .selected-icon{flex:0 0 auto;color:var(--color-primary);font-size:20px}
+.language-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.language-option{display:flex;align-items:center;gap:12px;min-width:0;padding:13px;border:1px solid var(--color-border);border-radius:10px;color:var(--color-text);background:var(--color-surface);font:inherit;text-align:left;cursor:pointer;transition:border-color .15s,background-color .15s}
+.language-option:hover{border-color:var(--color-primary)}
+.language-option.selected{border-color:var(--color-primary);background:color-mix(in srgb,var(--color-primary) 6%,var(--color-surface))}
+.language-option:focus-visible{outline:2px solid var(--color-primary);outline-offset:2px}
+.language-symbol{display:grid;place-items:center;flex:0 0 42px;height:42px;border:1px solid var(--color-border);border-radius:9px;color:#145ca8;background:#eef5ff;font-size:19px;font-weight:800}
+.hindi-symbol{color:#087943;background:#e7f8ef}
 .shortcut-list{display:grid}
 .shortcut-list>a{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 4px;border-top:1px solid var(--color-border);color:var(--color-text);text-decoration:none}
 .shortcut-list>a>span{display:flex;align-items:center;gap:12px;min-width:0}
@@ -35,4 +43,4 @@
 .shortcut-list small{color:var(--color-text-secondary);font-size:11px}
 .shortcut-list>a>mat-icon{color:var(--color-text-secondary)}
 .shortcut-list>a:hover strong{color:var(--color-primary)}
-@media(max-width:640px){.settings-page{padding:18px 14px}.page-heading h1{font-size:22px}.settings-section{padding:14px}.theme-options{grid-template-columns:1fr}.theme-option{padding:11px}.shortcut-list>a{align-items:flex-start}.shortcut-list small{line-height:1.4}}
+@media(max-width:640px){.settings-page{padding:18px 14px}.page-heading h1{font-size:22px}.settings-section{padding:14px}.theme-options,.language-options{grid-template-columns:1fr}.theme-option,.language-option{padding:11px}.shortcut-list>a{align-items:flex-start}.shortcut-list small{line-height:1.4}}

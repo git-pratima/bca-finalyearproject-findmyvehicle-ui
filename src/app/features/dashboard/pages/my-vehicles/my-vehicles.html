@@ -1,26 +1,26 @@
 <main class="listing-page">
   <header class="page-heading">
-    <div><span class="eyebrow">Your garage</span><h1>My Vehicles</h1><p>Vehicles listed by you, with their identification and report status.</p></div>
-    <a class="listing-action" routerLink="/dashboard/report-missing"><mat-icon>add</mat-icon>List a New Vehicle</a>
+    <div><span class="eyebrow">{{ 'Your garage' | translate:'आपका गैराज' }}</span><h1>{{ 'My Vehicles' | translate:'मेरे वाहन' }}</h1><p>{{ 'Vehicles listed by you, with their identification and report status.' | translate:'आपके द्वारा सूचीबद्ध वाहन, उनकी पहचान और रिपोर्ट की स्थिति।' }}</p></div>
+    <a class="listing-action" routerLink="/dashboard/report-missing"><mat-icon>add</mat-icon>{{ 'List a New Vehicle' | translate:'नया वाहन सूचीबद्ध करें' }}</a>
   </header>
 
-  <section class="filter-card" aria-label="Filter your vehicles">
-    <div class="filter-heading"><span class="filter-icon"><mat-icon>tune</mat-icon></span><div><h2>Filter vehicles</h2><p>Find a listed vehicle by registration, model, or reported location.</p></div></div>
+  <section class="filter-card" aria-label="{{ 'Filter your vehicles' | translate:'अपने वाहनों को फ़िल्टर करें' }}">
+    <div class="filter-heading"><span class="filter-icon"><mat-icon>tune</mat-icon></span><div><h2>{{ 'Filter vehicles' | translate:'वाहन फ़िल्टर करें' }}</h2><p>{{ 'Find a listed vehicle by registration, model, or reported location.' | translate:'पंजीकरण, मॉडल या रिपोर्ट किए गए स्थान से सूचीबद्ध वाहन खोजें।' }}</p></div></div>
     <form class="filter-grid" (submit)="$event.preventDefault(); search()">
-      <label>Registration number<input [value]="regNumber()" (input)="regNumber.set($any($event.target).value)" placeholder="e.g. KA00112212"></label>
-      <label>Vehicle model<input [value]="model()" (input)="model.set($any($event.target).value)" placeholder="e.g. Honda Activa"></label>
-      <label>Missing city<input [value]="missingCity()" (input)="missingCity.set($any($event.target).value)" placeholder="e.g. Bengaluru"></label>
-      <label>PIN code<input [value]="pinCode()" (input)="pinCode.set($any($event.target).value)" placeholder="e.g. 562107" inputmode="numeric"></label>
-      <div class="filter-actions"><button class="clear-button" type="button" (click)="clearFilters()" [disabled]="loading()">Clear</button><button class="search-button" type="submit" [disabled]="loading()"><mat-icon>search</mat-icon>{{ loading() ? 'Searching…' : 'Search vehicles' }}</button></div>
+      <label>{{ 'Registration number' | translate:'पंजीकरण संख्या' }}<input [value]="regNumber()" (input)="regNumber.set($any($event.target).value)" placeholder="{{ 'e.g. KA00112212' | translate:'उदा. KA00112212' }}"></label>
+      <label>{{ 'Vehicle model' | translate:'वाहन मॉडल' }}<input [value]="model()" (input)="model.set($any($event.target).value)" placeholder="{{ 'e.g. Honda Activa' | translate:'उदा. Honda Activa' }}"></label>
+      <label>{{ 'Missing city' | translate:'लापता होने का शहर' }}<input [value]="missingCity()" (input)="missingCity.set($any($event.target).value)" placeholder="{{ 'e.g. Bengaluru' | translate:'उदा. बेंगलुरु' }}"></label>
+      <label>{{ 'PIN code' | translate:'पिन कोड' }}<input [value]="pinCode()" (input)="pinCode.set($any($event.target).value)" placeholder="{{ 'e.g. 562107' | translate:'उदा. 562107' }}" inputmode="numeric"></label>
+      <div class="filter-actions"><button class="clear-button" type="button" (click)="clearFilters()" [disabled]="loading()">{{ 'Clear' | translate:'साफ़ करें' }}</button><button class="search-button" type="submit" [disabled]="loading()"><mat-icon>search</mat-icon>{{ loading() ? ('Searching…' | translate:'खोज रहे हैं…') : ('Search vehicles' | translate:'वाहन खोजें') }}</button></div>
     </form>
   </section>
 
   <section class="vehicle-section" aria-labelledby="vehicle-list-heading">
-    <header class="list-heading"><div><h2 id="vehicle-list-heading">{{ searched() ? 'Vehicle search results' : 'Vehicles listed by you' }}</h2><p>{{ totalElements() }} vehicle{{ totalElements() === 1 ? '' : 's' }} found</p></div><div class="list-controls"><label>Per page<select [value]="pageSize()" (change)="updatePageSize($any($event.target).value)" [disabled]="loading()" aria-label="Vehicles per page"><option value="4">4</option><option value="6">6</option><option value="8">8</option><option value="10">10</option></select></label><nav class="list-pagination" aria-label="My vehicle pages"><button type="button" aria-label="Previous page" (click)="loadVehicles(page() - 1)" [disabled]="page() === 0 || loading()"><mat-icon>chevron_left</mat-icon></button><span>Page <strong>{{ totalPages() ? page() + 1 : 0 }}</strong> of <strong>{{ totalPages() }}</strong></span><button type="button" aria-label="Next page" (click)="loadVehicles(page() + 1)" [disabled]="page() + 1 >= totalPages() || loading()"><mat-icon>chevron_right</mat-icon></button></nav></div></header>
+    <header class="list-heading"><div><h2 id="vehicle-list-heading">{{ searched() ? ('Vehicle search results' | translate:'वाहन खोज परिणाम') : ('Vehicles listed by you' | translate:'आपके द्वारा सूचीबद्ध वाहन') }}</h2><p>{{ totalElements() }} {{ totalElements() === 1 ? ('vehicle' | translate:'वाहन') : ('vehicles' | translate:'वाहन') }} {{ 'found' | translate:'मिले' }}</p></div><div class="list-controls"><label>{{ 'Per page' | translate:'प्रति पृष्ठ' }}<select [value]="pageSize()" (change)="updatePageSize($any($event.target).value)" [disabled]="loading()" aria-label="{{ 'Vehicles per page' | translate:'प्रति पृष्ठ वाहन' }}"><option value="4">4</option><option value="6">6</option><option value="8">8</option><option value="10">10</option></select></label><nav class="list-pagination" aria-label="{{ 'My vehicle pages' | translate:'मेरे वाहनों के पृष्ठ' }}"><button type="button" aria-label="{{ 'Previous page' | translate:'पिछला पृष्ठ' }}" (click)="loadVehicles(page() - 1)" [disabled]="page() === 0 || loading()"><mat-icon>chevron_left</mat-icon></button><span>{{ 'Page' | translate:'पृष्ठ' }} <strong>{{ totalPages() ? page() + 1 : 0 }}</strong> {{ 'of' | translate:'में से' }} <strong>{{ totalPages() }}</strong></span><button type="button" aria-label="{{ 'Next page' | translate:'अगला पृष्ठ' }}" (click)="loadVehicles(page() + 1)" [disabled]="page() + 1 >= totalPages() || loading()"><mat-icon>chevron_right</mat-icon></button></nav></div></header>
     @if (loading()) {
-      <div class="state-card" role="status"><mat-icon>hourglass_top</mat-icon><p>Loading your vehicles…</p></div>
+      <div class="state-card" role="status"><mat-icon>hourglass_top</mat-icon><p>{{ 'Loading your vehicles…' | translate:'आपके वाहन लोड हो रहे हैं…' }}</p></div>
     } @else if (error()) {
-      <div class="state-card error-state" role="alert"><mat-icon>error_outline</mat-icon><p>{{ error() }}</p><button type="button" (click)="loadVehicles(page())">Try again</button></div>
+      <div class="state-card error-state" role="alert"><mat-icon>error_outline</mat-icon><p>{{ error() }}</p><button type="button" (click)="loadVehicles(page())">{{ 'Try again' | translate:'फिर से प्रयास करें' }}</button></div>
     } @else if (vehicles().length) {
       <div class="vehicle-list">
         @for (vehicle of vehicles(); track vehicle.id) {
@@ -28,34 +28,34 @@
             <div class="vehicle-top">
               @if (vehicle.imageUrls?.[0]; as imageUrl) {<img class="vehicle-image" [src]="imageUrl" [alt]="vehicle.vehicleModel || vehicle.regNumber">}
               @else {<span class="vehicle-image placeholder"><mat-icon>directions_car</mat-icon></span>}
-              <div class="vehicle-heading"><span class="eyebrow">{{ vehicle.vehicleCompany || 'Vehicle' }}{{ vehicle.type ? ' · ' + vehicle.type : '' }}</span><h3>{{ vehicle.vehicleModel || vehicle.vehicleCompany || 'Vehicle' }}</h3><p class="registration">{{ vehicle.regNumber }}</p><div class="badges"><span class="status" [class.found]="vehicle.vehicleStatus === 'FOUND'">{{ vehicle.vehicleStatus || 'STATUS UNKNOWN' }}</span>@if (vehicle.color) {<span>{{ vehicle.color }}</span>}</div></div>
+              <div class="vehicle-heading"><span class="eyebrow">{{ vehicle.vehicleCompany || ('Vehicle' | translate:'वाहन') }}{{ vehicle.type ? ' · ' + vehicle.type : '' }}</span><h3>{{ vehicle.vehicleModel || vehicle.vehicleCompany || ('Vehicle' | translate:'वाहन') }}</h3><p class="registration">{{ vehicle.regNumber }}</p><div class="badges"><span class="status" [class.found]="vehicle.vehicleStatus === 'FOUND'">{{ vehicle.vehicleStatus || ('STATUS UNKNOWN' | translate:'स्थिति अज्ञात') }}</span>@if (vehicle.color) {<span>{{ vehicle.color }}</span>}</div></div>
               <div class="vehicle-actions">
-                <a class="details-link" [routerLink]="['/dashboard/my-reports']" [queryParams]="{ regNumber: vehicle.regNumber }">View report details<mat-icon>arrow_forward</mat-icon></a>
-                <button class="missing-report-button" type="button" (click)="reportMissingVehicle(vehicle)"><mat-icon>campaign</mat-icon>Report Missing Vehicle</button>
+                <a class="details-link" [routerLink]="['/dashboard/my-reports']" [queryParams]="{ regNumber: vehicle.regNumber }">{{ 'View report details' | translate:'रिपोर्ट का विवरण देखें' }}<mat-icon>arrow_forward</mat-icon></a>
+                <button class="missing-report-button" type="button" (click)="reportMissingVehicle(vehicle)"><mat-icon>campaign</mat-icon>{{ 'Report Missing Vehicle' | translate:'लापता वाहन की रिपोर्ट करें' }}</button>
               </div>
             </div>
             <div class="vehicle-meta">
-              <div><mat-icon>confirmation_number</mat-icon><span><small>Chassis number</small><strong>{{ vehicle.chassisNumber || 'Not provided' }}</strong></span></div>
-              <div><mat-icon>settings</mat-icon><span><small>Engine number</small><strong>{{ vehicle.engineNumber || 'Not provided' }}</strong></span></div>
-              <div><mat-icon>person_outline</mat-icon><span><small>Listed owner</small><strong>{{ vehicle.owner || 'Not provided' }}</strong></span></div>
-              <div><mat-icon>call</mat-icon><span><small>Contact</small><strong>{{ vehicle.ownerMobile || 'Not provided' }}</strong></span></div>
+              <div><mat-icon>confirmation_number</mat-icon><span><small>{{ 'Chassis number' | translate:'चेसिस नंबर' }}</small><strong>{{ vehicle.chassisNumber || ('Not provided' | translate:'उपलब्ध नहीं') }}</strong></span></div>
+              <div><mat-icon>settings</mat-icon><span><small>{{ 'Engine number' | translate:'इंजन नंबर' }}</small><strong>{{ vehicle.engineNumber || ('Not provided' | translate:'उपलब्ध नहीं') }}</strong></span></div>
+              <div><mat-icon>person_outline</mat-icon><span><small>{{ 'Listed owner' | translate:'सूचीबद्ध मालिक' }}</small><strong>{{ vehicle.owner || ('Not provided' | translate:'उपलब्ध नहीं') }}</strong></span></div>
+              <div><mat-icon>call</mat-icon><span><small>{{ 'Contact' | translate:'संपर्क' }}</small><strong>{{ vehicle.ownerMobile || ('Not provided' | translate:'उपलब्ध नहीं') }}</strong></span></div>
             </div>
             @if (vehicle.missingDetails?.length) {
               <footer class="report-summary">
                 <mat-icon>location_on</mat-icon>
-                <span><strong>{{ vehicle.missingDetails?.length }} missing report{{ vehicle.missingDetails?.length === 1 ? '' : 's' }}</strong>
+                <span><strong>{{ vehicle.missingDetails?.length }} {{ vehicle.missingDetails?.length === 1 ? ('missing report' | translate:'लापता रिपोर्ट') : ('missing reports' | translate:'लापता रिपोर्टें') }}</strong>
                   @if (vehicle.missingDetails?.[0]; as latest) {<small>{{ latestReportLocation(latest) }}{{ latest.missingDate ? ' · ' + (latest.missingDate | date:'dd MMM yyyy') : '' }}</small>}
                 </span>
-                <a [routerLink]="['/dashboard/my-reports']">View reports<mat-icon>chevron_right</mat-icon></a>
+                <a [routerLink]="['/dashboard/my-reports']">{{ 'View reports' | translate:'रिपोर्टें देखें' }}<mat-icon>chevron_right</mat-icon></a>
               </footer>
             } @else {
-              <footer class="report-summary no-reports"><mat-icon>info_outline</mat-icon><span><strong>No missing reports</strong><small>This vehicle has no missing report details.</small></span></footer>
+              <footer class="report-summary no-reports"><mat-icon>info_outline</mat-icon><span><strong>{{ 'No missing reports' | translate:'कोई लापता रिपोर्ट नहीं' }}</strong><small>{{ 'This vehicle has no missing report details.' | translate:'इस वाहन की लापता रिपोर्ट का कोई विवरण नहीं है।' }}</small></span></footer>
             }
           </article>
         }
       </div>
     } @else {
-      <div class="state-card empty-state"><span class="empty-icon"><mat-icon>directions_car</mat-icon></span><h3>{{ searched() ? 'No vehicles match those filters' : 'No vehicles listed yet' }}</h3><p>{{ searched() ? 'Try adjusting your filters and search again.' : 'Vehicles that you report will appear here.' }}</p><a routerLink="/dashboard/report-missing">List a New Vehicle</a></div>
+      <div class="state-card empty-state"><span class="empty-icon"><mat-icon>directions_car</mat-icon></span><h3>{{ searched() ? ('No vehicles match those filters' | translate:'इन फ़िल्टरों से कोई वाहन मेल नहीं खाता') : ('No vehicles listed yet' | translate:'अभी तक कोई वाहन सूचीबद्ध नहीं') }}</h3><p>{{ searched() ? ('Try adjusting your filters and search again.' | translate:'फ़िल्टर बदलकर फिर से खोजें।') : ('Vehicles that you report will appear here.' | translate:'आपके द्वारा रिपोर्ट किए गए वाहन यहाँ दिखाई देंगे।') }}</p><a routerLink="/dashboard/report-missing">{{ 'List a New Vehicle' | translate:'नया वाहन सूचीबद्ध करें' }}</a></div>
     }
   </section>
 </main>

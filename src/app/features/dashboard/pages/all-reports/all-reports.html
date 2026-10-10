@@ -1,27 +1,27 @@
 <main class="listing-page">
   <header class="page-heading">
-    <div><span class="eyebrow">Community reports</span><h1>All Reports</h1><p>Explore missing vehicle reports shared by the Find My Vehicle community.</p></div>
+    <div><span class="eyebrow">{{ 'Community reports' | translate:'समुदाय की रिपोर्टें' }}</span><h1>{{ 'All Reports' | translate:'सभी रिपोर्टें' }}</h1><p>{{ 'Explore missing vehicle reports shared by the Find My Vehicle community.' | translate:'Find My Vehicle समुदाय द्वारा साझा की गई लापता वाहन रिपोर्टें देखें।' }}</p></div>
   </header>
 
-  <section class="filter-card" aria-label="Filter all reports">
-    <div class="filter-heading"><span class="filter-icon"><mat-icon>tune</mat-icon></span><div><h2>Find a report</h2><p>Search by vehicle, location, or current report status.</p></div></div>
+  <section class="filter-card" aria-label="{{ 'Filter all reports' | translate:'सभी रिपोर्टों को फ़िल्टर करें' }}">
+    <div class="filter-heading"><span class="filter-icon"><mat-icon>tune</mat-icon></span><div><h2>{{ 'Find a report' | translate:'रिपोर्ट खोजें' }}</h2><p>{{ 'Search by vehicle, location, or current report status.' | translate:'वाहन, स्थान या वर्तमान रिपोर्ट स्थिति से खोजें।' }}</p></div></div>
     <form class="filter-grid" (submit)="$event.preventDefault(); search()">
-      <label>Registration number<input [value]="regNumber()" (input)="regNumber.set($any($event.target).value)" placeholder="e.g. KA00112212"></label>
-      <label>Vehicle model<input [value]="model()" (input)="model.set($any($event.target).value)" placeholder="e.g. Honda Activa"></label>
-      <label>Missing city<input [value]="missingCity()" (input)="missingCity.set($any($event.target).value)" placeholder="e.g. Bengaluru"></label>
-      <label>PIN code<input [value]="pinCode()" (input)="pinCode.set($any($event.target).value)" placeholder="e.g. 562107" inputmode="numeric"></label>
-      <label>Report status<select [value]="status()" (change)="status.set($any($event.target).value)"><option value="">All statuses</option><option value="MISSING">Missing</option><option value="FOUND">Found</option></select></label>
-      <div class="filter-actions"><button class="clear-button" type="button" (click)="clearFilters()" [disabled]="loading()">Clear filters</button><button class="search-button" type="submit" [disabled]="loading()"><mat-icon>search</mat-icon>{{ loading() ? 'Searching…' : 'Search reports' }}</button></div>
+      <label>{{ 'Registration number' | translate:'पंजीकरण संख्या' }}<input [value]="regNumber()" (input)="regNumber.set($any($event.target).value)" placeholder="{{ 'e.g. KA00112212' | translate:'उदा. KA00112212' }}"></label>
+      <label>{{ 'Vehicle model' | translate:'वाहन मॉडल' }}<input [value]="model()" (input)="model.set($any($event.target).value)" placeholder="{{ 'e.g. Honda Activa' | translate:'उदा. Honda Activa' }}"></label>
+      <label>{{ 'Missing city' | translate:'लापता होने का शहर' }}<input [value]="missingCity()" (input)="missingCity.set($any($event.target).value)" placeholder="{{ 'e.g. Bengaluru' | translate:'उदा. बेंगलुरु' }}"></label>
+      <label>{{ 'PIN code' | translate:'पिन कोड' }}<input [value]="pinCode()" (input)="pinCode.set($any($event.target).value)" placeholder="{{ 'e.g. 562107' | translate:'उदा. 562107' }}" inputmode="numeric"></label>
+      <label>{{ 'Report status' | translate:'रिपोर्ट की स्थिति' }}<select [value]="status()" (change)="status.set($any($event.target).value)"><option value="">{{ 'All statuses' | translate:'सभी स्थितियाँ' }}</option><option value="MISSING">{{ 'Missing' | translate:'लापता' }}</option><option value="FOUND">{{ 'Found' | translate:'मिल गया' }}</option></select></label>
+      <div class="filter-actions"><button class="clear-button" type="button" (click)="clearFilters()" [disabled]="loading()">{{ 'Clear filters' | translate:'फ़िल्टर साफ़ करें' }}</button><button class="search-button" type="submit" [disabled]="loading()"><mat-icon>search</mat-icon>{{ loading() ? ('Searching…' | translate:'खोज रहे हैं…') : ('Search reports' | translate:'रिपोर्टें खोजें') }}</button></div>
     </form>
   </section>
 
   <section aria-labelledby="all-reports-heading">
-    <header class="list-heading"><div><h2 id="all-reports-heading">{{ searched() ? 'Search results' : 'Community reports' }}</h2><p>{{ visibleReports().length }} report{{ visibleReports().length === 1 ? '' : 's' }} on this page · {{ totalElements() }} report{{ totalElements() === 1 ? '' : 's' }} total</p></div><div class="list-controls"><label>Per page<select [value]="pageSize()" (change)="updatePageSize($any($event.target).value)" [disabled]="loading()" aria-label="Reports per page"><option value="4">4</option><option value="6">6</option><option value="8">8</option><option value="10">10</option></select></label><nav class="list-pagination" aria-label="All report pages"><button type="button" aria-label="Previous page" (click)="changePage(page() - 1)" [disabled]="page() === 0 || loading()"><mat-icon>chevron_left</mat-icon></button><span>Page <strong>{{ totalPages() ? page() + 1 : 0 }}</strong> of <strong>{{ totalPages() }}</strong></span><button type="button" aria-label="Next page" (click)="changePage(page() + 1)" [disabled]="page() + 1 >= totalPages() || loading()"><mat-icon>chevron_right</mat-icon></button></nav></div></header>
+    <header class="list-heading"><div><h2 id="all-reports-heading">{{ searched() ? ('Search results' | translate:'खोज परिणाम') : ('Community reports' | translate:'समुदाय की रिपोर्टें') }}</h2><p>{{ visibleReports().length }} {{ visibleReports().length === 1 ? ('report' | translate:'रिपोर्ट') : ('reports' | translate:'रिपोर्टें') }} {{ 'on this page' | translate:'इस पृष्ठ पर' }} · {{ totalElements() }} {{ totalElements() === 1 ? ('report' | translate:'रिपोर्ट') : ('reports' | translate:'रिपोर्टें') }} {{ 'total' | translate:'कुल' }}</p></div><div class="list-controls"><label>{{ 'Per page' | translate:'प्रति पृष्ठ' }}<select [value]="pageSize()" (change)="updatePageSize($any($event.target).value)" [disabled]="loading()" aria-label="{{ 'Reports per page' | translate:'प्रति पृष्ठ रिपोर्टें' }}"><option value="4">4</option><option value="6">6</option><option value="8">8</option><option value="10">10</option></select></label><nav class="list-pagination" aria-label="{{ 'All report pages' | translate:'सभी रिपोर्ट पृष्ठ' }}"><button type="button" aria-label="{{ 'Previous page' | translate:'पिछला पृष्ठ' }}" (click)="changePage(page() - 1)" [disabled]="page() === 0 || loading()"><mat-icon>chevron_left</mat-icon></button><span>{{ 'Page' | translate:'पृष्ठ' }} <strong>{{ totalPages() ? page() + 1 : 0 }}</strong> {{ 'of' | translate:'में से' }} <strong>{{ totalPages() }}</strong></span><button type="button" aria-label="{{ 'Next page' | translate:'अगला पृष्ठ' }}" (click)="changePage(page() + 1)" [disabled]="page() + 1 >= totalPages() || loading()"><mat-icon>chevron_right</mat-icon></button></nav></div></header>
 
     @if (loading()) {
-      <div class="state-card" role="status"><mat-icon>hourglass_top</mat-icon><p>Loading community reports…</p></div>
+      <div class="state-card" role="status"><mat-icon>hourglass_top</mat-icon><p>{{ 'Loading community reports…' | translate:'समुदाय की रिपोर्टें लोड हो रही हैं…' }}</p></div>
     } @else if (error()) {
-      <div class="state-card error-state" role="alert"><mat-icon>error_outline</mat-icon><p>{{ error() }}</p><button type="button" (click)="loadReports()">Try again</button></div>
+      <div class="state-card error-state" role="alert"><mat-icon>error_outline</mat-icon><p>{{ error() }}</p><button type="button" (click)="loadReports()">{{ 'Try again' | translate:'फिर से प्रयास करें' }}</button></div>
     } @else if (visibleReports().length) {
       <div class="report-list">
         @for (entry of visibleReports(); track entry.vehicle.id + '-' + entry.detail.id) {
@@ -31,13 +31,13 @@
             <div class="report-top">
               @if (vehicle.imageUrls?.[0]; as imageUrl) {<img class="vehicle-image" [src]="imageUrl" [alt]="vehicle.vehicleModel || vehicle.regNumber" loading="lazy">}
               @else {<span class="vehicle-image placeholder"><mat-icon>directions_car</mat-icon></span>}
-              <div class="vehicle-heading"><span class="eyebrow">Missing vehicle report</span><h3>{{ vehicle.vehicleModel || vehicle.vehicleCompany || 'Vehicle' }}</h3><p class="registration">{{ vehicle.regNumber }}</p><div class="badges"><span class="status" [class.found]="detail.vehicleStatus === 'FOUND' || detail.status === 'CLOSED'">{{ detail.vehicleStatus || detail.status || vehicle.vehicleStatus || 'STATUS UNKNOWN' }}</span>@if (vehicle.type) {<span>{{ vehicle.type }}</span>}@if (vehicle.color) {<span>{{ vehicle.color }}</span>}</div></div>
+              <div class="vehicle-heading"><span class="eyebrow">{{ 'Missing vehicle report' | translate:'लापता वाहन रिपोर्ट' }}</span><h3>{{ vehicle.vehicleModel || vehicle.vehicleCompany || ('Vehicle' | translate:'वाहन') }}</h3><p class="registration">{{ vehicle.regNumber }}</p><div class="badges"><span class="status" [class.found]="detail.vehicleStatus === 'FOUND' || detail.status === 'CLOSED'">{{ detail.vehicleStatus || detail.status || vehicle.vehicleStatus || ('STATUS UNKNOWN' | translate:'स्थिति अज्ञात') }}</span>@if (vehicle.type) {<span>{{ vehicle.type }}</span>}@if (vehicle.color) {<span>{{ vehicle.color }}</span>}</div></div>
               <button
                 class="expand-button"
                 type="button"
                 [attr.aria-expanded]="expandedReportId() === detail.id"
                 [attr.aria-controls]="'report-details-' + detail.id"
-                [attr.aria-label]="(expandedReportId() === detail.id ? 'Collapse' : 'Expand') + ' report details for ' + vehicle.regNumber"
+                [attr.aria-label]="(expandedReportId() === detail.id ? ('Collapse' | translate:'समेटें') : ('Expand' | translate:'विस्तृत करें')) + (' report details for ' | translate:' रिपोर्ट का विवरण ') + vehicle.regNumber"
                 (click)="toggleReport(detail.id)">
                 <mat-icon>{{ expandedReportId() === detail.id ? 'expand_less' : 'expand_more' }}</mat-icon>
               </button>
@@ -45,27 +45,27 @@
             @if (expandedReportId() === detail.id) {
               <div class="report-details" [id]="'report-details-' + detail.id">
                 <div class="report-meta">
-                  <div><mat-icon>person_outline</mat-icon><span><small>Owner</small><strong>{{ vehicle.owner || 'Not provided' }}</strong></span></div>
-                  <div><mat-icon>call</mat-icon><span><small>Contact</small><strong>{{ vehicle.ownerMobile || 'Not provided' }}</strong></span></div>
+                  <div><mat-icon>person_outline</mat-icon><span><small>{{ 'Owner' | translate:'मालिक' }}</small><strong>{{ vehicle.owner || ('Not provided' | translate:'उपलब्ध नहीं') }}</strong></span></div>
+                  <div><mat-icon>call</mat-icon><span><small>{{ 'Contact' | translate:'संपर्क' }}</small><strong>{{ vehicle.ownerMobile || ('Not provided' | translate:'उपलब्ध नहीं') }}</strong></span></div>
                 </div>
                 <section class="incident-details">
                 <div class="incident-heading">
                   <div>
-                    <span class="eyebrow">Missing report</span>
-                    <strong>{{ detail.missingDate ? (detail.missingDate | date:'dd MMM yyyy') : 'Date not provided' }}{{ detail.missingTime ? ' · ' + detail.missingTime : '' }}</strong>
+                    <span class="eyebrow">{{ 'Missing report' | translate:'लापता रिपोर्ट' }}</span>
+                    <strong>{{ detail.missingDate ? (detail.missingDate | date:'dd MMM yyyy') : ('Date not provided' | translate:'तारीख उपलब्ध नहीं') }}{{ detail.missingTime ? ' · ' + detail.missingTime : '' }}</strong>
                   </div>
-                  <a class="details-link" [routerLink]="['/dashboard/vehicle', vehicle.regNumber]" [queryParams]="{ missingDetailsId: detail.id }">View details<mat-icon>arrow_forward</mat-icon></a>
+                  <a class="details-link" [routerLink]="['/dashboard/vehicle', vehicle.regNumber]" [queryParams]="{ missingDetailsId: detail.id }">{{ 'View details' | translate:'विवरण देखें' }}<mat-icon>arrow_forward</mat-icon></a>
                 </div>
                 <div class="report-meta">
-                  <div><mat-icon>workspace_premium</mat-icon><span><small>Reward</small><strong>{{ detail.reward || 'Not specified' }}</strong></span></div>
+                  <div><mat-icon>workspace_premium</mat-icon><span><small>{{ 'Reward' | translate:'इनाम' }}</small><strong>{{ detail.reward || ('Not specified' | translate:'निर्दिष्ट नहीं') }}</strong></span></div>
                 </div>
                 <div class="location-panel">
-                  <div><mat-icon>location_on</mat-icon><span><small>Last seen</small><strong>{{ detail.missingAddress || 'Address not provided' }}</strong></span></div>
-                  <div><small>City / district</small><strong>{{ joinValues(detail.city, detail.district) }}</strong></div>
-                  <div><small>State / country</small><strong>{{ joinValues(detail.state, detail.country) }}</strong></div>
-                  <div><small>PIN code</small><strong>{{ detail.pinCode || 'Not provided' }}</strong></div>
+                  <div><mat-icon>location_on</mat-icon><span><small>{{ 'Last seen' | translate:'अंतिम बार देखा गया' }}</small><strong>{{ detail.missingAddress || ('Address not provided' | translate:'पता उपलब्ध नहीं') }}</strong></span></div>
+                  <div><small>{{ 'City / district' | translate:'शहर / ज़िला' }}</small><strong>{{ joinValues(detail.city, detail.district) }}</strong></div>
+                  <div><small>{{ 'State / country' | translate:'राज्य / देश' }}</small><strong>{{ joinValues(detail.state, detail.country) }}</strong></div>
+                  <div><small>{{ 'PIN code' | translate:'पिन कोड' }}</small><strong>{{ detail.pinCode || ('Not provided' | translate:'उपलब्ध नहीं') }}</strong></div>
                 </div>
-                @if (detail.description) {<p class="description"><strong>Report description</strong>{{ detail.description }}</p>}
+                @if (detail.description) {<p class="description"><strong>{{ 'Report description' | translate:'रिपोर्ट का विवरण' }}</strong>{{ detail.description }}</p>}
                 </section>
               </div>
             }
@@ -73,7 +73,7 @@
         }
       </div>
     } @else {
-      <div class="state-card empty-state"><span class="empty-icon"><mat-icon>description</mat-icon></span><h3>{{ searched() ? 'No reports match those filters' : 'No community reports found' }}</h3><p>Try another registration, model, location, or status.</p></div>
+      <div class="state-card empty-state"><span class="empty-icon"><mat-icon>description</mat-icon></span><h3>{{ searched() ? ('No reports match those filters' | translate:'इन फ़िल्टरों से कोई रिपोर्ट मेल नहीं खाती') : ('No community reports found' | translate:'समुदाय की कोई रिपोर्ट नहीं मिली') }}</h3><p>{{ 'Try another registration, model, location, or status.' | translate:'कोई दूसरा पंजीकरण नंबर, मॉडल, स्थान या स्थिति आज़माएँ।' }}</p></div>
     }
   </section>
 </main>

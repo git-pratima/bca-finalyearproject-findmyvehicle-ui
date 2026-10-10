@@ -10,8 +10,8 @@
     <div class="hero-mark" aria-hidden="true"><mat-icon>near_me</mat-icon><span></span><span></span></div>
   </section>
 
-  <section class="info-content" aria-label="Information">
-    <div class="section-heading"><span>Find My Vehicle</span><h2>People helping people</h2></div>
+  <section class="info-content" [attr.aria-label]="'Information' | translate:'जानकारी'">
+    <div class="section-heading"><span>Find My Vehicle</span><h2>{{ 'People helping people' | translate:'लोगों की मदद करते लोग' }}</h2></div>
     <div class="info-grid">
       @for (section of content.sections; track section.title; let index = $index) {
         <article class="info-card">
@@ -21,6 +21,6 @@
         </article>
       }
     </div>
-    <aside class="closing-note"><mat-icon>info</mat-icon><p>Always prioritize your safety. If a situation requires urgent assistance, contact the appropriate local authorities.</p></aside>
+    <aside class="closing-note"><mat-icon>info</mat-icon><p>{{ 'Always prioritize your safety. If a situation requires urgent assistance, contact the appropriate local authorities.' | translate:'हमेशा अपनी सुरक्षा को प्राथमिकता दें। तत्काल सहायता की आवश्यकता होने पर संबंधित स्थानीय अधिकारियों से संपर्क करें।' }}</p></aside>
   </section>
 </main>

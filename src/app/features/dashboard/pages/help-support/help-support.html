@@ -1,25 +1,24 @@
 <main class="help-page" aria-labelledby="help-title">
   <header class="page-heading">
     <div>
-      <span class="eyebrow">Help when you need it</span>
-      <h1 id="help-title">Help &amp; Support</h1>
-      <p>India-wide emergency, police, medical, and roadside assistance numbers.</p>
+      <span class="eyebrow">{{ 'Help when you need it' | translate:'ज़रूरत के समय सहायता' }}</span>
+      <h1 id="help-title">{{ 'Help &amp; Support' | translate:'सहायता और समर्थन' }}</h1>
+      <p>{{ 'India-wide emergency, police, medical, and roadside assistance numbers.' | translate:'पूरे भारत में आपातकालीन, पुलिस, चिकित्सा और सड़क सहायता के नंबर।' }}</p>
     </div>
     <span class="heading-icon"><mat-icon>support_agent</mat-icon></span>
   </header>
 
-  <aside class="emergency-banner" aria-label="Emergency number">
+  <aside class="emergency-banner" aria-label="{{ 'Emergency number' | translate:'आपातकालीन नंबर' }}">
     <span class="emergency-icon"><mat-icon>emergency</mat-icon></span>
     <div>
-      <strong>Need urgent help?</strong>
-      <p>Call 112 for unified police, fire, and ambulance emergency response across India.</p>
+      <strong>{{ 'Need urgent help?' | translate:'तत्काल सहायता चाहिए?' }}</strong>
+      <p>{{ 'Call 112 for unified police, fire, and ambulance emergency response across India.' | translate:'पूरे भारत में पुलिस, अग्निशमन और एम्बुलेंस की एकीकृत आपातकालीन सहायता के लिए 112 पर कॉल करें।' }}</p>
     </div>
-    <a href="tel:112" aria-label="Call emergency number 112">Call 112<mat-icon>call</mat-icon></a>
+    <a href="tel:112" aria-label="{{ 'Call emergency number 112' | translate:'आपातकालीन नंबर 112 पर कॉल करें' }}">{{ 'Call 112' | translate:'112 पर कॉल करें' }}<mat-icon>call</mat-icon></a>
   </aside>
 
   <p class="coverage-note">
-    Helpline availability and coverage may vary by state and service provider. If a number
-    does not connect, try 112 for emergencies or contact your local authorities.
+    {{ 'Helpline availability and coverage may vary by state and service provider. If a number does not connect, try 112 for emergencies or contact your local authorities.' | translate:'हेल्पलाइन की उपलब्धता और कवरेज राज्य और सेवा प्रदाता के अनुसार अलग हो सकती है। यदि कोई नंबर नहीं लगता है, तो आपात स्थिति में 112 पर कॉल करें या स्थानीय अधिकारियों से संपर्क करें।' }}
   </p>
 
   <div class="helpline-sections">
@@ -27,22 +26,22 @@
       <section class="helpline-section" [attr.aria-labelledby]="section.id + '-heading'">
         <header class="section-heading">
           <span class="section-icon"><mat-icon>{{ section.icon }}</mat-icon></span>
-          <h2 [id]="section.id + '-heading'">{{ section.title }}</h2>
+          <h2 [id]="section.id + '-heading'">{{ section.title | translate:hindi(section.title) }}</h2>
         </header>
         <div class="helpline-grid">
           @for (contact of section.contacts; track contact.label) {
             <article class="helpline-card">
               <div class="contact-copy">
-                <h3>{{ contact.label }}</h3>
+                <h3>{{ contact.label | translate:hindi(contact.label) }}</h3>
                 @if (contact.description) {
-                  <p>{{ contact.description }}</p>
+                  <p>{{ contact.description | translate:hindi(contact.description) }}</p>
                 }
               </div>
               @if (contact.number) {
                 <a
                   class="phone-link"
                   [href]="'tel:' + (contact.dialNumber || contact.number.replaceAll('-', ''))"
-                  [attr.aria-label]="'Call ' + contact.label + ' at ' + contact.number">
+                  [attr.aria-label]="('Call ' | translate:'कॉल करें ') + hindi(contact.label) + (' at ' | translate:' पर ') + contact.number">
                   {{ contact.number }}<mat-icon>call</mat-icon>
                 </a>
               }
@@ -57,8 +56,8 @@
     <header class="section-heading">
       <span class="section-icon"><mat-icon>support_agent</mat-icon></span>
       <div>
-        <h2 id="support-team-heading">Find My Vehicle support team</h2>
-        <p>Contact our team for help with your account, reports, or using the platform.</p>
+        <h2 id="support-team-heading">{{ 'Find My Vehicle support team' | translate:'Find My Vehicle सहायता टीम' }}</h2>
+        <p>{{ 'Contact our team for help with your account, reports, or using the platform.' | translate:'अपने खाते, रिपोर्टों या प्लेटफ़ॉर्म के उपयोग में सहायता के लिए हमारी टीम से संपर्क करें।' }}</p>
       </div>
     </header>
     <div class="support-team-card">

@@ -13,6 +13,8 @@ import { AuthService, ChangePasswordRequest, ChangePasswordResponse } from '../.
 import { ProfileService, UserProfileRequest, UserProfileResponse } from '../../../../core/services/profile.service';
 import { ApiService } from '../../../../core/services/api.service';
 import { DashboardRefreshService } from '../../../../core/services/dashboard-refresh.service';
+import { LanguageService } from '../../../../core/services/language.service';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 type DashboardVehicle = {
   id: number;
@@ -120,7 +122,7 @@ type VehicleSearchType = 'regNumber' | 'model' | 'missingCity' | 'pinCode';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [DatePipe, FormsModule, MatIconModule, RouterLink, RouterOutlet],
+  imports: [DatePipe, FormsModule, MatIconModule, RouterLink, RouterOutlet, TranslatePipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
@@ -131,6 +133,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private readonly profileService = inject(ProfileService);
   private readonly apiService = inject(ApiService);
   private readonly dashboardRefreshService = inject(DashboardRefreshService);
+  private readonly languageService = inject(LanguageService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
@@ -252,7 +255,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.profileImageUrl.set(response.data.user.profileImageUrl);
         },
         error: error => this.dashboardError.set(
-          error?.error?.status?.message || 'Unable to load dashboard data. Please try again.'
+          error?.error?.status?.message || this.languageService.text('Unable to load dashboard data. Please try again.', 'डैशबोर्ड डेटा लोड नहीं हो सका। कृपया फिर से प्रयास करें।')
         )
       });
   }
@@ -273,7 +276,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (!profileMenu?.contains(event.target as Node)) this.profileMenuOpen.set(false);
   }
 
-  displayName(): string { return this.dashboardData()?.user.name || this.userName() || 'Member'; }
+  displayName(): string { return this.dashboardData()?.user.name || this.userName() || this.languageService.text('Member', 'सदस्य'); }
 
   initials(): string { return this.displayName().split(' ').map(word => word[0]).join('').slice(0, 2).toUpperCase(); }
 
@@ -286,7 +289,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const identity = this.tokenService.getUserIdentity();
     const id = identity?.userId ?? this.userId();
     if (id === null) {
-      this.profileError.set('Your login session is missing the user ID. Please sign out and sign in again.');
+      this.profileError.set(this.languageService.text('Your login session is missing the user ID. Please sign out and sign in again.', 'आपके लॉगिन सत्र में उपयोगकर्ता आईडी नहीं है। कृपया साइन आउट करके फिर से साइन इन करें।'));
       this.editProfileOpen.set(true);
       return;
     }
@@ -297,7 +300,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       .pipe(finalize(() => this.profileLoading.set(false)))
       .subscribe({
         next: response => this.setProfileFromResponse(response),
-        error: error => this.profileError.set(error?.error?.status?.message || error?.error?.message || 'Unable to load your profile. Please try again.')
+        error: error => this.profileError.set(error?.error?.status?.message || error?.error?.message || this.languageService.text('Unable to load your profile. Please try again.', 'आपकी प्रोफ़ाइल लोड नहीं हो सकी। कृपया फिर से प्रयास करें।'))
       });
   }
 
@@ -334,26 +337,26 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const request: ChangePasswordRequest = { ...this.changePassword };
     if (this.changePasswordSaving()) return;
     if (!request.currentPassword || !request.newPassword || !request.confirmPassword) {
-      this.changePasswordError.set('Complete all password fields.');
+      this.changePasswordError.set(this.languageService.text('Complete all password fields.', 'पासवर्ड के सभी फ़ील्ड भरें।'));
       return;
     }
     if (request.newPassword.length < 5) {
-      this.changePasswordError.set('New password must be at least 5 characters.');
+      this.changePasswordError.set(this.languageService.text('New password must be at least 5 characters.', 'नया पासवर्ड कम से कम 5 अक्षरों का होना चाहिए।'));
       return;
     }
     if (request.newPassword !== request.confirmPassword) {
-      this.changePasswordError.set('New password and confirmation do not match.');
+      this.changePasswordError.set(this.languageService.text('New password and confirmation do not match.', 'नया पासवर्ड और उसकी पुष्टि मेल नहीं खाते।'));
       return;
     }
     this.changePasswordError.set('');
     this.changePasswordSaving.set(true);
     this.authService.changePassword(request).pipe(finalize(() => this.changePasswordSaving.set(false))).subscribe({
       next: (response: ChangePasswordResponse) => {
-        this.changePasswordSuccess.set(response?.status?.message || 'Password changed successfully.');
+        this.changePasswordSuccess.set(response?.status?.message || this.languageService.text('Password changed successfully.', 'पासवर्ड सफलतापूर्वक बदल दिया गया।'));
         this.changePasswordOpen.set(false);
         this.changePassword = this.createChangePasswordForm();
       },
-      error: error => this.changePasswordError.set(error?.error?.status?.message || error?.error?.message || 'Unable to change password. Please try again.')
+      error: error => this.changePasswordError.set(error?.error?.status?.message || error?.error?.message || this.languageService.text('Unable to change password. Please try again.', 'पासवर्ड नहीं बदला जा सका। कृपया फिर से प्रयास करें।'))
     });
   }
 
@@ -370,15 +373,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const authenticatedEmail = identity?.email ?? this.userEmail() ?? email;
     if (this.profileSaving() || this.profileLoading()) return;
     if (!name) {
-      this.profileError.set('Enter your full name before saving.');
+      this.profileError.set(this.languageService.text('Enter your full name before saving.', 'सहेजने से पहले अपना पूरा नाम दर्ज करें।'));
       return;
     }
     if (!authenticatedEmail) {
-      this.profileError.set('Enter your email address before saving.');
+      this.profileError.set(this.languageService.text('Enter your email address before saving.', 'सहेजने से पहले अपना ईमेल पता दर्ज करें।'));
       return;
     }
     if (id === null) {
-      this.profileError.set('Your login session is missing the user ID. Please sign out and sign in again, then save your profile.');
+      this.profileError.set(this.languageService.text('Your login session is missing the user ID. Please sign out and sign in again, then save your profile.', 'आपके लॉगिन सत्र में उपयोगकर्ता आईडी नहीं है। कृपया साइन आउट करके फिर से साइन इन करें, फिर अपनी प्रोफ़ाइल सहेजें।'));
       return;
     }
     this.profile.fullName = name;
@@ -414,7 +417,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.profileSaved.set(true);
           this.editProfileOpen.set(false);
         },
-        error: error => this.profileError.set(error?.error?.status?.message || error?.error?.message || 'Unable to save your profile. Please try again.')
+        error: error => this.profileError.set(error?.error?.status?.message || error?.error?.message || this.languageService.text('Unable to save your profile. Please try again.', 'आपकी प्रोफ़ाइल सहेजी नहीं जा सकी। कृपया फिर से प्रयास करें।'))
       });
   }
 
@@ -422,7 +425,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const file = (event.target as HTMLInputElement).files?.[0] ?? null;
     if (!file) return;
     if (!file.type.startsWith('image/')) {
-      this.profileError.set('Please select an image file.');
+      this.profileError.set(this.languageService.text('Please select an image file.', 'कृपया एक छवि फ़ाइल चुनें।'));
       return;
     }
     const previousPreview = this.profileImagePreview();
@@ -467,7 +470,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.searchRequestSubscription?.unsubscribe();
 
     if (!term) {
-      this.searchError.set('Enter a registration number to search.');
+      this.searchError.set(this.languageService.text('Enter a registration number to search.', 'खोजने के लिए पंजीकरण संख्या दर्ज करें।'));
       return;
     }
 
@@ -478,7 +481,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         next: response => {
           const vehicle = response.data;
           if (!vehicle) {
-            this.searchError.set('No vehicle was found for that registration number.');
+            this.searchError.set(this.languageService.text('No vehicle was found for that registration number.', 'उस पंजीकरण संख्या का कोई वाहन नहीं मिला।'));
             return;
           }
           const report = vehicle.missingDetails?.[0];
@@ -507,7 +510,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           });
         },
         error: error => this.searchError.set(
-          error?.error?.status?.message || error?.error?.message || 'Unable to search for this vehicle. Please try again.'
+          error?.error?.status?.message || error?.error?.message || this.languageService.text('Unable to search for this vehicle. Please try again.', 'इस वाहन को खोजा नहीं जा सका। कृपया फिर से प्रयास करें।')
         )
       });
   }
@@ -551,7 +554,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.globalSearchSubscription?.unsubscribe();
 
     if (!term) {
-      this.globalSearchError.set(`Enter a value to search by ${this.globalSearchType()}.`);
+      const searchType = this.globalSearchType();
+      const englishSearchType = searchType === 'regNumber' ? 'registration number' : searchType === 'missingCity' ? 'missing city' : searchType === 'pinCode' ? 'PIN code' : 'model';
+      const hindiSearchType = searchType === 'regNumber' ? 'पंजीकरण संख्या' : searchType === 'missingCity' ? 'लापता होने का शहर' : searchType === 'pinCode' ? 'पिन कोड' : 'मॉडल';
+      this.globalSearchError.set(this.languageService.text(`Enter a value to search by ${englishSearchType}.`, `खोजने के लिए ${hindiSearchType} दर्ज करें।`));
       return;
     }
 
@@ -575,7 +581,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.globalSearchTotalPages.set(0);
           this.globalSearchTotalElements.set(0);
           this.globalSearchError.set(
-            error?.error?.status?.message || error?.error?.message || 'Unable to search missing vehicles. Please try again.'
+            error?.error?.status?.message || error?.error?.message || this.languageService.text('Unable to search missing vehicles. Please try again.', 'लापता वाहन खोजे नहीं जा सके। कृपया फिर से प्रयास करें।')
           );
         }
       });

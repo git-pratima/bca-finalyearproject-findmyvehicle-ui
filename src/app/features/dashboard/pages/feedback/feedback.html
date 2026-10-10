@@ -1,29 +1,29 @@
 <main class="feedback-page" aria-labelledby="feedback-title">
   <header class="page-heading">
     <div>
-      <span class="eyebrow">Community voices</span>
-      <h1 id="feedback-title">Feedback</h1>
-      <p>Ratings and comments shared about missing vehicle reports.</p>
+      <span class="eyebrow">{{ 'Community voices' | translate:'समुदाय की आवाज़ें' }}</span>
+      <h1 id="feedback-title">{{ 'Feedback' | translate:'प्रतिक्रिया' }}</h1>
+      <p>{{ 'Ratings and comments shared about missing vehicle reports.' | translate:'लापता वाहन रिपोर्टों पर साझा की गई रेटिंग और टिप्पणियाँ।' }}</p>
     </div>
     <div class="page-count">
       <mat-icon>reviews</mat-icon>
-      {{ totalElements() }} total
+      {{ totalElements() }} {{ 'total' | translate:'कुल' }}
     </div>
   </header>
 
-  <section class="feedback-panel" aria-label="Community feedback">
+  <section class="feedback-panel" aria-label="{{ 'Community feedback' | translate:'समुदाय की प्रतिक्रिया' }}">
     <header class="list-heading">
       <div>
-        <h2>Recent feedback</h2>
-        <p>{{ feedback().length }} entr{{ feedback().length === 1 ? 'y' : 'ies' }} on this page</p>
+        <h2>{{ 'Recent feedback' | translate:'हाल की प्रतिक्रिया' }}</h2>
+        <p>{{ feedback().length }} {{ feedback().length === 1 ? ('entry' | translate:'प्रविष्टि') : ('entries' | translate:'प्रविष्टियाँ') }} {{ 'on this page' | translate:'इस पृष्ठ पर' }}</p>
       </div>
       <label class="page-size">
-        Per page
+        {{ 'Per page' | translate:'प्रति पृष्ठ' }}
         <select
           [value]="pageSize()"
           (change)="updatePageSize($any($event.target).value)"
           [disabled]="loading()"
-          aria-label="Feedback per page">
+          aria-label="{{ 'Feedback per page' | translate:'प्रति पृष्ठ प्रतिक्रियाएँ' }}">
           <option value="10">10</option>
           <option value="20">20</option>
           <option value="50">50</option>
@@ -32,12 +32,12 @@
     </header>
 
     @if (loading()) {
-      <p class="state-message" role="status">Loading feedback…</p>
+      <p class="state-message" role="status">{{ 'Loading feedback…' | translate:'प्रतिक्रिया लोड हो रही है…' }}</p>
     } @else if (error()) {
       <div class="state-message error-state" role="alert">
         <mat-icon>error_outline</mat-icon>
         <p>{{ error() }}</p>
-        <button type="button" (click)="loadFeedback()">Try again</button>
+        <button type="button" (click)="loadFeedback()">{{ 'Try again' | translate:'फिर से प्रयास करें' }}</button>
       </div>
     } @else if (feedback().length) {
       <div class="feedback-list">
@@ -46,12 +46,12 @@
             <header class="feedback-heading">
               <div class="vehicle-icon"><mat-icon>directions_car</mat-icon></div>
               <div class="vehicle-details">
-                <h3>{{ item.vehicle.vehicleCompany || '' }} {{ item.vehicle.vehicleModel || 'Vehicle' }}</h3>
-                <p>{{ item.vehicle.regNumber }} <span>·</span> Report #{{ item.missingReport.id }}</p>
+                <h3>{{ item.vehicle.vehicleCompany || '' }} {{ item.vehicle.vehicleModel || ('Vehicle' | translate:'वाहन') }}</h3>
+                <p>{{ item.vehicle.regNumber }} <span>·</span> {{ 'Report #' | translate:'रिपोर्ट #' }}{{ item.missingReport.id }}</p>
               </div>
               <span class="report-status" [class.recovered]="isRecovered(item)">
                 <mat-icon>{{ isRecovered(item) ? 'check_circle' : 'search' }}</mat-icon>
-                {{ isRecovered(item) ? 'Recovered' : 'Still missing' }}
+                {{ isRecovered(item) ? ('Recovered' | translate:'बरामद') : ('Still missing' | translate:'अभी भी लापता') }}
               </span>
               @if (!isRecovered(item)) {
                 <a
@@ -59,15 +59,15 @@
                   [routerLink]="['/dashboard/all-reports']"
                   [queryParams]="{ regNumber: item.vehicle.regNumber }">
                   <mat-icon>open_in_new</mat-icon>
-                  View report
+                  {{ 'View report' | translate:'रिपोर्ट देखें' }}
                 </a>
               }
               <time [attr.datetime]="item.createdDate">
-                {{ item.createdDate ? (item.createdDate | date:'dd MMM yyyy, hh:mm a') : 'Date unavailable' }}
+                {{ item.createdDate ? (item.createdDate | date:'dd MMM yyyy, hh:mm a') : ('Date unavailable' | translate:'तारीख उपलब्ध नहीं') }}
               </time>
             </header>
 
-            <div class="rating" role="img" [attr.aria-label]="item.rating + ' out of 5 stars'">
+            <div class="rating" role="img" [attr.aria-label]="item.rating + (' out of 5 stars' | translate:' में से 5 सितारे')">
               @for (star of ratingStars; track star) {
                 <mat-icon [class.filled]="star <= item.rating">
                   {{ star <= item.rating ? 'star' : 'star_border' }}
@@ -76,41 +76,41 @@
               <span>{{ item.rating }} / 5</span>
             </div>
 
-            <p class="comment">{{ item.comment || 'No comment provided.' }}</p>
+            <p class="comment">{{ item.comment || ('No comment provided.' | translate:'कोई टिप्पणी नहीं दी गई।') }}</p>
 
             <footer class="feedback-meta">
-              <span><mat-icon>person_outline</mat-icon>{{ item.vehicle.owner || 'Owner not provided' }}</span>
+              <span><mat-icon>person_outline</mat-icon>{{ item.vehicle.owner || ('Owner not provided' | translate:'मालिक की जानकारी उपलब्ध नहीं') }}</span>
               <span><mat-icon>location_on</mat-icon>{{ location(item) }}</span>
-              <span><mat-icon>event</mat-icon>Missing since {{ item.missingReport.missingDate ? (item.missingReport.missingDate | date:'dd MMM yyyy') : 'date unavailable' }}</span>
+              <span><mat-icon>event</mat-icon>{{ 'Missing since' | translate:'से लापता' }} {{ item.missingReport.missingDate ? (item.missingReport.missingDate | date:'dd MMM yyyy') : ('date unavailable' | translate:'तारीख उपलब्ध नहीं') }}</span>
             </footer>
           </article>
         }
       </div>
 
       <footer class="pagination">
-        <span>Page {{ totalPages() ? page() + 1 : 0 }} of {{ totalPages() }}</span>
+        <span>{{ 'Page' | translate:'पृष्ठ' }} {{ totalPages() ? page() + 1 : 0 }} {{ 'of' | translate:'में से' }} {{ totalPages() }}</span>
         <div>
           <button
             type="button"
-            aria-label="Previous page"
+            aria-label="{{ 'Previous page' | translate:'पिछला पृष्ठ' }}"
             (click)="changePage(page() - 1)"
             [disabled]="page() === 0 || loading()">
-            <mat-icon>chevron_left</mat-icon>Previous
+            <mat-icon>chevron_left</mat-icon>{{ 'Previous' | translate:'पिछला' }}
           </button>
           <button
             type="button"
-            aria-label="Next page"
+            aria-label="{{ 'Next page' | translate:'अगला पृष्ठ' }}"
             (click)="changePage(page() + 1)"
             [disabled]="page() + 1 >= totalPages() || loading()">
-            Next<mat-icon>chevron_right</mat-icon>
+            {{ 'Next' | translate:'अगला' }}<mat-icon>chevron_right</mat-icon>
           </button>
         </div>
       </footer>
     } @else {
       <div class="state-message empty-state">
         <mat-icon>rate_review</mat-icon>
-        <h3>No feedback yet</h3>
-        <p>Feedback submitted by the community will appear here.</p>
+        <h3>{{ 'No feedback yet' | translate:'अभी तक कोई प्रतिक्रिया नहीं' }}</h3>
+        <p>{{ 'Feedback submitted by the community will appear here.' | translate:'समुदाय द्वारा दी गई प्रतिक्रिया यहाँ दिखाई देगी।' }}</p>
       </div>
     }
   </section>

@@ -24,6 +24,7 @@ import { TokenService } from '../../../../core/services/token.service';
 import { AuthService } from '../../../../core/services/auth.service';
 
 import { PUBLIC_NAVIGATION } from '../../../../core/config/navigation.config';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-mobile-nav',
@@ -35,7 +36,8 @@ import { PUBLIC_NAVIGATION } from '../../../../core/config/navigation.config';
     MatIconModule,
     MatDividerModule,
     MatSlideToggleModule,
-    MatButtonModule
+    MatButtonModule,
+    TranslatePipe
   ],
   templateUrl: './mobile-nav.html',
   styleUrl: './mobile-nav.scss'

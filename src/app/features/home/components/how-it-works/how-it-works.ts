@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 
 import { ScrollRevealDirective } from '../../../../shared/directives/scroll-reveal.directive';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-how-it-works',
@@ -10,7 +11,8 @@ import { ScrollRevealDirective } from '../../../../shared/directives/scroll-reve
   imports: [
     CommonModule,
     MatIconModule,
-    ScrollRevealDirective
+    ScrollRevealDirective,
+    TranslatePipe
   ],
   templateUrl: './how-it-works.html',
   styleUrl: './how-it-works.scss'

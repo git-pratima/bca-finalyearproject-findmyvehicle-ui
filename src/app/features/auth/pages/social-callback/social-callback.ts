@@ -9,10 +9,12 @@ import {
 } from '@angular/router';
 
 import { TokenService } from '../../../../core/services/token.service';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-social-callback',
   standalone: true,
+  imports: [TranslatePipe],
   templateUrl: './social-callback.html'
 })
 export class SocialCallback {

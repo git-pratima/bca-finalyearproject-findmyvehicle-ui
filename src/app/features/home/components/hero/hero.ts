@@ -7,11 +7,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
 import { ScrollRevealDirective } from '../../../../shared/directives/scroll-reveal.directive';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { HomeHeaderData, HomeStatisticData } from '../../../../core/models/home-dashboard.model';
 
 @Component({
   selector: 'app-hero', standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, MatButtonModule, MatIconModule, ScrollRevealDirective],
+  imports: [CommonModule, RouterLink, FormsModule, MatButtonModule, MatIconModule, ScrollRevealDirective, TranslatePipe],
   templateUrl: './hero.html', styleUrl: './hero.scss'
 })
 export class HeroComponent {

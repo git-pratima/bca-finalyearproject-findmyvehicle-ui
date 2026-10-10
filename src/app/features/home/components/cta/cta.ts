@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
 import { ScrollRevealDirective } from '../../../../shared/directives/scroll-reveal.directive';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 @Component({
 
@@ -21,7 +22,8 @@ import { ScrollRevealDirective } from '../../../../shared/directives/scroll-reve
     RouterModule,
     MatButtonModule,
     MatIconModule,
-    ScrollRevealDirective
+    ScrollRevealDirective,
+    TranslatePipe
   ],
 
   templateUrl: './cta.html',
