@@ -1,0 +1,67 @@
+<main class="settings-page" aria-labelledby="settings-title">
+  <header class="page-heading">
+    <div>
+      <span class="eyebrow">Your preferences</span>
+      <h1 id="settings-title">Settings</h1>
+      <p>Personalize how Find My Vehicle looks and get to common account pages.</p>
+    </div>
+    <span class="heading-icon"><mat-icon>settings</mat-icon></span>
+  </header>
+
+  <section class="settings-section" aria-labelledby="appearance-heading">
+    <header class="section-heading">
+      <span class="section-icon"><mat-icon>palette</mat-icon></span>
+      <div>
+        <h2 id="appearance-heading">Appearance</h2>
+        <p>Choose the theme used across the app. Your choice is saved on this device.</p>
+      </div>
+    </header>
+
+    <div class="theme-options" role="group" aria-labelledby="appearance-heading">
+      <button
+        class="theme-option"
+        type="button"
+        [class.selected]="theme() === 'light'"
+        [attr.aria-pressed]="theme() === 'light'"
+        (click)="setTheme('light')">
+        <span class="theme-preview light-preview"><mat-icon>light_mode</mat-icon></span>
+        <span class="option-copy"><strong>Light</strong><small>Bright surfaces and dark text</small></span>
+        @if (theme() === 'light') {<mat-icon class="selected-icon">check_circle</mat-icon>}
+      </button>
+      <button
+        class="theme-option"
+        type="button"
+        [class.selected]="theme() === 'dark'"
+        [attr.aria-pressed]="theme() === 'dark'"
+        (click)="setTheme('dark')">
+        <span class="theme-preview dark-preview"><mat-icon>dark_mode</mat-icon></span>
+        <span class="option-copy"><strong>Dark</strong><small>Dim surfaces for low-light use</small></span>
+        @if (theme() === 'dark') {<mat-icon class="selected-icon">check_circle</mat-icon>}
+      </button>
+    </div>
+  </section>
+
+  <section class="settings-section" aria-labelledby="account-heading">
+    <header class="section-heading">
+      <span class="section-icon account-icon"><mat-icon>manage_accounts</mat-icon></span>
+      <div>
+        <h2 id="account-heading">Account shortcuts</h2>
+        <p>Quickly open the dashboard areas used to manage your account and reports.</p>
+      </div>
+    </header>
+    <div class="shortcut-list">
+      <a routerLink="/dashboard/my-reports">
+        <span><mat-icon>description</mat-icon><span><strong>My Reports</strong><small>Review and manage your missing vehicle reports.</small></span></span>
+        <mat-icon>arrow_forward</mat-icon>
+      </a>
+      <a routerLink="/dashboard/my-vehicles">
+        <span><mat-icon>directions_car</mat-icon><span><strong>My Vehicles</strong><small>View vehicles registered to your account.</small></span></span>
+        <mat-icon>arrow_forward</mat-icon>
+      </a>
+      <a routerLink="/dashboard/help-support">
+        <span><mat-icon>help_outline</mat-icon><span><strong>Help &amp; Support</strong><small>Find emergency and Find My Vehicle support contacts.</small></span></span>
+        <mat-icon>arrow_forward</mat-icon>
+      </a>
+    </div>
+  </section>
+</main>
