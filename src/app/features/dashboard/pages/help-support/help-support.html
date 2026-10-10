@@ -3,147 +3,71 @@
     <div>
       <span class="eyebrow">Help when you need it</span>
       <h1 id="help-title">Help &amp; Support</h1>
-      <p>Find nearby services and quick access to emergency numbers.</p>
+      <p>India-wide emergency, police, medical, and roadside assistance numbers.</p>
     </div>
     <span class="heading-icon"><mat-icon>support_agent</mat-icon></span>
   </header>
 
-  <section class="location-notice" aria-label="Location privacy notice">
-    <mat-icon>my_location</mat-icon>
-    <p>
-      To find nearby services, your browser will ask for location permission. If allowed,
-      your coordinates are sent to OpenStreetMap to search within 15 km. This app does not
-      save your location. Phone numbers are shown only when a map listing provides one.
-    </p>
-  </section>
-
-  @if (help.error()) {
-    <div class="state-message error-state" role="alert">
-      <mat-icon>error_outline</mat-icon>
-      <p>{{ help.error() }}</p>
-      <button type="button" (click)="help.findNearbyHelp()">Try again</button>
+  <aside class="emergency-banner" aria-label="Emergency number">
+    <span class="emergency-icon"><mat-icon>emergency</mat-icon></span>
+    <div>
+      <strong>Need urgent help?</strong>
+      <p>Call 112 for unified police, fire, and ambulance emergency response across India.</p>
     </div>
-  } @else if (help.loading()) {
-    <div class="state-message" role="status">
-      <mat-icon>hourglass_top</mat-icon>
-      <p>{{ help.searched() ? 'Finding nearby services…' : 'Waiting for location permission…' }}</p>
-    </div>
-  } @else if (!help.searched()) {
-    <section class="location-prompt">
-      <span class="prompt-icon"><mat-icon>location_searching</mat-icon></span>
-      <h2>Find help near you</h2>
-      <p>Allow location access to look for the nearest petrol pump, police station, hospital, and emergency service.</p>
-      <button type="button" class="location-button" (click)="help.findNearbyHelp()">
-        <mat-icon>my_location</mat-icon>
-        Enable location and find help
-      </button>
-    </section>
-  } @else {
-    <section class="services-section" aria-labelledby="nearby-heading">
-      <header class="section-heading">
-        <div>
-          <h2 id="nearby-heading">Nearby services</h2>
-          <p>Closest mapped locations within 15 km of your current location.</p>
-        </div>
-        <button
-          type="button"
-          class="refresh-button"
-          (click)="help.findNearbyHelp()"
-          [disabled]="help.loading()">
-          <mat-icon>refresh</mat-icon>Refresh
-        </button>
-      </header>
+    <a href="tel:112" aria-label="Call emergency number 112">Call 112<mat-icon>call</mat-icon></a>
+  </aside>
 
-      <div class="service-grid">
-        @for (category of categories; track category.id) {
-          @let place = placeFor(category.id);
-          <article class="service-card">
-            <span class="service-icon"><mat-icon>{{ category.icon }}</mat-icon></span>
-            <div class="service-content">
-              <h3>{{ category.title }}</h3>
-              @if (place) {
-                <p class="place-name">{{ place.name }}</p>
-                @if (place.address) {
-                  <p class="place-address">{{ place.address }}</p>
+  <p class="coverage-note">
+    Helpline availability and coverage may vary by state and service provider. If a number
+    does not connect, try 112 for emergencies or contact your local authorities.
+  </p>
+
+  <div class="helpline-sections">
+    @for (section of sections; track section.id) {
+      <section class="helpline-section" [attr.aria-labelledby]="section.id + '-heading'">
+        <header class="section-heading">
+          <span class="section-icon"><mat-icon>{{ section.icon }}</mat-icon></span>
+          <h2 [id]="section.id + '-heading'">{{ section.title }}</h2>
+        </header>
+        <div class="helpline-grid">
+          @for (contact of section.contacts; track contact.label) {
+            <article class="helpline-card">
+              <div class="contact-copy">
+                <h3>{{ contact.label }}</h3>
+                @if (contact.description) {
+                  <p>{{ contact.description }}</p>
                 }
-                <p class="distance">{{ place.distanceKm < 1 ? (place.distanceKm * 1000 | number:'1.0-0') + ' m away' : (place.distanceKm | number:'1.1-1') + ' km away' }}</p>
-                <div class="service-actions">
-                  @if (place.phone) {
-                    @if (dialablePhone(place.phone); as phoneLink) {
-                      <a class="phone-link" [href]="phoneLink">
-                        <mat-icon>call</mat-icon>{{ place.phone }}
-                      </a>
-                    } @else {
-                      <span class="phone-unavailable">Phone: {{ place.phone }}</span>
-                    }
-                  } @else {
-                    <span class="phone-unavailable">Phone number not listed</span>
-                  }
-                  <a
-                    class="map-link"
-                    [href]="mapUrl(place)"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    [attr.aria-label]="'View ' + place.name + ' on OpenStreetMap'">
-                    <mat-icon>map</mat-icon>Map
-                  </a>
-                </div>
-              } @else {
-                <p class="not-found">No mapped location found within 15 km.</p>
+              </div>
+              @if (contact.number) {
+                <a
+                  class="phone-link"
+                  [href]="'tel:' + (contact.dialNumber || contact.number.replaceAll('-', ''))"
+                  [attr.aria-label]="'Call ' + contact.label + ' at ' + contact.number">
+                  {{ contact.number }}<mat-icon>call</mat-icon>
+                </a>
               }
-            </div>
-          </article>
-        }
-      </div>
-    </section>
-  }
-
-  <section class="helpline-section" aria-labelledby="helpline-heading">
-    <header class="section-heading">
-      <div>
-        <h2 id="helpline-heading">Emergency helplines in India</h2>
-        <p>Use these numbers for urgent assistance. Availability may vary by region.</p>
-      </div>
-    </header>
-    <div class="helpline-grid">
-      <article class="helpline-card">
-        <span class="helpline-icon"><mat-icon>emergency</mat-icon></span>
-        <div><h3>National emergency number</h3><p>Police, fire, and emergency response</p></div>
-        <a href="tel:112" aria-label="Call national emergency number 112">112<mat-icon>call</mat-icon></a>
-      </article>
-      <article class="helpline-card">
-        <span class="helpline-icon ambulance"><mat-icon>medical_services</mat-icon></span>
-        <div><h3>Ambulance</h3><p>Ambulance services where available</p></div>
-        <a href="tel:108" aria-label="Call ambulance number 108">108<mat-icon>call</mat-icon></a>
-      </article>
-    </div>
-  </section>
+            </article>
+          }
+        </div>
+      </section>
+    }
+  </div>
 
   <section class="support-team-section" aria-labelledby="support-team-heading">
     <header class="section-heading">
+      <span class="section-icon"><mat-icon>support_agent</mat-icon></span>
       <div>
         <h2 id="support-team-heading">Find My Vehicle support team</h2>
         <p>Contact our team for help with your account, reports, or using the platform.</p>
       </div>
     </header>
     <div class="support-team-card">
-      <span class="support-team-icon"><mat-icon>support_agent</mat-icon></span>
-      <div class="support-team-details">
-        <h3>We're here to help</h3>
-        <div class="support-team-links">
-          <a href="mailto:support.findmyvehicle@gmail.com">
-            <mat-icon>email</mat-icon>support.findmyvehicle@gmail.com
-          </a>
-          <a href="tel:+919001090010">
-            <mat-icon>call</mat-icon>+91-9001090010
-          </a>
-        </div>
-      </div>
+      <a href="mailto:support.findmyvehicle@gmail.com">
+        <mat-icon>email</mat-icon>support.findmyvehicle@gmail.com
+      </a>
+      <a href="tel:+919001090010">
+        <mat-icon>call</mat-icon>+91-9001090010
+      </a>
     </div>
   </section>
-
-  <p class="data-attribution">
-    Nearby place data © OpenStreetMap contributors.
-    <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">Attribution and terms</a>
-  </p>
 </main>
