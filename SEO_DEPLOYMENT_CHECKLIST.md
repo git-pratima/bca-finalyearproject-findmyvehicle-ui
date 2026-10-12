@@ -12,7 +12,7 @@
 
 ## Before deploying
 
-1. Decide the permanent public hostname. The project currently uses `https://findmyvehicle.netlify.app` in `src/index.html`, `src/app/core/services/seo.service.ts`, `public/robots.txt` and `public/sitemap.xml`.
+1. The configured public hostname is `https://pratima-bca-findmyvehicle.netlify.app`. It is used in `src/index.html`, `src/app/core/services/seo.service.ts`, `public/robots.txt` and `public/sitemap.xml`.
 2. If using a custom domain, change **every** occurrence of that Netlify hostname to the exact HTTPS custom-domain URL before the first production deploy. Pick one version only (for example `https://www.example.in`), then redirect every alternative (`http`, `www` or Netlify subdomain) to it.
 3. Deploy with `npm run build`; ensure `/`, `/how-it-works`, `/about`, `/contact`, `/robots.txt` and `/sitemap.xml` return HTTP 200 over HTTPS.
 4. Check that pages intended to be public do not require login and do not contain `noindex`. Do not put individual vehicle reports in the sitemap unless they are deliberately public and personal contact details have been privacy-reviewed.

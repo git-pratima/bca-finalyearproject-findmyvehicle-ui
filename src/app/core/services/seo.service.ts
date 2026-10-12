@@ -10,7 +10,7 @@ interface SeoData {
   robots: string;
 }
 
-const SITE_URL = 'https://findmyvehicle.netlify.app';
+const SITE_URL = 'https://pratima-bca-findmyvehicle.netlify.app';
 const DEFAULT_SOCIAL_IMAGE = `${SITE_URL}/assets/images/landing/vehicle-recovery-night.jpg`;
 const DEFAULT_SEO: SeoData = {
   title: 'Find My Vehicle | Missing & Stolen Vehicle Recovery',
