@@ -1,18 +1,27 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-IN">
   <head>
     <meta charset="utf-8" />
     <title>Find My Vehicle | Missing &amp; Stolen Vehicle Recovery</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Search and report missing or stolen vehicles across India with Find My Vehicle." />
+    <meta name="keywords" content="missing vehicle India, stolen vehicle India, vehicle recovery, report stolen vehicle, report missing vehicle, vehicle registration search, lost bike, stolen bike, stolen car" />
     <meta name="robots" content="index, follow" />
+    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="theme-color" content="#0b5fff" />
     <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_IN" />
     <meta property="og:site_name" content="Find My Vehicle" />
     <meta property="og:title" content="Find My Vehicle | Missing &amp; Stolen Vehicle Recovery" />
     <meta property="og:description" content="Search and report missing or stolen vehicles across India." />
     <meta property="og:url" content="https://findmyvehicle.netlify.app/" />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content="https://findmyvehicle.netlify.app/assets/images/landing/vehicle-recovery-night.jpg" />
+    <meta property="og:image:alt" content="Find My Vehicle community recovery platform" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Find My Vehicle | Missing &amp; Stolen Vehicle Recovery" />
+    <meta name="twitter:description" content="Search and report missing or stolen vehicles across India." />
+    <meta name="twitter:image" content="https://findmyvehicle.netlify.app/assets/images/landing/vehicle-recovery-night.jpg" />
     <link rel="canonical" href="https://findmyvehicle.netlify.app/" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -32,7 +41,27 @@
     })();
   </script>
     <script type="application/ld+json">
-      {"@context":"https://schema.org","@type":"WebSite","name":"Find My Vehicle","url":"https://findmyvehicle.netlify.app/","description":"A community platform for reporting and searching missing or stolen vehicles in India.","potentialAction":{"@type":"SearchAction","target":"https://findmyvehicle.netlify.app/search?q={search_term_string}","query-input":"required name=search_term_string"}}
+      {
+        "@context":"https://schema.org",
+        "@graph":[
+          {
+            "@type":"Organization",
+            "@id":"https://findmyvehicle.netlify.app/#organization",
+            "name":"Find My Vehicle",
+            "url":"https://findmyvehicle.netlify.app/",
+            "description":"A community platform for reporting and searching missing or stolen vehicles in India."
+          },
+          {
+            "@type":"WebSite",
+            "@id":"https://findmyvehicle.netlify.app/#website",
+            "url":"https://findmyvehicle.netlify.app/",
+            "name":"Find My Vehicle",
+            "description":"Search and report missing or stolen vehicles across India.",
+            "inLanguage":"en-IN",
+            "publisher":{"@id":"https://findmyvehicle.netlify.app/#organization"}
+          }
+        ]
+      }
     </script>
   </head>
   <body>

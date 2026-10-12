@@ -11,6 +11,7 @@ interface SeoData {
 }
 
 const SITE_URL = 'https://findmyvehicle.netlify.app';
+const DEFAULT_SOCIAL_IMAGE = `${SITE_URL}/assets/images/landing/vehicle-recovery-night.jpg`;
 const DEFAULT_SEO: SeoData = {
   title: 'Find My Vehicle | Missing & Stolen Vehicle Recovery',
   description: 'Search and report missing or stolen vehicles across India.',
@@ -44,8 +45,12 @@ export class SeoService {
     this.meta.updateTag({ property: 'og:title', content: seo.title });
     this.meta.updateTag({ property: 'og:description', content: seo.description });
     this.meta.updateTag({ property: 'og:url', content: canonicalUrl });
+    this.meta.updateTag({ property: 'og:image', content: DEFAULT_SOCIAL_IMAGE });
+    this.meta.updateTag({ property: 'og:image:alt', content: 'Find My Vehicle community recovery platform' });
+    this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
     this.meta.updateTag({ name: 'twitter:title', content: seo.title });
     this.meta.updateTag({ name: 'twitter:description', content: seo.description });
+    this.meta.updateTag({ name: 'twitter:image', content: DEFAULT_SOCIAL_IMAGE });
 
     let canonical = this.document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
     if (!canonical) {
